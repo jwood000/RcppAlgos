@@ -1,0 +1,7 @@
+{
+  "rule": "Closest block median to median of warmed first32 sums, then closest warmed call to that block median.",
+  "case": "p2-zero-80000000000-t2-L6over5",
+  "block": 2,
+  "repeat": 2,
+  "first32_us": 7404.124000000002
+}

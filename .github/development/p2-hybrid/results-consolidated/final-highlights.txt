@@ -1,0 +1,116 @@
+Consolidated P2: final highlights
+
+Advance the frozen consolidated selector as the first policy for maintainer review, not as a proven universal optimum. Retain one common K1 queue, the shared large-input caps, and conservative small-parallel guards; do not route permanently among v1/v2/v3 or refit thresholds from this matrix. The held-out results retain the large complete-call gains with no predeclared material regression flags. Production adoption still requires discussing the recurring ~0.079ms first-call scheduler tradeoff and accepting deliberately missed streaming gains for enlarged tables. The strict L==isqrt(x) gate is intentionally conservative and has a visible performance discontinuity for 0.1% enlargement; it is an empirical safety boundary, not a mathematical crossover. No retuning or production edits were made.
+
+12,104 timed counts matched (8,840 focus;3,264 held-out), 3,026 fresh processes. Candidate frozen before focus and held-out runs. Focus:1 predeclared flag;held-out:0.
+
+Complete calls: milliseconds; paired candidate change vs production / Phi1; negative is faster.
+case | state | production ms | Phi1 ms | candidate ms | change vs production | change vs Phi1
+phases-meissel-10000000000-t8-L1over1 | first | 1.680083 | 1.759085 | 1.692500 | +1.04% | -3.10%
+phases-meissel-10000000000-t8-L1over1 | warm | 0.590583 | 0.589917 | 0.584209 | -1.37% | +0.38%
+phases-lehmer-10000000000-t8-L1over1 | first | 1.705499 | 1.741334 | 1.770542 | +0.44% | -1.82%
+phases-lehmer-10000000000-t8-L1over1 | warm | 0.633125 | 0.637375 | 0.643000 | +1.80% | +0.88%
+phases-meissel-70000000000-t2-L1over1 | first | 8.316082 | 8.476334 | 6.265043 | -24.50% | -26.00%
+phases-meissel-70000000000-t2-L1over1 | warm | 2.971166 | 2.979334 | 2.696082 | -8.66% | -8.21%
+phases-meissel-70000000000-t8-L1over1 | first | 4.770543 | 4.772208 | 4.768499 | -0.55% | +0.76%
+phases-meissel-70000000000-t8-L1over1 | warm | 1.937291 | 1.949708 | 1.948125 | -0.71% | +0.45%
+phases-lehmer-70000000000-t2-L1over1 | first | 8.199751 | 8.262166 | 6.122334 | -25.52% | -25.36%
+phases-lehmer-70000000000-t2-L1over1 | warm | 3.018584 | 3.046667 | 2.722667 | -9.80% | -11.30%
+phases-lehmer-70000000000-t8-L1over1 | first | 4.355125 | 4.309291 | 4.408668 | +1.16% | +2.31%
+phases-lehmer-70000000000-t8-L1over1 | warm | 1.874209 | 1.835625 | 1.922000 | +2.55% | +4.97%
+phases-meissel-1000000000000-t8-L1over1 | first | 23.403666 | 23.560957 | 16.498041 | -30.05% | -29.98%
+phases-meissel-1000000000000-t8-L1over1 | warm | 12.236585 | 12.336333 | 10.174751 | -18.21% | -17.56%
+phases-lehmer-1000000000000-t8-L1over1 | first | 23.108209 | 22.734293 | 16.251374 | -30.56% | -29.18%
+phases-lehmer-1000000000000-t8-L1over1 | warm | 11.994376 | 12.012916 | 9.987999 | -16.27% | -16.37%
+phases-meissel-100000000000000-t8-L1over1 | first | 669.221000 | 666.726249 | 373.438208 | -44.20% | -44.21%
+phases-meissel-100000000000000-t8-L1over1 | warm | 618.225874 | 612.796124 | 325.777416 | -47.07% | -46.91%
+phases-lehmer-100000000000000-t8-L1over1 | first | 651.945917 | 654.443625 | 353.714626 | -45.52% | -45.95%
+phases-lehmer-100000000000000-t8-L1over1 | warm | 602.999124 | 603.762208 | 309.025293 | -48.36% | -48.12%
+phases-meissel-60000000000-t3-L1over1 | first | 5.583208 | 5.687666 | 4.503793 | -20.35% | -19.93%
+phases-meissel-60000000000-t3-L1over1 | warm | 2.121001 | 2.170833 | 2.048543 | -3.53% | -2.64%
+phases-lehmer-60000000000-t3-L1over1 | first | 6.050084 | 6.009293 | 4.816041 | -19.62% | -20.76%
+phases-lehmer-60000000000-t3-L1over1 | warm | 2.281960 | 2.223207 | 2.164043 | -2.24% | -1.23%
+phases-meissel-85000000000-t6-L1over1 | first | 5.765167 | 5.630000 | 5.734875 | +1.30% | +1.20%
+phases-meissel-85000000000-t6-L1over1 | warm | 2.291542 | 2.322335 | 2.308166 | -0.34% | -2.39%
+phases-lehmer-85000000000-t6-L1over1 | first | 5.371419 | 5.388751 | 5.425457 | +2.77% | +0.68%
+phases-lehmer-85000000000-t6-L1over1 | warm | 2.247374 | 2.212959 | 2.205751 | -1.33% | -0.57%
+phases-meissel-800000000000-t3-L1over1 | first | 31.033667 | 30.819416 | 21.685082 | -29.29% | -29.16%
+phases-meissel-800000000000-t3-L1over1 | warm | 14.519291 | 14.584626 | 12.051750 | -16.99% | -14.88%
+phases-lehmer-800000000000-t3-L1over1 | first | 30.327918 | 30.678624 | 21.412999 | -30.45% | -30.44%
+phases-lehmer-800000000000-t3-L1over1 | warm | 14.428750 | 14.529375 | 11.865500 | -17.62% | -18.33%
+phases-meissel-1200000000000-t6-L1over1 | first | 30.133792 | 30.138000 | 20.411000 | -30.79% | -32.43%
+phases-meissel-1200000000000-t6-L1over1 | warm | 15.439875 | 15.539876 | 12.465292 | -18.40% | -19.79%
+phases-lehmer-1200000000000-t6-L1over1 | first | 30.549791 | 30.252833 | 20.384250 | -32.71% | -31.69%
+phases-lehmer-1200000000000-t6-L1over1 | warm | 15.534583 | 15.998292 | 12.365376 | -20.40% | -22.39%
+phases-meissel-80000000000000-t6-L1over1 | first | 631.005332 | 632.969500 | 365.677292 | -41.96% | -42.23%
+phases-meissel-80000000000000-t6-L1over1 | warm | 568.551749 | 571.049293 | 308.135958 | -45.80% | -46.31%
+phases-lehmer-80000000000000-t6-L1over1 | first | 624.924085 | 612.793334 | 351.776334 | -42.61% | -42.37%
+phases-lehmer-80000000000000-t6-L1over1 | warm | 559.999458 | 556.351541 | 291.501668 | -46.14% | -46.92%
+
+Within 5% of best hindsight control (best>0.01ms):
+cohort | mode | state | variant | within / eligible
+focus | p2 | first | v1 | 7/27
+focus | p2 | first | v2 | 22/27
+focus | p2 | first | v3 | 18/27
+focus | p2 | first | candidate | 16/27
+focus | p2 | warm | v1 | 17/27
+focus | p2 | warm | v2 | 22/27
+focus | p2 | warm | v3 | 22/27
+focus | p2 | warm | candidate | 25/27
+focus | phases | first | v1 | 8/18
+focus | phases | first | v2 | 9/18
+focus | phases | first | v3 | 11/18
+focus | phases | first | candidate | 10/18
+focus | phases | warm | v1 | 16/18
+focus | phases | warm | v2 | 18/18
+focus | phases | warm | v3 | 18/18
+focus | phases | warm | candidate | 18/18
+holdout | p2 | first | candidate | 8/18
+holdout | p2 | warm | candidate | 14/18
+holdout | phases | first | candidate | 8/10
+holdout | phases | warm | candidate | 10/10
+
+Fastest median of process medians among production baseline, Phi1, and available fixed common-K1 variants, excluding all selectors. Focus has fixed8/16/32/64; holdout has fixed16/32/64. Cases with best control <=0.01ms excluded. Optimistic hindsight comparison, not a deployable policy.
+
+Every-block slower comparisons below the predeclared flag thresholds:
+focus p2-meissel-80000000000-t2-L6over5 first vs baseline: +1.83%, +0.092584ms; blocks5.
+focus p2-meissel-70000000000-t4-L2over1 warm vs phi1: +0.76%, +0.003958ms; blocks5.
+focus phases-meissel-10000000000-t2-L1over1 first vs phi1: +2.68%, +0.070250ms; blocks5.
+focus phases-lehmer-10000000000-t4-L1over1 first vs baseline: +0.76%, +0.012876ms; blocks5.
+focus phases-lehmer-10000000000-t8-L1over1 warm vs baseline: +1.80%, +0.011416ms; blocks5.
+focus phases-lehmer-70000000000-t8-L1over1 first vs phi1: +2.31%, +0.099377ms; blocks5.
+holdout p2-lehmer-85000000000-t6-L1over1 first vs phi1: +4.30%, +0.164041ms; blocks5.
+holdout p2-meissel-60000000000-t3-L1001over1000 first vs baseline: +1.08%, +0.033416ms; blocks5.
+
+Known flagged case:
+Isolated Lehmer1e10, requested8/actual4, first: candidate vsproduction+6.76% (+0.078916ms), everyblock slower. Candidate selectsPhi-only. Candidate vsPhi1+3.91% mixed; Phi1 vsproduction+5.68% mixed. Consistent with earlier queue tradeoff, without proving precise attribution.
+
+Conservative fallback costs:
+focus p2-zero-80000000000-t2-L6over5 first vsv2: +10.10%, +1.551333ms; everyblock slower.
+focus p2-zero-80000000000-t2-L6over5 warm vsv2: +2.74%, +0.167792ms; everyblock slower.
+focus p2-meissel-80000000000-t2-L6over5 first vsv2: +111.90%, +2.726250ms; everyblock slower.
+focus p2-meissel-80000000000-t2-L6over5 warm vsv2: +12.02%, +0.147625ms; everyblock slower.
+focus p2-meissel-80000000000-t2-L6over5 first vsfixed16: +108.30%, +2.758251ms; everyblock slower.
+focus p2-meissel-80000000000-t2-L6over5 warm vsfixed16: +11.46%, +0.143541ms; everyblock slower.
+focus p2-meissel-80000000000-t8-L6over5 first vsfixed16: +66.66%, +1.034251ms; everyblock slower.
+holdout p2-meissel-60000000000-t3-L1001over1000 first vsfixed16: +89.92%, +1.495916ms; everyblock slower.
+
+Near-root 1001/1000 table example, including non-unanimous warmed result:
+p2-meissel-60000000000-t3-L1001over1000 first: candidate3.162209ms, fixed161.741333ms, paired+89.92% /+1.495916ms; everyblock slower=True.
+p2-meissel-60000000000-t3-L1001over1000 warm: candidate0.845916ms, fixed160.786958ms, paired+9.92% /+0.076374ms; everyblock slower=False.
+
+Capacity maxima:
+focus: conservative_scratch_bytes=396344 bytes (phases-meissel-100000000000000-t8-L1over1).
+focus: table_capacity_bytes=45316764 bytes (phases-meissel-100000000000000-t8-L1over1).
+focus: sieve_capacity_bytes=262144 bytes (p2-zero-1000000000000-t8-L1over1).
+focus: next_capacity_bytes=134136 bytes (phases-meissel-100000000000000-t8-L1over1).
+holdout: conservative_scratch_bytes=294360 bytes (phases-meissel-80000000000000-t6-L1over1).
+holdout: table_capacity_bytes=40627384 bytes (phases-meissel-80000000000000-t6-L1over1).
+holdout: sieve_capacity_bytes=196608 bytes (p2-meissel-1200000000000-t6-L1over1).
+holdout: next_capacity_bytes=97704 bytes (phases-meissel-80000000000000-t6-L1over1).
+
+Measured vector capacities only, not RSS. Conservative scratch peak accounts for sequential Phi/stream phases; excludes thread stacks, allocator overhead, shared Phi cache and other process allocations.
+
+Displayed timings are medians of process medians. Changes are medians of paired block ratios/differences; they need not equal ratios/differences of displayed medians. Every-block direction is descriptive, not a statistical significance claim.
+
+All18 focused complete-call cases select identical partitions and worker budgets in v2,v3,andcandidate. Their differing within5% first-call counts cannot establish a dispatch advantage.

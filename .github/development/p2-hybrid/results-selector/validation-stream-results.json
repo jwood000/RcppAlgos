@@ -1,0 +1,10 @@
+[
+  {
+    "sanitizer": "asan-ubsan",
+    "checks": 88
+  },
+  {
+    "sanitizer": "tsan",
+    "checks": 88
+  }
+]

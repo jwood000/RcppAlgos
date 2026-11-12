@@ -1,0 +1,110 @@
+Validated 10752 timed results across 56 configurations and 7 variants.
+Percentages below are medians of matched process ratios; negative means less time.
+
+p2 parallel summary versus original baseline:
+zero    first head1   : median case -47.06% [-63.57,-16.26], improved 7/7; all-block improvement 7/7
+zero    first head2   : median case -43.65% [-50.27,-17.04], improved 7/7; all-block improvement 7/7
+zero    first head4   : median case -24.39% [-33.01,-16.58], improved 7/7; all-block improvement 7/7
+zero    first head8   : median case -16.46% [-21.53,-10.21], improved 7/7; all-block improvement 7/7
+zero    first head32  : median case -1.35% [-3.12,+0.13], improved 6/7; all-block improvement 1/7
+zero    first hybrid16: median case +8.79% [+4.72,+16.84], improved 0/7; all-block improvement 0/7
+zero    warm  head1   : median case -56.39% [-64.24,-16.00], improved 7/7; all-block improvement 7/7
+zero    warm  head2   : median case -44.65% [-54.98,-16.56], improved 7/7; all-block improvement 7/7
+zero    warm  head4   : median case -32.11% [-37.43,-16.49], improved 7/7; all-block improvement 7/7
+zero    warm  head8   : median case -20.51% [-22.40,-16.13], improved 7/7; all-block improvement 7/7
+zero    warm  head32  : median case -0.17% [-0.71,+0.35], improved 5/7; all-block improvement 0/7
+zero    warm  hybrid16: median case +7.51% [+1.82,+28.54], improved 0/7; all-block improvement 0/7
+meissel first head1   : median case +0.48% [-0.35,+5.26], improved 1/10; all-block improvement 0/10
+meissel first head2   : median case +1.20% [-1.05,+7.91], improved 2/10; all-block improvement 0/10
+meissel first head4   : median case +0.64% [-1.05,+5.34], improved 1/10; all-block improvement 0/10
+meissel first head8   : median case +0.61% [-0.03,+2.42], improved 1/10; all-block improvement 0/10
+meissel first head32  : median case -0.00% [-1.70,+1.49], improved 5/10; all-block improvement 1/10
+meissel first hybrid16: median case -46.94% [-61.06,+3.13], improved 8/10; all-block improvement 8/10
+meissel warm  head1   : median case +1.00% [-0.20,+1.89], improved 3/10; all-block improvement 0/10
+meissel warm  head2   : median case -0.05% [-0.72,+0.67], improved 6/10; all-block improvement 0/10
+meissel warm  head4   : median case +0.41% [-1.00,+3.28], improved 4/10; all-block improvement 0/10
+meissel warm  head8   : median case +0.08% [-1.22,+3.57], improved 5/10; all-block improvement 0/10
+meissel warm  head32  : median case +0.01% [-1.28,+3.96], improved 5/10; all-block improvement 0/10
+meissel warm  hybrid16: median case -4.84% [-61.56,+188.30], improved 5/10; all-block improvement 5/10
+lehmer  first head1   : median case +1.04% [-5.21,+8.50], improved 4/10; all-block improvement 1/10
+lehmer  first head2   : median case +0.80% [-2.72,+5.71], improved 3/10; all-block improvement 0/10
+lehmer  first head4   : median case +0.78% [-0.14,+3.12], improved 2/10; all-block improvement 0/10
+lehmer  first head8   : median case +0.52% [-1.71,+3.36], improved 4/10; all-block improvement 1/10
+lehmer  first head32  : median case -0.09% [-2.34,+2.49], improved 6/10; all-block improvement 1/10
+lehmer  first hybrid16: median case -30.85% [-43.93,+5.53], improved 8/10; all-block improvement 8/10
+lehmer  warm  head1   : median case +0.83% [-0.44,+3.48], improved 2/10; all-block improvement 0/10
+lehmer  warm  head2   : median case +0.64% [-1.19,+1.46], improved 3/10; all-block improvement 0/10
+lehmer  warm  head4   : median case -0.06% [-1.41,+4.60], improved 6/10; all-block improvement 0/10
+lehmer  warm  head8   : median case +0.39% [-0.91,+2.20], improved 3/10; all-block improvement 0/10
+lehmer  warm  head32  : median case +0.43% [-0.82,+2.54], improved 2/10; all-block improvement 0/10
+lehmer  warm  hybrid16: median case -5.14% [-45.80,+155.59], improved 6/10; all-block improvement 5/10
+
+phases parallel summary versus original baseline:
+meissel first head1   : median case +0.77% [-0.27,+12.06], improved 1/7; all-block improvement 0/7
+meissel first head2   : median case +0.33% [-0.60,+15.77], improved 2/7; all-block improvement 0/7
+meissel first head4   : median case -0.05% [-1.81,+7.50], improved 4/7; all-block improvement 0/7
+meissel first head8   : median case +0.84% [-0.94,+6.98], improved 2/7; all-block improvement 0/7
+meissel first head32  : median case +0.48% [-1.75,+8.82], improved 3/7; all-block improvement 1/7
+meissel first hybrid16: median case -25.27% [-33.50,+6.24], improved 5/7; all-block improvement 5/7
+meissel warm  head1   : median case +0.35% [-1.42,+11.23], improved 2/7; all-block improvement 0/7
+meissel warm  head2   : median case +0.66% [-0.66,+8.77], improved 2/7; all-block improvement 0/7
+meissel warm  head4   : median case +0.08% [-0.83,+8.65], improved 2/7; all-block improvement 0/7
+meissel warm  head8   : median case -0.17% [-3.79,+8.23], improved 4/7; all-block improvement 0/7
+meissel warm  head32  : median case +0.58% [-3.32,+8.80], improved 2/7; all-block improvement 0/7
+meissel warm  hybrid16: median case -13.31% [-36.91,+62.14], improved 4/7; all-block improvement 4/7
+lehmer  first head1   : median case +0.37% [-1.25,+6.19], improved 3/7; all-block improvement 1/7
+lehmer  first head2   : median case +0.41% [-1.39,+2.75], improved 3/7; all-block improvement 0/7
+lehmer  first head4   : median case -0.26% [-3.57,+3.67], improved 5/7; all-block improvement 1/7
+lehmer  first head8   : median case -0.19% [-0.42,+3.57], improved 4/7; all-block improvement 0/7
+lehmer  first head32  : median case -0.37% [-1.40,+2.72], improved 5/7; all-block improvement 0/7
+lehmer  first hybrid16: median case -26.76% [-37.09,+6.53], improved 5/7; all-block improvement 5/7
+lehmer  warm  head1   : median case -0.05% [-1.81,+3.26], improved 4/7; all-block improvement 0/7
+lehmer  warm  head2   : median case +0.22% [-2.69,+0.80], improved 3/7; all-block improvement 1/7
+lehmer  warm  head4   : median case +0.19% [-1.26,+1.21], improved 3/7; all-block improvement 1/7
+lehmer  warm  head8   : median case +0.05% [-2.90,+1.25], improved 3/7; all-block improvement 0/7
+lehmer  warm  head32  : median case +0.58% [-2.31,+1.53], improved 3/7; all-block improvement 0/7
+lehmer  warm  hybrid16: median case -13.07% [-39.20,+57.90], improved 4/7; all-block improvement 4/7
+
+Matched 8e10 cases, two requested threads, primary milliseconds:
+zero    first baseline 20.559333
+zero    warm  baseline 7.451542
+zero    first head1    16.733750
+zero    warm  head1    6.218333
+zero    first head2    16.866333
+zero    warm  head2    6.226875
+zero    first head4    16.909292
+zero    warm  head4    6.185167
+zero    first head8    17.154750
+zero    warm  head8    6.179042
+zero    first head32   20.429500
+zero    warm  head32   7.480667
+zero    first hybrid16 21.872917
+zero    warm  hybrid16 8.369917
+meissel first baseline 5.267583
+meissel warm  baseline 1.374041
+meissel first head1    5.273625
+meissel warm  head1    1.399375
+meissel first head2    5.393000
+meissel warm  head2    1.376833
+meissel first head4    5.271542
+meissel warm  head4    1.375667
+meissel first head8    5.257042
+meissel warm  head8    1.376542
+meissel first head32   5.275375
+meissel warm  head32   1.382750
+meissel first hybrid16 2.714833
+meissel warm  hybrid16 1.228041
+lehmer  first baseline 7.002250
+lehmer  warm  baseline 2.047042
+lehmer  first head1    6.993167
+lehmer  warm  head1    2.058541
+lehmer  first head2    6.950709
+lehmer  warm  head2    2.056250
+lehmer  first head4    7.005500
+lehmer  warm  head4    2.043959
+lehmer  first head8    6.911375
+lehmer  warm  head8    2.052292
+lehmer  first head32   6.921291
+lehmer  warm  head32   2.036875
+lehmer  first hybrid16 4.634917
+lehmer  warm  hybrid16 1.903125

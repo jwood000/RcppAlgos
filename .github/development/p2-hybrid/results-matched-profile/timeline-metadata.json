@@ -1,0 +1,369 @@
+{
+  "blocks": 5,
+  "repeats": 6,
+  "seed": 2026110703,
+  "runs": [
+    {
+      "block": 0,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 0,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 0,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 0,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 0,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 0,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 1,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 1,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 1,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 1,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 1,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 1,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 2,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 2,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 2,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 2,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 2,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 2,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 3,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 3,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 3,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 3,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 3,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 3,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 4,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 4,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 4,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "baseline",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 4,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    },
+    {
+      "block": 4,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "split-phi",
+        "meissel",
+        "2",
+        "none",
+        "6",
+        "2069687562"
+      ]
+    },
+    {
+      "block": 4,
+      "command": [
+        "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-matched-7hxw_j7g/profile-timeline",
+        "hybrid",
+        "zero",
+        "2",
+        "none",
+        "6",
+        "11238880589"
+      ]
+    }
+  ],
+  "rows": 180,
+  "sha256": "752f22f03976ed090fa6cd0b6056dfeb27815147ca84b74506024677d083caba"
+}

@@ -1,0 +1,17 @@
+{
+  "production_commit": "8b43ed790435b22eb9ec02627379082fe7deb103",
+  "production_files_checked": 392,
+  "production_changes": [],
+  "prior_result_files_unchanged": {
+    "results": 24,
+    "results-wide": 18,
+    "results-extended": 19,
+    "results-selector": 29,
+    "results-selector-v2": 35
+  },
+  "build_inputs_checked": 284,
+  "binaries_checked": 11,
+  "policies_and_runner_unchanged": true,
+  "staged_changes": "",
+  "validation_scope": "Native experimental builds on arm64 macOS; no full R package check or other-platform run; production unchanged."
+}

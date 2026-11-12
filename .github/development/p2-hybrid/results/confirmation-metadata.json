@@ -1,0 +1,11 @@
+{
+  "seed": 202611093,
+  "processes": 5,
+  "repeats": 4,
+  "verified_rows": 40,
+  "mode": "p2",
+  "method": "lehmer",
+  "x": 1000000000000,
+  "threads": 1,
+  "reason": "one slow hybrid8 process in the primary isolated matrix; original data retained"
+}

@@ -1,0 +1,18 @@
+{
+  "report_sha256": "a9728ef19cb39f70ab4e08df23bf8975c1d3da73d37c52574d5ab5dc58d06e86",
+  "status": "clean",
+  "actionable_findings": [],
+  "whole_call_and_paired_timing_tables_verified": true,
+  "all_tail_including_boundary_observation_verified_on_all_30_zero_traces": true,
+  "reported_2_70_ms_lead_us": 2698.5420000000004,
+  "warmed_tail_counter_records_verified": 64,
+  "worker_gap_seed_setup_fill_claims_verified": true,
+  "first_call_history_table_consistent_with_retained_analysis": true,
+  "validation_counts_and_reference_provenance_consistent_with_retained_evidence": true,
+  "measurement_limits_appropriate": true,
+  "reproduction_commands_read_only_review": "Fresh build directories, source snapshot, instrumentation/build arguments, validation/measurement order and existing-library/original-binary dependencies are coherent. No reproduction or benchmark rerun.",
+  "limits": [
+    "This audit checks report and retained data, not other inputs or platforms.",
+    "Root owns final production/prior-artifact preservation audit."
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "syntax": {
+    "v1": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "v1-memory": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "v2": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "v2-memory": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "v3": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "v3-memory": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "fixed32": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "fixed32-memory": {
+      "exit": 0,
+      "stderr": ""
+    }
+  },
+  "preprocessed": {
+    "v1": {
+      "unchanged": true,
+      "sha256": "fc67f5a747e03330926011d14f187990b75c4b5a5bd7831eb84648baef74f655"
+    },
+    "v1-memory": {
+      "unchanged": true,
+      "sha256": "4f07f858484942efe780b0559360c1a32781b28cf1bbaa154edb29743fdfcdc2"
+    },
+    "v2": {
+      "unchanged": true,
+      "sha256": "2861f978074cacda8f708528d38511f7e6a4f19ae37bc28c9f69b1d779daee6e"
+    },
+    "v2-memory": {
+      "unchanged": true,
+      "sha256": "5e0a074824a42a44eb95c7254e5e8eb3274b743417e9c83d63140617b3262e18"
+    },
+    "fixed32": {
+      "unchanged": true,
+      "sha256": "b2014f47151d28a2d18705eebf2a0c38ab15b4026a8e351dd78fea92d9912eb4"
+    },
+    "fixed32-memory": {
+      "unchanged": true,
+      "sha256": "dbdd65ff0a4ca43609011f4940857408805c39831e3ed310b6cc4ea6b2c939ee"
+    }
+  },
+  "exclusive": {
+    "v1-v2": {
+      "rejected": true,
+      "guard_message_present": true
+    },
+    "v1-v3": {
+      "rejected": true,
+      "guard_message_present": true
+    },
+    "v1-fixed32": {
+      "rejected": true,
+      "guard_message_present": true
+    },
+    "v2-v3": {
+      "rejected": true,
+      "guard_message_present": true
+    },
+    "v2-fixed32": {
+      "rejected": true,
+      "guard_message_present": true
+    },
+    "v3-fixed32": {
+      "rejected": true,
+      "guard_message_present": true
+    }
+  },
+  "header_sha256": {
+    "P2Selector.h": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+    "P2SelectorV2.h": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+    "P2SelectorV3.h": "b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931",
+    "hybrid_metrics.h": "1dccf2262a0b095079c747ad59a431083931b7f47ab73dce43c12942105fb23b"
+  },
+  "kernel_sha256": "8be6319d634edce0032d1afd41496c2c05c3fb2f0dc2ecc86ea97c47495fce82",
+  "prior_kernel_sha256": "8fb59b4d70a9ee2e41dbb73d5f0c3eb6cba2affdd84c7ba65ad02a91824ab979"
+}

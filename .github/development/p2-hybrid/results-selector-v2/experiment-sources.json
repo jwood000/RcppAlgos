@@ -1,0 +1,18 @@
+{
+  "source_commit": "8b43ed790435b22eb9ec02627379082fe7deb103",
+  "artifact_directory": "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-v2-pkbdf4cx",
+  "sha256": {
+    "P2Hybrid.cpp": "8fb59b4d70a9ee2e41dbb73d5f0c3eb6cba2affdd84c7ba65ad02a91824ab979",
+    "P2Selector.h": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+    "P2SelectorV2.h": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+    "selector_v2_profile.cpp": "d232db486273780963250cbef3e8d77f97bd5f37cdc732c0cdcd5aa67418fd1a",
+    "selector_v2_cases.h": "62082397c27e684aba1434c203d76d41432212ef6799b35888be6e30826922d5",
+    "selector_v2_bench.py": "c58f8e9454cdbfe42e6ada75c13b2d6b1fb380ce51202fa88983bc26c6c523c2",
+    "selector_v2_analyze.py": "b920576c614902b7c26925b96018a103c4d22155eed57c69486f604b5ffda6be",
+    "validate.py": "0095714a0154415eeec98d9a81b542ae371696fbcccbafb4c7a006ef400bf401",
+    "selector-check.cpp": "7dd92cab21542bf6bbabd13896568a8201698f5835d43974f60df9223945f8b8",
+    "selector-v2-check.cpp": "7f8ed7b7494dca0641f6dfe0683b85749cd7ac3b6a6e9803763f6b8655288b30",
+    "check.cpp": "63b03df69483d56e534ace8cb39d3deb49622219985f29451af9c736d555d098",
+    "hybrid_metrics.h": "1dccf2262a0b095079c747ad59a431083931b7f47ab73dce43c12942105fb23b"
+  }
+}

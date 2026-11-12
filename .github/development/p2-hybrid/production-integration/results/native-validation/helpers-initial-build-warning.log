@@ -1,0 +1,14 @@
+/Users/owacasa/RcppAlgos/.github/development/p2-hybrid/production-integration/helpers.cpp:91:19: warning: variable 'frozenBegin' is used uninitialized whenever '&&' condition is false [-Wsometimes-uninitialized]
+   91 |             check(actual.range(ticket, begin, end) && frozen.range(ticket, frozenBegin, frozenEnd),
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/owacasa/RcppAlgos/.github/development/p2-hybrid/production-integration/helpers.cpp:93:28: note: uninitialized use occurs here
+   93 |             check(begin == frozenBegin && end == frozenEnd && first <= begin && begin < end && end <= maximum,
+      |                            ^~~~~~~~~~~
+/Users/owacasa/RcppAlgos/.github/development/p2-hybrid/production-integration/helpers.cpp:91:19: note: remove the '&&' if its condition is always true
+   91 |             check(actual.range(ticket, begin, end) && frozen.range(ticket, frozenBegin, frozenEnd),
+      |                   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/Users/owacasa/RcppAlgos/.github/development/p2-hybrid/production-integration/helpers.cpp:90:49: note: initialize the variable 'frozenBegin' to silence this warning
+   90 |             std::int64_t begin, end, frozenBegin, frozenEnd;
+      |                                                 ^
+      |                                                  = 0
+1 warning generated.

@@ -1,0 +1,63 @@
+In file included from /var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/package-source/src/PrimeCount.cpp:2:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert.h:5:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert/ConvertUtils.h:3:
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/integers.hpp:43:10: warning: unused parameter 'is_altrep' [-Wunused-parameter]
+   43 |     bool is_altrep, SEXP data) {
+      |          ^
+In file included from /var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/package-source/src/PrimeCount.cpp:2:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert.h:5:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert/ConvertUtils.h:4:
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/doubles.hpp:42:10: warning: unused parameter 'is_altrep' [-Wunused-parameter]
+   42 |     bool is_altrep, SEXP data) {
+      |          ^
+In file included from /var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/package-source/src/PrimeCount.cpp:2:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert.h:5:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert/ConvertUtils.h:6:
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:52:45: warning: unused parameter 'x' [-Wunused-parameter]
+   52 | inline void r_vector<SEXP>::get_region(SEXP x, R_xlen_t i, R_xlen_t n,
+      |                                             ^
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:52:57: warning: unused parameter 'i' [-Wunused-parameter]
+   52 | inline void r_vector<SEXP>::get_region(SEXP x, R_xlen_t i, R_xlen_t n,
+      |                                                         ^
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:52:69: warning: unused parameter 'n' [-Wunused-parameter]
+   52 | inline void r_vector<SEXP>::get_region(SEXP x, R_xlen_t i, R_xlen_t n,
+      |                                                                     ^
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:53:76: warning: unused parameter 'buf' [-Wunused-parameter]
+   53 |                                        typename r_vector::underlying_type* buf) {
+      |                                                                            ^
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:58:58: warning: unused parameter 'is_altrep' [-Wunused-parameter]
+   58 | inline bool r_vector<SEXP>::const_iterator::use_buf(bool is_altrep) {
+      |                                                          ^
+In file included from /var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/package-source/src/PrimeCount.cpp:2:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert.h:5:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert/ConvertUtils.h:3:
+In file included from /Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/integers.hpp:12:
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/r_vector.hpp:274:12: warning: definition of implicit copy constructor for 'proxy' is deprecated because it has a user-provided copy assignment operator [-Wdeprecated-copy-with-user-provided-copy]
+  274 |     proxy& operator=(const proxy& rhs);
+      |            ^
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/r_vector.hpp:1286:12: note: in implicit copy constructor for 'cpp11::writable::r_vector<int>::proxy' first required here
+ 1286 |     return proxy(
+      |            ^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/transform.h:24:5: note: in instantiation of member function 'cpp11::writable::r_vector<int>::iterator::operator*' requested here
+   24 |     *__result = __op(*__first);
+      |     ^
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/integers.hpp:89:10: note: in instantiation of function template specialization 'std::transform<cpp11::r_vector<double>::const_iterator, cpp11::writable::r_vector<int>::iterator, (lambda at /Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/integers.hpp:89:55)>' requested here
+   89 |     std::transform(xn.begin(), xn.end(), ret.begin(), [](double value) {
+      |          ^
+In file included from /var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/package-source/src/PrimeCount.cpp:2:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert.h:5:
+In file included from /Users/owacasa/RcppAlgos/inst/include/CppConvert/ConvertUtils.h:3:
+In file included from /Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/integers.hpp:12:
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/r_vector.hpp:274:12: warning: definition of implicit copy constructor for 'proxy' is deprecated because it has a user-provided copy assignment operator [-Wdeprecated-copy-with-user-provided-copy]
+  274 |     proxy& operator=(const proxy& rhs);
+      |            ^
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/r_vector.hpp:1286:12: note: in implicit copy constructor for 'cpp11::writable::r_vector<double>::proxy' first required here
+ 1286 |     return proxy(
+      |            ^
+/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/transform.h:24:5: note: in instantiation of member function 'cpp11::writable::r_vector<double>::iterator::operator*' requested here
+   24 |     *__result = __op(*__first);
+      |     ^
+/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/doubles.hpp:84:10: note: in instantiation of function template specialization 'std::transform<cpp11::r_vector<int>::const_iterator, cpp11::writable::r_vector<double>::iterator, (lambda at /Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/doubles.hpp:84:55)>' requested here
+   84 |     std::transform(xn.begin(), xn.end(), ret.begin(), [](int value) {
+      |          ^
+9 warnings generated.

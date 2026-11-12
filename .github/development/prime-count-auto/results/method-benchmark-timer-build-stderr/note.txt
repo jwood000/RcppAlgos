@@ -1,0 +1,1 @@
+Timer compilation succeeded with exit0 and no warnings. R CMD SHLIB compiler/SDK identification appears on stderr, which the generic runner initially treated as an error. Updated only build invocation handling to allow informational stderr while rejecting warning/error diagnostics. Build log retained. No timed runs attempted.

@@ -1,0 +1,74 @@
+[
+  {
+    "binary": "baseline",
+    "args": [
+      "oracle",
+      "zero",
+      30,
+      1,
+      1,
+      -1
+    ],
+    "rows": 1
+  },
+  {
+    "binary": "baseline",
+    "args": [
+      "reference",
+      "zero",
+      30,
+      1,
+      1,
+      -1
+    ],
+    "rows": 1
+  },
+  {
+    "binary": "baseline",
+    "args": [
+      "p2",
+      "zero",
+      30,
+      1,
+      2,
+      10
+    ],
+    "rows": 2
+  },
+  {
+    "binary": "baseline",
+    "args": [
+      "phases",
+      "meissel",
+      100,
+      1,
+      2,
+      25
+    ],
+    "rows": 2
+  },
+  {
+    "binary": "selector-memory",
+    "args": [
+      "p2",
+      "zero",
+      30,
+      1,
+      2,
+      10
+    ],
+    "rows": 2
+  },
+  {
+    "binary": "fixed8-memory",
+    "args": [
+      "p2",
+      "zero",
+      30,
+      1,
+      2,
+      10
+    ],
+    "rows": 2
+  }
+]

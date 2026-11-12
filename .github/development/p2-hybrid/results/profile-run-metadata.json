@@ -1,0 +1,20 @@
+{
+  "seed": 202611092,
+  "verified_rows": 120,
+  "repeats": 3,
+  "inputs": {
+    "1000000000000": 37607912018,
+    "10000000000000": 346065536839
+  },
+  "thread_budgets": [
+    1,
+    8
+  ],
+  "kinds": [
+    "counts",
+    "timing",
+    "bands"
+  ],
+  "isolated_p2_reference": "derived from known complete identities; small independent tests are separate",
+  "timings": "diagnostic clocks are not uninstrumented benchmark results"
+}

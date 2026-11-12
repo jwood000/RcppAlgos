@@ -1,0 +1,34 @@
+{
+  "utc": "2026-11-07T04:11:18.941539+00:00",
+  "commands": [
+    [
+      "clang++",
+      "-std=c++11",
+      "-O2",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-v3-ag0tbj0m/scope-check/replay.cpp",
+      "-o",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-v3-ag0tbj0m/scope-check/replay"
+    ],
+    [
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-v3-ag0tbj0m/scope-check/replay",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-v3-ag0tbj0m/scope-check/contexts.tsv"
+    ]
+  ],
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.3)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin\n",
+  "sha256": {
+    "run.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "P2SelectorV3.h": "b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931",
+    "results.json": "5242fe732df8fadfd7b34c86e6f030b812dec3e5e26b499aa882361d09f92625",
+    "build.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run.stdout": "bcc749c179d04abf341b2fed9b58fb20844f49e67df6c53c6dbe5f56a36f97c7",
+    "contexts.tsv": "79594643480d5de9d841af493f6cfa27f6bfb461e1e4fd8506787c21b3e47b57",
+    "P2SelectorV2.h": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+    "replay": "25bc2be8462dcee5105b17d4beeb93393392a55109ca663f79f9976678cac0e3",
+    "replay.cpp": "585ff42643f7caab2485b680813b231cea8acc3fdf1459a207330a00d0c0cf0b",
+    "input-metadata.json": "1f18d3cd09179cb67da78f5b2cec050ac20d309d6482fefa1457e2fa8e5f4f7b"
+  }
+}

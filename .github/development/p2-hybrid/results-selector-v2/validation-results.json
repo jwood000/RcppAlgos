@@ -1,0 +1,72 @@
+[
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "baseline",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "selector",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "selector-v2",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "8",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "16",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "32",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "64",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "baseline",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "selector",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "selector-v2",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "8",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "16",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "32",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "64",
+    "checks": 60322
+  }
+]

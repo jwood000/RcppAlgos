@@ -1,0 +1,593 @@
+{
+  "records": [
+    {
+      "cutoff": "zero",
+      "threads": 1,
+      "variant": "baseline",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 1,
+      "variant": "head1",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 1,
+      "variant": "head2",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 1,
+      "variant": "head4",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 1,
+      "variant": "head8",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 1,
+      "variant": "head32",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 1,
+      "variant": "hybrid16",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 2,
+      "variant": "baseline",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 2,
+      "variant": "head1",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 2,
+      "variant": "head2",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 2,
+      "variant": "head4",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 2,
+      "variant": "head8",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 2,
+      "variant": "head32",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 2,
+      "variant": "hybrid16",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 4,
+      "variant": "baseline",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 4,
+      "variant": "head1",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 4,
+      "variant": "head2",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 4,
+      "variant": "head4",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 4,
+      "variant": "head8",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 4,
+      "variant": "head32",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 4,
+      "variant": "hybrid16",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 8,
+      "variant": "baseline",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 8,
+      "variant": "head1",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 8,
+      "variant": "head2",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 8,
+      "variant": "head4",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 8,
+      "variant": "head8",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 8,
+      "variant": "head32",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "zero",
+      "threads": 8,
+      "variant": "hybrid16",
+      "expected": 17427258,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 1,
+      "variant": "baseline",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 1,
+      "variant": "head1",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 1,
+      "variant": "head2",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 1,
+      "variant": "head4",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 1,
+      "variant": "head8",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 1,
+      "variant": "head32",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 1,
+      "variant": "hybrid16",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 2,
+      "variant": "baseline",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 2,
+      "variant": "head1",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 2,
+      "variant": "head2",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 2,
+      "variant": "head4",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 2,
+      "variant": "head8",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 2,
+      "variant": "head32",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 2,
+      "variant": "hybrid16",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 4,
+      "variant": "baseline",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 4,
+      "variant": "head1",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 4,
+      "variant": "head2",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 4,
+      "variant": "head4",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 4,
+      "variant": "head8",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 4,
+      "variant": "head32",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 4,
+      "variant": "hybrid16",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 8,
+      "variant": "baseline",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 8,
+      "variant": "head1",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 8,
+      "variant": "head2",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 8,
+      "variant": "head4",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 8,
+      "variant": "head8",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 8,
+      "variant": "head32",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "meissel",
+      "threads": 8,
+      "variant": "hybrid16",
+      "expected": 3349453,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 1,
+      "variant": "baseline",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 1,
+      "variant": "head1",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 1,
+      "variant": "head2",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 1,
+      "variant": "head4",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 1,
+      "variant": "head8",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 1,
+      "variant": "head32",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 1,
+      "variant": "hybrid16",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 2,
+      "variant": "baseline",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 2,
+      "variant": "head1",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 2,
+      "variant": "head2",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 2,
+      "variant": "head4",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 2,
+      "variant": "head8",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 2,
+      "variant": "head32",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 2,
+      "variant": "hybrid16",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 4,
+      "variant": "baseline",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 4,
+      "variant": "head1",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 4,
+      "variant": "head2",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 4,
+      "variant": "head4",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 4,
+      "variant": "head8",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 4,
+      "variant": "head32",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 4,
+      "variant": "hybrid16",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 8,
+      "variant": "baseline",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 8,
+      "variant": "head1",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 8,
+      "variant": "head2",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 8,
+      "variant": "head4",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 8,
+      "variant": "head8",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 8,
+      "variant": "head32",
+      "expected": 5710616,
+      "calls": 2
+    },
+    {
+      "cutoff": "lehmer",
+      "threads": 8,
+      "variant": "hybrid16",
+      "expected": 5710616,
+      "calls": 2
+    }
+  ],
+  "calls": 168
+}

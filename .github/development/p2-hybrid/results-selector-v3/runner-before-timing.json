@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T04:11:37.440687+00:00",
+  "sha256": "612a47f743a0a39d1e74c80039e392da06c5b4c07e31b0e43ce8951ad2e33e0e",
+  "policy_sha256": {
+    "P2Selector.h": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+    "P2SelectorV2.h": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+    "P2SelectorV3.h": "b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931"
+  },
+  "matrix_order": [
+    "p2",
+    "phases"
+  ]
+}

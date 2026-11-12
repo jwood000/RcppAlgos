@@ -1,0 +1,18 @@
+{
+  "purpose": "harness correctness and schema checks; no benchmark measurements",
+  "source_sha256": {
+    "selector_v2_profile.cpp": "d232db486273780963250cbef3e8d77f97bd5f37cdc732c0cdcd5aa67418fd1a",
+    "selector_v2_cases.h": "62082397c27e684aba1434c203d76d41432212ef6799b35888be6e30826922d5",
+    "P2Selector.h": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+    "P2SelectorV2.h": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+    "P2Hybrid.cpp": "8fb59b4d70a9ee2e41dbb73d5f0c3eb6cba2affdd84c7ba65ad02a91824ab979",
+    "hybrid_metrics.h": "1dccf2262a0b095079c747ad59a431083931b7f47ab73dce43c12942105fb23b"
+  },
+  "reused_objects": {
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-5kevyr5k/timing-build/Phi.o": "76bc4050843db58ce16a3a89c2a1be05c8b5181ba7ac2f01e99f8adfc89eb340",
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-5kevyr5k/timing-build/PhiParallel.o": "20a9fcc7ce9ae67356873dea11085063ad3b03ab9294d53ea7695f8476897f90",
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-5kevyr5k/timing-build/P3.o": "d27ebbb840451a7cd8f55ce4f0273fd690718668dd55f6a76338d71e19c71fff",
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-5kevyr5k/timing-build/Eratosthenes.o": "c51a40fe3fab1ee7b13338e980bbfd6e42bfe9a84c8c1004e6fe550e3396639e"
+  },
+  "reused_sources_identical": true
+}

@@ -1,0 +1,155 @@
+{
+  "report": "/Users/owacasa/RcppAlgos/.github/development/p2-hybrid/CONSOLIDATED.md",
+  "report_sha256": "62195fef97abb5752c8d8f15137506dcc631d275ca3487778b917f3032305fea",
+  "status": "passed",
+  "open_findings": [],
+  "resolved_clarifications": [
+    "Explicit zero/one non-table query Phi guard added before short-full exception.",
+    "Proximity counts explicitly use ratios of aggregate medians; other percentage changes use paired block ratios."
+  ],
+  "checked_complete_table_rows": [
+    "phases-meissel-1000000000000-t8-L1over1",
+    "phases-lehmer-1000000000000-t8-L1over1",
+    "phases-meissel-100000000000000-t8-L1over1",
+    "phases-lehmer-100000000000000-t8-L1over1",
+    "phases-meissel-800000000000-t3-L1over1",
+    "phases-lehmer-800000000000-t3-L1over1",
+    "phases-meissel-80000000000000-t6-L1over1",
+    "phases-lehmer-80000000000000-t6-L1over1"
+  ],
+  "proximity_counts": {
+    "focus/p2/first/candidate": {
+      "within_5_percent": 16,
+      "total": 27,
+      "minimum_best_control_ms": 0.03675
+    },
+    "focus/p2/first/v1": {
+      "within_5_percent": 7,
+      "total": 27,
+      "minimum_best_control_ms": 0.03675
+    },
+    "focus/p2/first/v2": {
+      "within_5_percent": 22,
+      "total": 27,
+      "minimum_best_control_ms": 0.03675
+    },
+    "focus/p2/first/v3": {
+      "within_5_percent": 18,
+      "total": 27,
+      "minimum_best_control_ms": 0.03675
+    },
+    "focus/phases/first/candidate": {
+      "within_5_percent": 10,
+      "total": 18,
+      "minimum_best_control_ms": 1.548457
+    },
+    "focus/phases/first/v1": {
+      "within_5_percent": 8,
+      "total": 18,
+      "minimum_best_control_ms": 1.548457
+    },
+    "focus/phases/first/v2": {
+      "within_5_percent": 9,
+      "total": 18,
+      "minimum_best_control_ms": 1.548457
+    },
+    "focus/phases/first/v3": {
+      "within_5_percent": 11,
+      "total": 18,
+      "minimum_best_control_ms": 1.548457
+    },
+    "focus/p2/warm/candidate": {
+      "within_5_percent": 25,
+      "total": 27,
+      "minimum_best_control_ms": 0.017167
+    },
+    "focus/p2/warm/v1": {
+      "within_5_percent": 17,
+      "total": 27,
+      "minimum_best_control_ms": 0.017167
+    },
+    "focus/p2/warm/v2": {
+      "within_5_percent": 22,
+      "total": 27,
+      "minimum_best_control_ms": 0.017167
+    },
+    "focus/p2/warm/v3": {
+      "within_5_percent": 22,
+      "total": 27,
+      "minimum_best_control_ms": 0.017167
+    },
+    "focus/phases/warm/candidate": {
+      "within_5_percent": 18,
+      "total": 18,
+      "minimum_best_control_ms": 0.589917
+    },
+    "focus/phases/warm/v1": {
+      "within_5_percent": 16,
+      "total": 18,
+      "minimum_best_control_ms": 0.589917
+    },
+    "focus/phases/warm/v2": {
+      "within_5_percent": 18,
+      "total": 18,
+      "minimum_best_control_ms": 0.589917
+    },
+    "focus/phases/warm/v3": {
+      "within_5_percent": 18,
+      "total": 18,
+      "minimum_best_control_ms": 0.589917
+    },
+    "holdout/p2/first/candidate": {
+      "within_5_percent": 8,
+      "total": 18,
+      "minimum_best_control_ms": 0.036041
+    },
+    "holdout/phases/first/candidate": {
+      "within_5_percent": 8,
+      "total": 10,
+      "minimum_best_control_ms": 4.281835
+    },
+    "holdout/p2/warm/candidate": {
+      "within_5_percent": 14,
+      "total": 18,
+      "minimum_best_control_ms": 0.016292
+    },
+    "holdout/phases/warm/candidate": {
+      "within_5_percent": 10,
+      "total": 10,
+      "minimum_best_control_ms": 1.989499
+    }
+  },
+  "memory": {
+    "probes": 73,
+    "maximum_scratch_capacity_bytes": 396344,
+    "maximum_table_capacity_bytes": 45316764,
+    "scope": "Components, not RSS; exclusions correctly stated."
+  },
+  "validation_metadata": {
+    "variants_per_sanitizer": 10,
+    "kernel_checks_each": 60322,
+    "queue_checks_each": 174907,
+    "selector_checks_each": 4674256,
+    "generator_rejections": 5,
+    "diagnostic_free_logs": 64,
+    "harness_oracle_calls": 240
+  },
+  "preservation_scopes": {
+    "live_files_vs_before_manifest": {
+      "production": 532,
+      "prior": 349
+    },
+    "live_production_vs_git_snapshot": 394,
+    "note": "Distinct scopes; no contradiction."
+  },
+  "evidence": {
+    "raw_and_distributions_independently_verified": "independent-focus-holdout-audit.json",
+    "all_18_focused_complete_partitions_and_budgets_match_v2_v3_candidate": true,
+    "all_4_short_full_cases_improve_first_and_warm_paired_medians_vs_phi1": true,
+    "matched_and_doubled_table_percentages_checked": true,
+    "known_and_smaller_systematic_regressions_present": true,
+    "all_relative_links_exist": true
+  },
+  "reproduction_review": "CLI arguments and action names match scripts, including memory.py ROOT; extraction/setup instructions are stated. No native commands rerun.",
+  "interpretation": "Recommendation supported as a conservative first policy for review. Report does not claim universal fastest dispatch, full supported-range/platform validation, or production adoption."
+}

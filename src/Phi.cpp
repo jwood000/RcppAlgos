@@ -298,6 +298,7 @@ namespace {
                 primes_[count + 1] == n) {
                 ++count;
             }
+
             pi_[n] = count;
         }
     }

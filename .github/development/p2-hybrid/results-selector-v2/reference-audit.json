@@ -1,0 +1,7 @@
+{
+  "unchanged_regression_expectations": 170,
+  "complete_input_values": 13,
+  "unique_p2_reference_contexts": 121,
+  "independent_dense_oracle_case_count": 24,
+  "all_expectations": 354
+}

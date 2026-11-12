@@ -1,0 +1,13 @@
+{
+  "cohort": "holdout",
+  "rows": 3264,
+  "processes": 816,
+  "cases": 28,
+  "first_warm_groups": 1632,
+  "raw_sha256": "9e72a5015f9120c7ce18569f5885a1bc5d021aba15898230104673b92b71823f",
+  "checked": "Complete matrix, identities, hashes, references, exact results, stable selection, phase sums, process pairing.",
+  "summary_distributions": 2016,
+  "paired_distributions": 2016,
+  "flagged_comparisons": 0,
+  "analyzer_sha256": "b9f3e7ba8bb048f596328bc02e5508574292e8d55024c295cea337d5f2a484e2"
+}

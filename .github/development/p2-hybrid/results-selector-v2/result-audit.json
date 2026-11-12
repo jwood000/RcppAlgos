@@ -1,0 +1,8 @@
+{
+  "timed_results": 29736,
+  "all_expected_results_match": true,
+  "finite_nonnegative_timings": true,
+  "phase_sum_tolerance_ms": 5e-06,
+  "cross_mode_p2_values_agree": true,
+  "distinct_numeric_x_a_table_contexts": 134
+}

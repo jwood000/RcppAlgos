@@ -1,0 +1,63 @@
+Matched-cutoff analysis (microseconds; process medians).
+Negative paired percentages mean less time for the candidate.
+
+controls matched comparisons:
+meissel t2 none           first hybrid16/baseline: -52.76% [-54.68, -35.91] n=9
+meissel t2 none           warm  hybrid16/baseline: -18.52% [-21.99, +6.96] n=9
+zero    t2 none           first hybrid16/baseline: +6.17% [-14.80, +12.79] n=9
+zero    t2 none           warm  hybrid16/baseline: +11.04% [+8.90, +14.98] n=9
+meissel t2 none           first selector-v2/baseline: -53.84% [-54.55, -52.55] n=9
+meissel t2 none           warm  selector-v2/baseline: -17.04% [-20.10, -14.01] n=9
+zero    t2 none           first selector-v2/baseline: +5.36% [-16.57, +8.89] n=9
+zero    t2 none           warm  selector-v2/baseline: +11.67% [+8.07, +15.35] n=9
+meissel t2 none           first selector-v3/baseline: -0.08% [-1.32, +7.52] n=9
+meissel t2 none           warm  selector-v3/baseline: -0.40% [-4.99, +12.44] n=9
+zero    t2 none           first selector-v3/baseline: -0.75% [-11.04, +6.50] n=9
+zero    t2 none           warm  selector-v3/baseline: +0.01% [-2.02, +1.50] n=9
+meissel t2 none           first selector-v3/selector-v2: +115.85% [+109.90, +132.91] n=9
+meissel t2 none           warm  selector-v3/selector-v2: +18.94% [+16.83, +40.72] n=9
+zero    t2 none           first selector-v3/selector-v2: -3.79% [-7.83, +6.63] n=9
+zero    t2 none           warm  selector-v3/selector-v2: -10.45% [-12.50, -9.10] n=9
+
+plain matched comparisons:
+meissel t2 none           first hybrid/baseline: -53.44% [-55.37, -50.87] n=9
+meissel t2 none           warm  hybrid/baseline: -18.41% [-22.31, -13.21] n=9
+zero    t2 none           first hybrid/baseline: +6.50% [+1.18, +13.50] n=9
+zero    t2 none           warm  hybrid/baseline: +9.89% [+8.22, +14.75] n=9
+meissel t2 none           first split-phi/baseline: -0.51% [-6.37, +2.33] n=9
+meissel t2 none           warm  split-phi/baseline: +0.91% [-6.50, +2.99] n=9
+zero    t2 none           first split-phi/baseline: +13.62% [+10.82, +22.19] n=9
+zero    t2 none           warm  split-phi/baseline: +14.43% [+12.39, +15.98] n=9
+meissel t2 none           first hybrid/split-phi: -52.60% [-54.50, -51.69] n=9
+meissel t2 none           warm  hybrid/split-phi: -17.55% [-21.73, -14.77] n=9
+zero    t2 none           first hybrid/split-phi: -7.79% [-14.88, -0.11] n=9
+zero    t2 none           warm  hybrid/split-phi: -2.22% [-5.66, +0.22] n=9
+meissel t2 meissel-prefix first tail-stream/tail-phi: -75.18% [-76.30, -74.36] n=9
+meissel t2 none           first tail-stream/tail-phi: -77.17% [-77.43, -74.80] n=9
+meissel t2 none           warm  tail-stream/tail-phi: -21.79% [-24.78, -15.56] n=9
+meissel t2 tail           first tail-stream/tail-phi: -15.12% [-21.26, -11.88] n=9
+meissel t2 zero-prefix    first tail-stream/tail-phi: -61.91% [-63.09, -60.77] n=9
+
+Timeline baseline tail/prefix overlap (instrumented):
+meissel first: initial chunk 276.3us; pure tail ends +4807.8us relative to initial chunk end; fraction per-process median all tail completed first=0.00
+meissel warm: initial chunk 35.3us; pure tail ends +1295.8us relative to initial chunk end; fraction per-process median all tail completed first=0.00
+zero first: initial chunk 20287.6us; pure tail ends -7574.4us relative to initial chunk end; fraction per-process median all tail completed first=1.00
+zero warm: initial chunk 7515.4us; pure tail ends -2698.5us relative to initial chunk end; fraction per-process median all tail completed first=1.00
+
+Counts only (not usable as timing measurements):
+baseline meissel none first: prefix: public_phi=1134.0, cache_hits=203718.0, cache_misses=95186.0, expansions=110946.0; tail: public_phi=19161.0, cache_hits=639698.0, cache_misses=268480.5, expansions=291906.5
+baseline meissel none warm: prefix: public_phi=1134.0, cache_hits=110823.0, cache_misses=0.0, expansions=15760.0; tail: public_phi=19161.0, cache_hits=340984.0, cache_misses=0.0, expansions=23426.0
+baseline zero none first: prefix: public_phi=1724.0, cache_hits=3147989.5, cache_misses=749890.0, expansions=944068.0; tail: public_phi=19161.0, cache_hits=603743.0, cache_misses=150262.5, expansions=173688.5
+baseline zero none warm: prefix: public_phi=1724.0, cache_hits=1944749.0, cache_misses=0.0, expansions=194178.0; tail: public_phi=19161.0, cache_hits=340984.0, cache_misses=0.0, expansions=23426.0
+hybrid meissel none first: prefix: public_phi=1134.0, cache_hits=203723.0, cache_misses=95181.0, expansions=110941.0; seed: public_phi=1.0, cache_hits=68.0, cache_misses=46.0, expansions=48.0
+hybrid meissel none warm: prefix: public_phi=1134.0, cache_hits=110823.0, cache_misses=0.0, expansions=15760.0; seed: public_phi=1.0, cache_hits=26.0, cache_misses=0.0, expansions=2.0
+hybrid zero none first: prefix: public_phi=1724.0, cache_hits=3159072.5, cache_misses=765976.5, expansions=960154.5; seed: public_phi=1.0, cache_hits=88.0, cache_misses=26.0, expansions=28.0
+hybrid zero none warm: prefix: public_phi=1724.0, cache_hits=1944749.0, cache_misses=0.0, expansions=194178.0; seed: public_phi=1.0, cache_hits=26.0, cache_misses=0.0, expansions=2.0
+tail-phi meissel meissel-prefix first: tail: public_phi=19161.0, cache_hits=639705.5, cache_misses=268460.5, expansions=291886.5
+tail-phi meissel meissel-prefix warm: tail: public_phi=19161.0, cache_hits=340984.0, cache_misses=0.0, expansions=23426.0
+tail-phi meissel none first: tail: public_phi=19161.0, cache_hits=615944.0, cache_misses=295635.0, expansions=319061.0
+tail-phi meissel none warm: tail: public_phi=19161.0, cache_hits=340984.0, cache_misses=0.0, expansions=23426.0
+tail-phi meissel tail first: tail: public_phi=19161.0, cache_hits=340984.0, cache_misses=0.0, expansions=23426.0
+tail-phi meissel tail warm: tail: public_phi=19161.0, cache_hits=340984.0, cache_misses=0.0, expansions=23426.0
+tail-phi meissel zero-prefix first: tail: public_phi=19161.0, cache_hits=592662.5, cache_misses=134173.0, expansions=157599.0
+tail-phi meissel zero-prefix warm: tail: public_phi=19161.0, cache_hits=340984.0, cache_misses=0.0, expansions=23426.0

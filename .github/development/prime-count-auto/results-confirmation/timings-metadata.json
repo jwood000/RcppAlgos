@@ -1,0 +1,1953 @@
+{
+  "rows": 432,
+  "processes": 108,
+  "runs": [
+    {
+      "case_id": "n2000000000000-t8",
+      "method": "meissel",
+      "block": 0,
+      "order": 0,
+      "process": 0,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "8",
+        "meissel",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t8",
+      "method": "legendre",
+      "block": 0,
+      "order": 1,
+      "process": 1,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "8",
+        "legendre",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t8",
+      "method": "lehmer",
+      "block": 0,
+      "order": 2,
+      "process": 2,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "8",
+        "lehmer",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t8",
+      "method": "legendre",
+      "block": 0,
+      "order": 0,
+      "process": 3,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "8",
+        "legendre",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t8",
+      "method": "meissel",
+      "block": 0,
+      "order": 1,
+      "process": 4,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "8",
+        "meissel",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t8",
+      "method": "lehmer",
+      "block": 0,
+      "order": 2,
+      "process": 5,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "8",
+        "lehmer",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n40000000000-t4",
+      "method": "legendre",
+      "block": 0,
+      "order": 0,
+      "process": 6,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "40000000000",
+        "4",
+        "legendre",
+        "1711955433",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n40000000000-t4",
+      "method": "meissel",
+      "block": 0,
+      "order": 1,
+      "process": 7,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "40000000000",
+        "4",
+        "meissel",
+        "1711955433",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n40000000000-t4",
+      "method": "lehmer",
+      "block": 0,
+      "order": 2,
+      "process": 8,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "40000000000",
+        "4",
+        "lehmer",
+        "1711955433",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t4",
+      "method": "lehmer",
+      "block": 0,
+      "order": 0,
+      "process": 9,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "4",
+        "lehmer",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t4",
+      "method": "meissel",
+      "block": 0,
+      "order": 1,
+      "process": 10,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "4",
+        "meissel",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t4",
+      "method": "legendre",
+      "block": 0,
+      "order": 2,
+      "process": 11,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "4",
+        "legendre",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t8",
+      "method": "lehmer",
+      "block": 0,
+      "order": 0,
+      "process": 12,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "8",
+        "lehmer",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t8",
+      "method": "legendre",
+      "block": 0,
+      "order": 1,
+      "process": 13,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "8",
+        "legendre",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t8",
+      "method": "meissel",
+      "block": 0,
+      "order": 2,
+      "process": 14,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "8",
+        "meissel",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n30000000000-t4",
+      "method": "meissel",
+      "block": 0,
+      "order": 0,
+      "process": 15,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "30000000000",
+        "4",
+        "meissel",
+        "1300005926",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n30000000000-t4",
+      "method": "legendre",
+      "block": 0,
+      "order": 1,
+      "process": 16,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "30000000000",
+        "4",
+        "legendre",
+        "1300005926",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n30000000000-t4",
+      "method": "lehmer",
+      "block": 0,
+      "order": 2,
+      "process": 17,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "30000000000",
+        "4",
+        "lehmer",
+        "1300005926",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t4",
+      "method": "legendre",
+      "block": 0,
+      "order": 0,
+      "process": 18,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "4",
+        "legendre",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t4",
+      "method": "lehmer",
+      "block": 0,
+      "order": 1,
+      "process": 19,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "4",
+        "lehmer",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t4",
+      "method": "meissel",
+      "block": 0,
+      "order": 2,
+      "process": 20,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "4",
+        "meissel",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t6",
+      "method": "legendre",
+      "block": 0,
+      "order": 0,
+      "process": 21,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "6",
+        "legendre",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t6",
+      "method": "meissel",
+      "block": 0,
+      "order": 1,
+      "process": 22,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "6",
+        "meissel",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t6",
+      "method": "lehmer",
+      "block": 0,
+      "order": 2,
+      "process": 23,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "6",
+        "lehmer",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t6",
+      "method": "legendre",
+      "block": 0,
+      "order": 0,
+      "process": 24,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "6",
+        "legendre",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t6",
+      "method": "meissel",
+      "block": 0,
+      "order": 1,
+      "process": 25,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "6",
+        "meissel",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t6",
+      "method": "lehmer",
+      "block": 0,
+      "order": 2,
+      "process": 26,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "6",
+        "lehmer",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n20000000000-t4",
+      "method": "meissel",
+      "block": 0,
+      "order": 0,
+      "process": 27,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "20000000000",
+        "4",
+        "meissel",
+        "882206716",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n20000000000-t4",
+      "method": "legendre",
+      "block": 0,
+      "order": 1,
+      "process": 28,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "20000000000",
+        "4",
+        "legendre",
+        "882206716",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n20000000000-t4",
+      "method": "lehmer",
+      "block": 0,
+      "order": 2,
+      "process": 29,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "20000000000",
+        "4",
+        "lehmer",
+        "882206716",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t6",
+      "method": "meissel",
+      "block": 0,
+      "order": 0,
+      "process": 30,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "6",
+        "meissel",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t6",
+      "method": "legendre",
+      "block": 0,
+      "order": 1,
+      "process": 31,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "6",
+        "legendre",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t6",
+      "method": "lehmer",
+      "block": 0,
+      "order": 2,
+      "process": 32,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "6",
+        "lehmer",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t4",
+      "method": "meissel",
+      "block": 0,
+      "order": 0,
+      "process": 33,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "4",
+        "meissel",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t4",
+      "method": "legendre",
+      "block": 0,
+      "order": 1,
+      "process": 34,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "4",
+        "legendre",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t4",
+      "method": "lehmer",
+      "block": 0,
+      "order": 2,
+      "process": 35,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "4",
+        "lehmer",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n20000000000-t4",
+      "method": "lehmer",
+      "block": 1,
+      "order": 0,
+      "process": 36,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "20000000000",
+        "4",
+        "lehmer",
+        "882206716",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n20000000000-t4",
+      "method": "meissel",
+      "block": 1,
+      "order": 1,
+      "process": 37,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "20000000000",
+        "4",
+        "meissel",
+        "882206716",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n20000000000-t4",
+      "method": "legendre",
+      "block": 1,
+      "order": 2,
+      "process": 38,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "20000000000",
+        "4",
+        "legendre",
+        "882206716",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t4",
+      "method": "lehmer",
+      "block": 1,
+      "order": 0,
+      "process": 39,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "4",
+        "lehmer",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t4",
+      "method": "meissel",
+      "block": 1,
+      "order": 1,
+      "process": 40,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "4",
+        "meissel",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t4",
+      "method": "legendre",
+      "block": 1,
+      "order": 2,
+      "process": 41,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "4",
+        "legendre",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t6",
+      "method": "meissel",
+      "block": 1,
+      "order": 0,
+      "process": 42,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "6",
+        "meissel",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t6",
+      "method": "legendre",
+      "block": 1,
+      "order": 1,
+      "process": 43,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "6",
+        "legendre",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t6",
+      "method": "lehmer",
+      "block": 1,
+      "order": 2,
+      "process": 44,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "6",
+        "lehmer",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t8",
+      "method": "lehmer",
+      "block": 1,
+      "order": 0,
+      "process": 45,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "8",
+        "lehmer",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t8",
+      "method": "meissel",
+      "block": 1,
+      "order": 1,
+      "process": 46,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "8",
+        "meissel",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t8",
+      "method": "legendre",
+      "block": 1,
+      "order": 2,
+      "process": 47,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "8",
+        "legendre",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t4",
+      "method": "meissel",
+      "block": 1,
+      "order": 0,
+      "process": 48,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "4",
+        "meissel",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t4",
+      "method": "legendre",
+      "block": 1,
+      "order": 1,
+      "process": 49,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "4",
+        "legendre",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t4",
+      "method": "lehmer",
+      "block": 1,
+      "order": 2,
+      "process": 50,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "4",
+        "lehmer",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n40000000000-t4",
+      "method": "legendre",
+      "block": 1,
+      "order": 0,
+      "process": 51,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "40000000000",
+        "4",
+        "legendre",
+        "1711955433",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n40000000000-t4",
+      "method": "lehmer",
+      "block": 1,
+      "order": 1,
+      "process": 52,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "40000000000",
+        "4",
+        "lehmer",
+        "1711955433",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n40000000000-t4",
+      "method": "meissel",
+      "block": 1,
+      "order": 2,
+      "process": 53,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "40000000000",
+        "4",
+        "meissel",
+        "1711955433",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t8",
+      "method": "lehmer",
+      "block": 1,
+      "order": 0,
+      "process": 54,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "8",
+        "lehmer",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t8",
+      "method": "legendre",
+      "block": 1,
+      "order": 1,
+      "process": 55,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "8",
+        "legendre",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t8",
+      "method": "meissel",
+      "block": 1,
+      "order": 2,
+      "process": 56,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "8",
+        "meissel",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t4",
+      "method": "legendre",
+      "block": 1,
+      "order": 0,
+      "process": 57,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "4",
+        "legendre",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t4",
+      "method": "meissel",
+      "block": 1,
+      "order": 1,
+      "process": 58,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "4",
+        "meissel",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t4",
+      "method": "lehmer",
+      "block": 1,
+      "order": 2,
+      "process": 59,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "4",
+        "lehmer",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t8",
+      "method": "legendre",
+      "block": 1,
+      "order": 0,
+      "process": 60,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "8",
+        "legendre",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t8",
+      "method": "lehmer",
+      "block": 1,
+      "order": 1,
+      "process": 61,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "8",
+        "lehmer",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t8",
+      "method": "meissel",
+      "block": 1,
+      "order": 2,
+      "process": 62,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "8",
+        "meissel",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t6",
+      "method": "lehmer",
+      "block": 1,
+      "order": 0,
+      "process": 63,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "6",
+        "lehmer",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t6",
+      "method": "legendre",
+      "block": 1,
+      "order": 1,
+      "process": 64,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "6",
+        "legendre",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t6",
+      "method": "meissel",
+      "block": 1,
+      "order": 2,
+      "process": 65,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "6",
+        "meissel",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n30000000000-t4",
+      "method": "legendre",
+      "block": 1,
+      "order": 0,
+      "process": 66,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "30000000000",
+        "4",
+        "legendre",
+        "1300005926",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n30000000000-t4",
+      "method": "lehmer",
+      "block": 1,
+      "order": 1,
+      "process": 67,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "30000000000",
+        "4",
+        "lehmer",
+        "1300005926",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n30000000000-t4",
+      "method": "meissel",
+      "block": 1,
+      "order": 2,
+      "process": 68,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "30000000000",
+        "4",
+        "meissel",
+        "1300005926",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t6",
+      "method": "lehmer",
+      "block": 1,
+      "order": 0,
+      "process": 69,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "6",
+        "lehmer",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t6",
+      "method": "meissel",
+      "block": 1,
+      "order": 1,
+      "process": 70,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "6",
+        "meissel",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t6",
+      "method": "legendre",
+      "block": 1,
+      "order": 2,
+      "process": 71,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "6",
+        "legendre",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t8",
+      "method": "lehmer",
+      "block": 2,
+      "order": 0,
+      "process": 72,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "8",
+        "lehmer",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t8",
+      "method": "legendre",
+      "block": 2,
+      "order": 1,
+      "process": 73,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "8",
+        "legendre",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t8",
+      "method": "meissel",
+      "block": 2,
+      "order": 2,
+      "process": 74,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "8",
+        "meissel",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n20000000000-t4",
+      "method": "lehmer",
+      "block": 2,
+      "order": 0,
+      "process": 75,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "20000000000",
+        "4",
+        "lehmer",
+        "882206716",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n20000000000-t4",
+      "method": "legendre",
+      "block": 2,
+      "order": 1,
+      "process": 76,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "20000000000",
+        "4",
+        "legendre",
+        "882206716",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n20000000000-t4",
+      "method": "meissel",
+      "block": 2,
+      "order": 2,
+      "process": 77,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "20000000000",
+        "4",
+        "meissel",
+        "882206716",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n30000000000-t4",
+      "method": "meissel",
+      "block": 2,
+      "order": 0,
+      "process": 78,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "30000000000",
+        "4",
+        "meissel",
+        "1300005926",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n30000000000-t4",
+      "method": "lehmer",
+      "block": 2,
+      "order": 1,
+      "process": 79,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "30000000000",
+        "4",
+        "lehmer",
+        "1300005926",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n30000000000-t4",
+      "method": "legendre",
+      "block": 2,
+      "order": 2,
+      "process": 80,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "30000000000",
+        "4",
+        "legendre",
+        "1300005926",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t6",
+      "method": "lehmer",
+      "block": 2,
+      "order": 0,
+      "process": 81,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "6",
+        "lehmer",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t6",
+      "method": "legendre",
+      "block": 2,
+      "order": 1,
+      "process": 82,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "6",
+        "legendre",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t6",
+      "method": "meissel",
+      "block": 2,
+      "order": 2,
+      "process": 83,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "6",
+        "meissel",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t8",
+      "method": "lehmer",
+      "block": 2,
+      "order": 0,
+      "process": 84,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "8",
+        "lehmer",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t8",
+      "method": "meissel",
+      "block": 2,
+      "order": 1,
+      "process": 85,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "8",
+        "meissel",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t8",
+      "method": "legendre",
+      "block": 2,
+      "order": 2,
+      "process": 86,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "8",
+        "legendre",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t4",
+      "method": "lehmer",
+      "block": 2,
+      "order": 0,
+      "process": 87,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "4",
+        "lehmer",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t4",
+      "method": "legendre",
+      "block": 2,
+      "order": 1,
+      "process": 88,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "4",
+        "legendre",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n80000000000000-t4",
+      "method": "meissel",
+      "block": 2,
+      "order": 2,
+      "process": 89,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "80000000000000",
+        "4",
+        "meissel",
+        "2582444113487",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t8",
+      "method": "legendre",
+      "block": 2,
+      "order": 0,
+      "process": 90,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "8",
+        "legendre",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t8",
+      "method": "meissel",
+      "block": 2,
+      "order": 1,
+      "process": 91,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "8",
+        "meissel",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t8",
+      "method": "lehmer",
+      "block": 2,
+      "order": 2,
+      "process": 92,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "8",
+        "lehmer",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t4",
+      "method": "meissel",
+      "block": 2,
+      "order": 0,
+      "process": 93,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "4",
+        "meissel",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t4",
+      "method": "lehmer",
+      "block": 2,
+      "order": 1,
+      "process": 94,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "4",
+        "lehmer",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t4",
+      "method": "legendre",
+      "block": 2,
+      "order": 2,
+      "process": 95,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "4",
+        "legendre",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t6",
+      "method": "legendre",
+      "block": 2,
+      "order": 0,
+      "process": 96,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "6",
+        "legendre",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t6",
+      "method": "meissel",
+      "block": 2,
+      "order": 1,
+      "process": 97,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "6",
+        "meissel",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t6",
+      "method": "lehmer",
+      "block": 2,
+      "order": 2,
+      "process": 98,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "6",
+        "lehmer",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t6",
+      "method": "lehmer",
+      "block": 2,
+      "order": 0,
+      "process": 99,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "6",
+        "lehmer",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t6",
+      "method": "legendre",
+      "block": 2,
+      "order": 1,
+      "process": 100,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "6",
+        "legendre",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n2000000000000-t6",
+      "method": "meissel",
+      "block": 2,
+      "order": 2,
+      "process": 101,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "2000000000000",
+        "6",
+        "meissel",
+        "73301896139",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t4",
+      "method": "legendre",
+      "block": 2,
+      "order": 0,
+      "process": 102,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "4",
+        "legendre",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t4",
+      "method": "lehmer",
+      "block": 2,
+      "order": 1,
+      "process": 103,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "4",
+        "lehmer",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n8000000000000-t4",
+      "method": "meissel",
+      "block": 2,
+      "order": 2,
+      "process": 104,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "8000000000000",
+        "4",
+        "meissel",
+        "279010070811",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n40000000000-t4",
+      "method": "legendre",
+      "block": 2,
+      "order": 0,
+      "process": 105,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "40000000000",
+        "4",
+        "legendre",
+        "1711955433",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n40000000000-t4",
+      "method": "lehmer",
+      "block": 2,
+      "order": 1,
+      "process": 106,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "40000000000",
+        "4",
+        "lehmer",
+        "1711955433",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    },
+    {
+      "case_id": "n40000000000-t4",
+      "method": "meissel",
+      "block": 2,
+      "order": 2,
+      "process": 107,
+      "command": [
+        "Rscript",
+        "--vanilla",
+        "/Users/owacasa/RcppAlgos/.github/development/prime-count-auto/call.R",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/library",
+        "40000000000",
+        "4",
+        "meissel",
+        "1711955433",
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/method-benchmark/timer.so"
+      ]
+    }
+  ],
+  "sha256": "f12b85f75c358f29f86278c6ca5c96a6ff008dbac0e6d5c0422cd3389124ea56",
+  "suite_sha256": "09e24877b45301e6eb2f014b307293a0b4508173c72c3136e28eede9368ed1af",
+  "elapsed_seconds": 67.70639109611511
+}

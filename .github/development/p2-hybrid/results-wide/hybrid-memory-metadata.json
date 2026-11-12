@@ -1,0 +1,21 @@
+{
+  "multipliers": [
+    8,
+    16,
+    32
+  ],
+  "verified_rows": 96,
+  "repeats_per_process": 2,
+  "timing": "none; separately compiled capacity/work instrumentation",
+  "conservative_scratch_bytes": "max(phi subtotal capacity, stream subtotal capacity + sum of all active stream sieve/next capacities); phases do not overlap, worker allocations may not all overlap",
+  "exclusions": [
+    "diagnostic snapshot/vector",
+    "ThreadBatch vectors",
+    "thread stacks",
+    "allocator overhead",
+    "Phi cache",
+    "table construction scratch",
+    "RSS"
+  ],
+  "phase_order": "tables, PhiParallel, P2, optional P3, table destruction"
+}

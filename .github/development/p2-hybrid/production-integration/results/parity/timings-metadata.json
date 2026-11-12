@@ -1,0 +1,1305 @@
+{
+  "rows": 288,
+  "processes": 72,
+  "runs": [
+    {
+      "case_id": "phases-meissel-1000000000000-t1-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 0,
+      "process": 0,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t1-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 1,
+      "process": 1,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 0,
+      "process": 2,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 1,
+      "process": 3,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-1000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 0,
+      "process": 4,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "23729370364",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-1000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 1,
+      "process": 5,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "23729370364",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 0,
+      "process": 6,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "lehmer",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 1,
+      "process": 7,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "lehmer",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-80000000000-t8-L6over5",
+      "variant": "approved",
+      "block": 0,
+      "order": 0,
+      "process": 8,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "zero",
+        "80000000000",
+        "8",
+        "4",
+        "11238880589",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "p2-zero-80000000000-t8-L6over5",
+      "variant": "integrated",
+      "block": 0,
+      "order": 1,
+      "process": 9,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "zero",
+        "80000000000",
+        "8",
+        "4",
+        "11238880589",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-60000000000-t3-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 0,
+      "process": 10,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "meissel",
+        "60000000000",
+        "3",
+        "4",
+        "1570399156",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-60000000000-t3-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 1,
+      "process": 11,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "meissel",
+        "60000000000",
+        "3",
+        "4",
+        "1570399156",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t1-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 0,
+      "process": 12,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t1-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 1,
+      "process": 13,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-10000000000-t4-L2over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 0,
+      "process": 14,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "meissel",
+        "10000000000",
+        "4",
+        "4",
+        "279167372",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-10000000000-t4-L2over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 1,
+      "process": 15,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "meissel",
+        "10000000000",
+        "4",
+        "4",
+        "279167372",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail2048-3000000000-t1-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 0,
+      "process": 16,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "tail2048",
+        "3000000000",
+        "1",
+        "4",
+        "4927380",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail2048-3000000000-t1-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 1,
+      "process": 17,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "tail2048",
+        "3000000000",
+        "1",
+        "4",
+        "4927380",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 0,
+      "process": 18,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "lehmer",
+        "10000000000",
+        "8",
+        "4",
+        "463026862",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 1,
+      "process": 19,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "lehmer",
+        "10000000000",
+        "8",
+        "4",
+        "463026862",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 0,
+      "process": 20,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 1,
+      "process": 21,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-100000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 0,
+      "order": 0,
+      "process": 22,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "meissel",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-100000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 0,
+      "order": 1,
+      "process": 23,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "meissel",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-100000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 0,
+      "process": 24,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "meissel",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-100000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 1,
+      "process": 25,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "meissel",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-60000000000-t3-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 0,
+      "process": 26,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "meissel",
+        "60000000000",
+        "3",
+        "4",
+        "1570399156",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-60000000000-t3-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 1,
+      "process": 27,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "meissel",
+        "60000000000",
+        "3",
+        "4",
+        "1570399156",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail2048-3000000000-t1-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 0,
+      "process": 28,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "tail2048",
+        "3000000000",
+        "1",
+        "4",
+        "4927380",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail2048-3000000000-t1-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 1,
+      "process": 29,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "tail2048",
+        "3000000000",
+        "1",
+        "4",
+        "4927380",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 0,
+      "process": 30,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 1,
+      "process": 31,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-1000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 0,
+      "process": 32,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "23729370364",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-1000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 1,
+      "process": 33,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "23729370364",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-10000000000-t4-L2over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 0,
+      "process": 34,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "meissel",
+        "10000000000",
+        "4",
+        "4",
+        "279167372",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-10000000000-t4-L2over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 1,
+      "process": 35,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "meissel",
+        "10000000000",
+        "4",
+        "4",
+        "279167372",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t1-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 0,
+      "process": 36,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t1-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 1,
+      "process": 37,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-80000000000-t8-L6over5",
+      "variant": "integrated",
+      "block": 1,
+      "order": 0,
+      "process": 38,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "zero",
+        "80000000000",
+        "8",
+        "4",
+        "11238880589",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "p2-zero-80000000000-t8-L6over5",
+      "variant": "approved",
+      "block": 1,
+      "order": 1,
+      "process": 39,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "zero",
+        "80000000000",
+        "8",
+        "4",
+        "11238880589",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t1-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 0,
+      "process": 40,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t1-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 1,
+      "process": 41,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 0,
+      "process": 42,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "lehmer",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 1,
+      "process": 43,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "lehmer",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 0,
+      "process": 44,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 1,
+      "process": 45,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 1,
+      "order": 0,
+      "process": 46,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "lehmer",
+        "10000000000",
+        "8",
+        "4",
+        "463026862",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 1,
+      "order": 1,
+      "process": 47,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "lehmer",
+        "10000000000",
+        "8",
+        "4",
+        "463026862",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-60000000000-t3-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 0,
+      "process": 48,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "meissel",
+        "60000000000",
+        "3",
+        "4",
+        "1570399156",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-60000000000-t3-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 1,
+      "process": 49,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "meissel",
+        "60000000000",
+        "3",
+        "4",
+        "1570399156",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-80000000000-t8-L6over5",
+      "variant": "integrated",
+      "block": 2,
+      "order": 0,
+      "process": 50,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "zero",
+        "80000000000",
+        "8",
+        "4",
+        "11238880589",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "p2-zero-80000000000-t8-L6over5",
+      "variant": "approved",
+      "block": 2,
+      "order": 1,
+      "process": 51,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "zero",
+        "80000000000",
+        "8",
+        "4",
+        "11238880589",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 0,
+      "process": 52,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 1,
+      "process": 53,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t1-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 0,
+      "process": 54,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t1-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 1,
+      "process": 55,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 0,
+      "process": 56,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "lehmer",
+        "10000000000",
+        "8",
+        "4",
+        "463026862",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 1,
+      "process": 57,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "lehmer",
+        "10000000000",
+        "8",
+        "4",
+        "463026862",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-10000000000-t4-L2over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 0,
+      "process": 58,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "meissel",
+        "10000000000",
+        "4",
+        "4",
+        "279167372",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-10000000000-t4-L2over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 1,
+      "process": 59,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "meissel",
+        "10000000000",
+        "4",
+        "4",
+        "279167372",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-1000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 0,
+      "process": 60,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "23729370364",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-1000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 1,
+      "process": 61,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "meissel",
+        "1000000000000",
+        "8",
+        "4",
+        "23729370364",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 0,
+      "process": 62,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 1,
+      "process": 63,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "8",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 0,
+      "process": 64,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "lehmer",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 1,
+      "process": 65,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "lehmer",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-100000000000000-t8-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 0,
+      "process": 66,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "meissel",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-100000000000000-t8-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 1,
+      "process": 67,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "meissel",
+        "100000000000000",
+        "8",
+        "4",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail2048-3000000000-t1-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 0,
+      "process": 68,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "p2",
+        "tail2048",
+        "3000000000",
+        "1",
+        "4",
+        "4927380",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail2048-3000000000-t1-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 1,
+      "process": 69,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "p2",
+        "tail2048",
+        "3000000000",
+        "1",
+        "4",
+        "4927380",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t1-L1over1",
+      "variant": "integrated",
+      "block": 2,
+      "order": 0,
+      "process": 70,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-integrated",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t1-L1over1",
+      "variant": "approved",
+      "block": 2,
+      "order": 1,
+      "process": 71,
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/parity/profile-approved",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "1",
+        "4",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    }
+  ],
+  "sha256": "ac7ad042c73a6ba7a90750c51213cd28b612f8be99f0c09138672b99cf9293b5",
+  "suite_sha256": "ae1f882989e2d44c50bea9ee448a0e321e123574dfd0a318ce355834589ac470",
+  "elapsed_seconds": 18.046849012374878
+}

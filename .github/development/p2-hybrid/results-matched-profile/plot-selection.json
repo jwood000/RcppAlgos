@@ -1,0 +1,33 @@
+{
+  "rule": "Closest block median to median of warmed process medians, then closest warmed call to that block median; ties retain original order.",
+  "selected": [
+    {
+      "cutoff": "zero",
+      "mode": "baseline",
+      "block": 3,
+      "repeat": 2,
+      "elapsed_us": 7549.708
+    },
+    {
+      "cutoff": "zero",
+      "mode": "hybrid",
+      "block": 2,
+      "repeat": 5,
+      "elapsed_us": 8327.167
+    },
+    {
+      "cutoff": "meissel",
+      "mode": "baseline",
+      "block": 4,
+      "repeat": 3,
+      "elapsed_us": 1357.625
+    },
+    {
+      "cutoff": "meissel",
+      "mode": "hybrid",
+      "block": 3,
+      "repeat": 4,
+      "elapsed_us": 1132.375
+    }
+  ]
+}

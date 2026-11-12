@@ -13,8 +13,10 @@ namespace PrimeCounting {
     // Use at the chosen outer parallel level; worker computations stay serial.
 
     // For x >= 4, prepare tables through floor(sqrt(x)). Larger pi queries
-    // use serial Phi with those same tables and its bounded shared cache.
-    // No dense table through x / p[a + 1] or additional sieve is allocated.
+    // use serial Phi with its bounded shared cache, or a bounded segmented
+    // sieve selected from the numeric workload. Stream workers own their
+    // segment/crossing buffers and share the prepared primes. No dense table
+    // through x / p[a + 1] is allocated; Phi and stream phases do not overlap.
     std::int64_t P2(std::int64_t x, std::int64_t a, int nThreads,
                     const PhiTables& tables);
 

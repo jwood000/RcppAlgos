@@ -1,0 +1,17 @@
+{
+  "seed": 202611092,
+  "processes": 3,
+  "repeats": 4,
+  "verified_rows": 576,
+  "blocks": 36,
+  "variants": [
+    "baseline",
+    "hybrid2",
+    "hybrid4",
+    "hybrid8"
+  ],
+  "mode": "p2",
+  "first": "fresh process per configuration; Phi precedes P2 in phases mode",
+  "warm": "median of subsequent calls within each process; tables rebuilt in phases mode",
+  "summary": "median of process medians; ratios pair each candidate with its block baseline"
+}

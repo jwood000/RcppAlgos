@@ -1,0 +1,15 @@
+{
+  "scope": "Synthetic analysis fixture only; not a native counting test",
+  "rows": 72,
+  "processes": 18,
+  "cases": 2,
+  "first_paired_percent": 20,
+  "warm_paired_percent": 25,
+  "short_full_absolute_allowance_warm_only": true,
+  "rejected_corruptions": [
+    "corrupt count",
+    "duplicate row"
+  ],
+  "analyzer_sha256": "b9f3e7ba8bb048f596328bc02e5508574292e8d55024c295cea337d5f2a484e2",
+  "runner_sha256": "b643ce4842bd4046f9441b3df1ce3c559161be98970eafd504cd51926c99452e"
+}

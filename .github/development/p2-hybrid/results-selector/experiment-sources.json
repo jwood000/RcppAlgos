@@ -1,0 +1,15 @@
+{
+  "source_commit": "8b43ed790435b22eb9ec02627379082fe7deb103",
+  "artifact_directory": "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-5kevyr5k",
+  "sha256": {
+    "P2Hybrid.cpp": "4fa74e5bdebc9a7a87ec8c45c4299a25d8fe50958a77c5be487d8779fc9bda6a",
+    "P2Selector.h": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+    "selector_profile.cpp": "47a178eab7d9f0c520a2cd68aca9092e6118d85dee405e026025147a537ee39e",
+    "selector_cases.h": "c55bfb86e6e6186d3adeaccca44981c0fe4bcea58ed8946ea3e7a333636e09bd",
+    "selector_bench.py": "314066a576675c3b4efae0a7ffc3c16cad69267b97bbe27c5cab96e547cbc1c9",
+    "validate.py": "2bfd897a85baefbed8d43bb66d0de9e7b5d47da7a9744736cc445190e7e953d8",
+    "selector-check.cpp": "7dd92cab21542bf6bbabd13896568a8201698f5835d43974f60df9223945f8b8",
+    "check.cpp": "63b03df69483d56e534ace8cb39d3deb49622219985f29451af9c736d555d098",
+    "hybrid_metrics.h": "1dccf2262a0b095079c747ad59a431083931b7f47ab73dce43c12942105fb23b"
+  }
+}

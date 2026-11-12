@@ -1,0 +1,54 @@
+{
+  "syntax": {
+    "v2": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "v2-memory": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "v1": {
+      "exit": 0,
+      "stderr": ""
+    },
+    "fixed32": {
+      "exit": 0,
+      "stderr": ""
+    }
+  },
+  "preprocessed": {
+    "v1": {
+      "unchanged": true,
+      "sha256": "fc67f5a747e03330926011d14f187990b75c4b5a5bd7831eb84648baef74f655"
+    },
+    "v1-memory": {
+      "unchanged": true,
+      "sha256": "4f07f858484942efe780b0559360c1a32781b28cf1bbaa154edb29743fdfcdc2"
+    },
+    "fixed32": {
+      "unchanged": true,
+      "sha256": "b2014f47151d28a2d18705eebf2a0c38ab15b4026a8e351dd78fea92d9912eb4"
+    },
+    "fixed32-memory": {
+      "unchanged": true,
+      "sha256": "dbdd65ff0a4ca43609011f4940857408805c39831e3ed310b6cc4ea6b2c939ee"
+    }
+  },
+  "exclusive": {
+    "v1-v2": {
+      "rejected": true,
+      "guard_message_present": true
+    },
+    "v2-fixed": {
+      "rejected": true,
+      "guard_message_present": true
+    },
+    "v1-fixed": {
+      "rejected": true,
+      "guard_message_present": true
+    }
+  },
+  "header_sha256": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+  "kernel_sha256": "8fb59b4d70a9ee2e41dbb73d5f0c3eb6cba2affdd84c7ba65ad02a91824ab979"
+}

@@ -1,0 +1,28 @@
+{
+  "commit": "8b43ed790435b22eb9ec02627379082fe7deb103",
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.3)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin\n",
+  "input_sha256": {
+    "timing-build/profile.cpp": "3974e10f899cd4dff07117823cfe259995ea45b2f5ef442fb3f76c70cba5cfa4",
+    "source/src/Phi.cpp": "b15ba8e5422d755373cd334be9063184abc39d214cb5b212a23735adcf4a1a2b",
+    "source/src/PhiParallel.cpp": "afeceed0f06490bc013dbb082c036e6a18493cdcaf24c15f8d4decddc6cfb60d",
+    "source/src/P3.cpp": "31c1a2e73e85993122e11d7af0aa7635c3395c2e3936f52329f6be1db7fd26d3",
+    "source/src/Eratosthenes.cpp": "98904804fb7c2f79d31cb1161d4313e6c2c7e7f99089730694bfb019c67275c7",
+    "source/src/P2.cpp": "9234a232b99861dc4d447d62ee3c0482aa43174f083dd0f47cd69cf4cf711af7",
+    "timing-build/P2Hybrid.cpp": "fbcf2d5d530f7c32130e44b63290254629329cb6f9a9ced83f435bc0966b9e88"
+  },
+  "binary_sha256": {
+    "baseline": "ecb585e79eaaba295600bcb07940ed3d0d8b779bbe6e9af5177c10b11851ee14",
+    "hybrid8": "6a65abcc69f97dae0c94489598cf94c02ee09640e5d6b7cc4701414f0b257494",
+    "hybrid16": "3251374489f8d2eabea891ef24d5d4fae9502ba12caa0d64afcc7368e3fe0598",
+    "hybrid32": "ca685a9a0e2ef5855e2f440fa1040720f29c21ed9ba5032f7ec7692a6ba759d4"
+  },
+  "variants": [
+    "baseline",
+    "hybrid8",
+    "hybrid16",
+    "hybrid32"
+  ],
+  "cache_max_x": 131071,
+  "timing": "uninstrumented kernels, complete-driver phase order; no R adapter"
+}

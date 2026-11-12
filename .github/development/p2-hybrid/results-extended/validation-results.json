@@ -1,0 +1,42 @@
+[
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "baseline",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "32",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "64",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "asan-ubsan",
+    "variant": "128",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "baseline",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "32",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "64",
+    "checks": 60322
+  },
+  {
+    "sanitizer": "tsan",
+    "variant": "128",
+    "checks": 60322
+  }
+]

@@ -1,0 +1,1572 @@
+{
+  "raw_rows": {
+    "timeline": 180,
+    "plain": 2304,
+    "controls": 576
+  },
+  "all_results_match": true,
+  "finite_positive_times": true,
+  "timeline_chunk_partitions_and_timestamp_bounds_valid": true,
+  "source_mutations": false,
+  "benchmarks_rerun": false,
+  "paired_comparisons": [
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 1,
+      "state": "first",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 32.144959,
+        "minimum": 30.95225,
+        "maximum": 32.994707999999996
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 1,
+      "state": "first",
+      "variant": "hybrid",
+      "process_ms": {
+        "samples": 9,
+        "median": 29.049917,
+        "minimum": 27.967208,
+        "maximum": 31.397292
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -9.265119121526999,
+        "minimum": -11.45134245187437,
+        "maximum": -2.8178295882522297
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -2.9881670000000007,
+        "minimum": -3.6167920000000002,
+        "maximum": -0.9103750000000019
+      },
+      "faster_pairs": 9
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 1,
+      "state": "first",
+      "variant": "split-phi",
+      "process_ms": {
+        "samples": 9,
+        "median": 32.2435,
+        "minimum": 31.370167000000002,
+        "maximum": 33.1635
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.783451644941402,
+        "minimum": -2.8068018030236286,
+        "maximum": 3.2863553305101822
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.24904099999999474,
+        "minimum": -0.9064589999999946,
+        "maximum": 1.0408750000000033
+      },
+      "faster_pairs": 4
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 1,
+      "state": "warm",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 11.952125,
+        "minimum": 11.797915999999999,
+        "maximum": 12.0665
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 1,
+      "state": "warm",
+      "variant": "hybrid",
+      "process_ms": {
+        "samples": 9,
+        "median": 11.346791999999999,
+        "minimum": 11.233042,
+        "maximum": 11.729417
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -4.787913390805631,
+        "minimum": -6.551883313305429,
+        "maximum": -1.3474604960206915
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.5648739999999997,
+        "minimum": -0.7905829999999998,
+        "maximum": -0.1602080000000008
+      },
+      "faster_pairs": 9
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 1,
+      "state": "warm",
+      "variant": "split-phi",
+      "process_ms": {
+        "samples": 9,
+        "median": 11.866834,
+        "minimum": 11.305792,
+        "maximum": 12.441583000000001
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -1.3371798170229154,
+        "minimum": -4.4345436006186345,
+        "maximum": 3.3193169668344957
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.15883300000000133,
+        "minimum": -0.5246249999999986,
+        "maximum": 0.3997080000000022
+      },
+      "faster_pairs": 6
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "first",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 19.896042,
+        "minimum": 19.312459,
+        "maximum": 20.666541000000002
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "first",
+      "variant": "hybrid",
+      "process_ms": {
+        "samples": 9,
+        "median": 21.049332999999997,
+        "minimum": 20.583458,
+        "maximum": 22.846208999999998
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 6.49864966745286,
+        "minimum": 1.178639424952621,
+        "maximum": 13.496862172819558
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 1.2822499999999977,
+        "minimum": 0.24358399999999847,
+        "maximum": 2.7168339999999986
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "first",
+      "variant": "split-phi",
+      "process_ms": {
+        "samples": 9,
+        "median": 22.871582999999998,
+        "minimum": 22.051,
+        "maximum": 24.1825
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 13.62105877604247,
+        "minimum": 10.817006096956415,
+        "maximum": 22.192466082211148
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 2.7418340000000008,
+        "minimum": 2.154957999999997,
+        "maximum": 4.3919999999999995
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "warm",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 7.417875,
+        "minimum": 7.2105,
+        "maximum": 7.449707999999999
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "warm",
+      "variant": "hybrid",
+      "process_ms": {
+        "samples": 9,
+        "median": 8.153708,
+        "minimum": 8.034625,
+        "maximum": 8.475042
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 9.892262685308385,
+        "minimum": 8.221966811548565,
+        "maximum": 14.751427771776694
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.7356669999999994,
+        "minimum": 0.6104160000000007,
+        "maximum": 1.0694170000000014
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "warm",
+      "variant": "split-phi",
+      "process_ms": {
+        "samples": 9,
+        "median": 8.357916999999999,
+        "minimum": 8.251625,
+        "maximum": 8.615
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 14.426867532817678,
+        "minimum": 12.386053018559595,
+        "maximum": 15.979186445609406
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 1.041125000000001,
+        "minimum": 0.9199579999999994,
+        "maximum": 1.1818740000000005
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 1,
+      "state": "first",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 9.421459,
+        "minimum": 9.1055,
+        "maximum": 9.7725
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 1,
+      "state": "first",
+      "variant": "hybrid",
+      "process_ms": {
+        "samples": 9,
+        "median": 4.281375,
+        "minimum": 4.085792,
+        "maximum": 4.3175
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -55.75358652893778,
+        "minimum": -56.17827191811977,
+        "maximum": -52.81528026466722
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -5.237874999999999,
+        "minimum": -5.4732080000000005,
+        "maximum": -4.832708000000001
+      },
+      "faster_pairs": 9
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 1,
+      "state": "first",
+      "variant": "split-phi",
+      "process_ms": {
+        "samples": 9,
+        "median": 9.340334,
+        "minimum": 9.102333,
+        "maximum": 9.587583
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -0.3779476925552028,
+        "minimum": -3.13828516294814,
+        "maximum": 0.9745288867839985
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.03458300000000136,
+        "minimum": -0.3036670000000008,
+        "maximum": 0.09200000000000053
+      },
+      "faster_pairs": 7
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 1,
+      "state": "warm",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 2.5287919999999997,
+        "minimum": 2.429375,
+        "maximum": 2.589667
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 1,
+      "state": "warm",
+      "variant": "hybrid",
+      "process_ms": {
+        "samples": 9,
+        "median": 1.946625,
+        "minimum": 1.878542,
+        "maximum": 1.992667
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -23.128851971615795,
+        "minimum": -25.12510400964493,
+        "maximum": -20.718806310293914
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.5727089999999997,
+        "minimum": -0.6443750000000004,
+        "maximum": -0.52075
+      },
+      "faster_pairs": 9
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 1,
+      "state": "warm",
+      "variant": "split-phi",
+      "process_ms": {
+        "samples": 9,
+        "median": 2.50675,
+        "minimum": 2.492416,
+        "maximum": 2.564542
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -0.563654976472272,
+        "minimum": -3.069931385000446,
+        "maximum": 3.1849755595575013
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.01416700000000004,
+        "minimum": -0.0795009999999996,
+        "maximum": 0.07737499999999997
+      },
+      "faster_pairs": 5
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "first",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 5.046625,
+        "minimum": 4.940207999999999,
+        "maximum": 5.160542
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "first",
+      "variant": "hybrid",
+      "process_ms": {
+        "samples": 9,
+        "median": 2.356833,
+        "minimum": 2.268583,
+        "maximum": 2.427125
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -53.43720257575049,
+        "minimum": -55.3704516076887,
+        "maximum": -50.86998361202604
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -2.68525,
+        "minimum": -2.836167,
+        "maximum": -2.513082999999999
+      },
+      "faster_pairs": 9
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "first",
+      "variant": "split-phi",
+      "process_ms": {
+        "samples": 9,
+        "median": 5.022375,
+        "minimum": 4.795917,
+        "maximum": 5.1341660000000005
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -0.5111091044312732,
+        "minimum": -6.369374524493243,
+        "maximum": 2.3305107297163064
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.026375999999999955,
+        "minimum": -0.32624999999999993,
+        "maximum": 0.11604100000000006
+      },
+      "faster_pairs": 7
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "warm",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 1.3615840000000001,
+        "minimum": 1.3115830000000002,
+        "maximum": 1.4192090000000002
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "warm",
+      "variant": "hybrid",
+      "process_ms": {
+        "samples": 9,
+        "median": 1.102625,
+        "minimum": 1.0637919999999998,
+        "maximum": 1.183625
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -18.405497646305268,
+        "minimum": -22.307073870021977,
+        "maximum": -13.213347968556278
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.24683300000000008,
+        "minimum": -0.3165840000000002,
+        "maximum": -0.17895800000000017
+      },
+      "faster_pairs": 9
+    },
+    {
+      "build": "plain",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "warm",
+      "variant": "split-phi",
+      "process_ms": {
+        "samples": 9,
+        "median": 1.35425,
+        "minimum": 1.327,
+        "maximum": 1.394167
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.9072518255768047,
+        "minimum": -6.497210770224838,
+        "maximum": 2.9894410037336394
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.012167000000000039,
+        "minimum": -0.09220900000000021,
+        "maximum": 0.03920899999999983
+      },
+      "faster_pairs": 2
+    },
+    {
+      "build": "controls",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "first",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 20.00625,
+        "minimum": 19.4275,
+        "maximum": 23.942459
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "controls",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "first",
+      "variant": "hybrid16",
+      "process_ms": {
+        "samples": 9,
+        "median": 21.22125,
+        "minimum": 20.3985,
+        "maximum": 22.5645
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 6.167863327500611,
+        "minimum": -14.801984207219487,
+        "maximum": 12.787253983130253
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 1.2320410000000024,
+        "minimum": -3.543959000000001,
+        "maximum": 2.5582499999999975
+      },
+      "faster_pairs": 1
+    },
+    {
+      "build": "controls",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "first",
+      "variant": "selector-v2",
+      "process_ms": {
+        "samples": 9,
+        "median": 21.154,
+        "minimum": 19.975375,
+        "maximum": 21.354584
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 5.3625505172667065,
+        "minimum": -16.56924211502252,
+        "maximum": 8.886887144511647
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 1.0544159999999998,
+        "minimum": -3.967084,
+        "maximum": 1.7265000000000015
+      },
+      "faster_pairs": 1
+    },
+    {
+      "build": "controls",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "first",
+      "variant": "selector-v3",
+      "process_ms": {
+        "samples": 9,
+        "median": 19.932834,
+        "minimum": 19.682375,
+        "maximum": 21.29875
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -0.7450901411737876,
+        "minimum": -11.041927648283757,
+        "maximum": 6.49852013897827
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.14883299999999977,
+        "minimum": -2.643709000000001,
+        "maximum": 1.2625000000000028
+      },
+      "faster_pairs": 5
+    },
+    {
+      "build": "controls",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "warm",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 7.349125,
+        "minimum": 6.912125,
+        "maximum": 7.555541
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "controls",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "warm",
+      "variant": "hybrid16",
+      "process_ms": {
+        "samples": 9,
+        "median": 8.157834,
+        "minimum": 7.94775,
+        "maximum": 8.22775
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 11.035076613021433,
+        "minimum": 8.89690096314746,
+        "maximum": 14.982729623668556
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.8129999999999988,
+        "minimum": 0.6722090000000005,
+        "maximum": 1.0356250000000005
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "controls",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "warm",
+      "variant": "selector-v2",
+      "process_ms": {
+        "samples": 9,
+        "median": 8.164958,
+        "minimum": 7.973083,
+        "maximum": 8.454958
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 11.665630226029112,
+        "minimum": 8.065828773876028,
+        "maximum": 15.349230518834656
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.8595430000000004,
+        "minimum": 0.6094170000000005,
+        "maximum": 1.0875419999999991
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "controls",
+      "cutoff": "zero",
+      "threads": 2,
+      "state": "warm",
+      "variant": "selector-v3",
+      "process_ms": {
+        "samples": 9,
+        "median": 7.361459,
+        "minimum": 6.976084,
+        "maximum": 7.421709
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.00962247593225829,
+        "minimum": -2.023993144815772,
+        "maximum": 1.5049907578558175
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0007089999999996266,
+        "minimum": -0.14762500000000056,
+        "maximum": 0.10991700000000026
+      },
+      "faster_pairs": 4
+    },
+    {
+      "build": "controls",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "first",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 5.109708,
+        "minimum": 4.961917,
+        "maximum": 5.18525
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "controls",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "first",
+      "variant": "hybrid16",
+      "process_ms": {
+        "samples": 9,
+        "median": 2.37525,
+        "minimum": 2.316958,
+        "maximum": 3.180208
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -52.76489125339852,
+        "minimum": -54.68274412009193,
+        "maximum": -35.907674392780045
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -2.6498749999999998,
+        "minimum": -2.795792,
+        "maximum": -1.7817089999999998
+      },
+      "faster_pairs": 9
+    },
+    {
+      "build": "controls",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "first",
+      "variant": "selector-v2",
+      "process_ms": {
+        "samples": 9,
+        "median": 2.327542,
+        "minimum": 2.306042,
+        "maximum": 2.448917
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -53.8363233437287,
+        "minimum": -54.549751179519454,
+        "maximum": -52.55493274932657
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -2.7126670000000006,
+        "minimum": -2.791333,
+        "maximum": -2.6539589999999995
+      },
+      "faster_pairs": 9
+    },
+    {
+      "build": "controls",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "first",
+      "variant": "selector-v3",
+      "process_ms": {
+        "samples": 9,
+        "median": 5.140292,
+        "minimum": 4.9355,
+        "maximum": 5.403875
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -0.07894312715196472,
+        "minimum": -1.3220703271436651,
+        "maximum": 7.519302787647653
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.004040999999999961,
+        "minimum": -0.06612499999999955,
+        "maximum": 0.37791700000000006
+      },
+      "faster_pairs": 5
+    },
+    {
+      "build": "controls",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "warm",
+      "variant": "baseline",
+      "process_ms": {
+        "samples": 9,
+        "median": 1.344,
+        "minimum": 1.2595,
+        "maximum": 1.391416
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.0
+      },
+      "faster_pairs": 0
+    },
+    {
+      "build": "controls",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "warm",
+      "variant": "hybrid16",
+      "process_ms": {
+        "samples": 9,
+        "median": 1.094084,
+        "minimum": 1.055125,
+        "maximum": 1.347167
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -18.521707010467736,
+        "minimum": -21.994270400147855,
+        "maximum": 6.960460500198495
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.24870900000000007,
+        "minimum": -0.2974999999999999,
+        "maximum": 0.08766699999999994
+      },
+      "faster_pairs": 8
+    },
+    {
+      "build": "controls",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "warm",
+      "variant": "selector-v2",
+      "process_ms": {
+        "samples": 9,
+        "median": 1.113083,
+        "minimum": 1.073666,
+        "maximum": 1.149291
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -17.03783384160429,
+        "minimum": -20.096776978331597,
+        "maximum": -14.010162763001189
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.23045800000000005,
+        "minimum": -0.27833299999999994,
+        "maximum": -0.176458
+      },
+      "faster_pairs": 9
+    },
+    {
+      "build": "controls",
+      "cutoff": "meissel",
+      "threads": 2,
+      "state": "warm",
+      "variant": "selector-v3",
+      "process_ms": {
+        "samples": 9,
+        "median": 1.34275,
+        "minimum": 1.315166,
+        "maximum": 1.510916
+      },
+      "paired_percent_vs_baseline": {
+        "samples": 9,
+        "median": -0.39811128599204215,
+        "minimum": -4.991893150574667,
+        "maximum": 12.443774986827494
+      },
+      "paired_delta_ms": {
+        "samples": 9,
+        "median": -0.00537500000000013,
+        "minimum": -0.06945800000000002,
+        "maximum": 0.16720800000000002
+      },
+      "faster_pairs": 5
+    }
+  ],
+  "baseline_overlap": [
+    {
+      "cutoff": "zero",
+      "state": "first",
+      "samples": 5,
+      "all_tail_hidden_samples": 5,
+      "initial_chunk_finishes_last_samples": 5,
+      "metrics": {
+        "first_chunk_duration_us": {
+          "samples": 5,
+          "median": 20287.584,
+          "minimum": 19874.791,
+          "maximum": 20750.709000000003
+        },
+        "first_chunk_end_us": {
+          "samples": 5,
+          "median": 20302.584,
+          "minimum": 19890.416,
+          "maximum": 20766.042
+        },
+        "first_pure_tail_start_us": {
+          "samples": 5,
+          "median": 7521.083,
+          "minimum": 7406.5,
+          "maximum": 7618.959
+        },
+        "last_tail_end_us": {
+          "samples": 5,
+          "median": 12619.083,
+          "minimum": 12380.166,
+          "maximum": 12728.167
+        },
+        "margin_us": {
+          "samples": 5,
+          "median": 7574.4169999999995,
+          "minimum": 7447.459000000001,
+          "maximum": 8171.584000000001
+        },
+        "pure_tail_chunks_hidden": {
+          "samples": 5,
+          "median": 599,
+          "minimum": 599,
+          "maximum": 599
+        },
+        "pure_tail_chunks": {
+          "samples": 5,
+          "median": 599,
+          "minimum": 599,
+          "maximum": 599
+        }
+      }
+    },
+    {
+      "cutoff": "zero",
+      "state": "warm",
+      "samples": 25,
+      "all_tail_hidden_samples": 25,
+      "initial_chunk_finishes_last_samples": 25,
+      "metrics": {
+        "first_chunk_duration_us": {
+          "samples": 25,
+          "median": 7428.375,
+          "minimum": 7066.0,
+          "maximum": 7885.334000000001
+        },
+        "first_chunk_end_us": {
+          "samples": 25,
+          "median": 7442.167,
+          "minimum": 7081.416,
+          "maximum": 7905.167
+        },
+        "first_pure_tail_start_us": {
+          "samples": 25,
+          "median": 2715.208,
+          "minimum": 2580.709,
+          "maximum": 2912.458
+        },
+        "last_tail_end_us": {
+          "samples": 25,
+          "median": 4772.25,
+          "minimum": 4549.583,
+          "maximum": 4971.458
+        },
+        "margin_us": {
+          "samples": 25,
+          "median": 2687.4580000000005,
+          "minimum": 2531.8330000000005,
+          "maximum": 3017.7090000000007
+        },
+        "pure_tail_chunks_hidden": {
+          "samples": 25,
+          "median": 599,
+          "minimum": 599,
+          "maximum": 599
+        },
+        "pure_tail_chunks": {
+          "samples": 25,
+          "median": 599,
+          "minimum": 599,
+          "maximum": 599
+        }
+      }
+    },
+    {
+      "cutoff": "meissel",
+      "state": "first",
+      "samples": 5,
+      "all_tail_hidden_samples": 0,
+      "initial_chunk_finishes_last_samples": 0,
+      "metrics": {
+        "first_chunk_duration_us": {
+          "samples": 5,
+          "median": 276.33399999999995,
+          "minimum": 249.79199999999997,
+          "maximum": 292.25
+        },
+        "first_chunk_end_us": {
+          "samples": 5,
+          "median": 292.542,
+          "minimum": 266.042,
+          "maximum": 310.625
+        },
+        "first_pure_tail_start_us": {
+          "samples": 5,
+          "median": 1501.167,
+          "minimum": 1478.459,
+          "maximum": 1639.292
+        },
+        "last_tail_end_us": {
+          "samples": 5,
+          "median": 5095.708,
+          "minimum": 5073.792,
+          "maximum": 6358.584
+        },
+        "margin_us": {
+          "samples": 5,
+          "median": -4807.75,
+          "minimum": -6047.959,
+          "maximum": -4790.584000000001
+        },
+        "pure_tail_chunks_hidden": {
+          "samples": 5,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "pure_tail_chunks": {
+          "samples": 5,
+          "median": 599,
+          "minimum": 599,
+          "maximum": 599
+        }
+      }
+    },
+    {
+      "cutoff": "meissel",
+      "state": "warm",
+      "samples": 25,
+      "all_tail_hidden_samples": 0,
+      "initial_chunk_finishes_last_samples": 0,
+      "metrics": {
+        "first_chunk_duration_us": {
+          "samples": 25,
+          "median": 35.666,
+          "minimum": 31.292,
+          "maximum": 98.875
+        },
+        "first_chunk_end_us": {
+          "samples": 25,
+          "median": 50.833,
+          "minimum": 44.167,
+          "maximum": 161.042
+        },
+        "first_pure_tail_start_us": {
+          "samples": 25,
+          "median": 314.542,
+          "minimum": 283.584,
+          "maximum": 619.292
+        },
+        "last_tail_end_us": {
+          "samples": 25,
+          "median": 1376.917,
+          "minimum": 1261.542,
+          "maximum": 1920.209
+        },
+        "margin_us": {
+          "samples": 25,
+          "median": -1320.3329999999999,
+          "minimum": -1759.1670000000001,
+          "maximum": -1215.75
+        },
+        "pure_tail_chunks_hidden": {
+          "samples": 25,
+          "median": 0,
+          "minimum": 0,
+          "maximum": 0
+        },
+        "pure_tail_chunks": {
+          "samples": 25,
+          "median": 599,
+          "minimum": 599,
+          "maximum": 599
+        }
+      }
+    }
+  ],
+  "interpretation": "Zero-cutoff baseline overlaps every tail query (including crossing-chunk queries) with the initial 32-query chunk in all measured first and warm traces. Splitting the Phi range adds a barrier and a second batch; the two-thread zero control regresses consistently even without streaming. Meissel does not have this initial-chunk overlap and does not show a consistent split-Phi penalty. Hybrid reduces local tail work but cannot recover the lost zero overlap.",
+  "limitations": [
+    "Chunk clocks measure elapsed time, not CPU time.",
+    "Split-Phi changes barrier, launch/join and chunk alignment together; it does not isolate a pure barrier instruction cost.",
+    "Trace instrumentation can change scheduling; uninstrumented plain and original-binary controls independently confirm directions.",
+    "Comparisons pair process medians inside each collection only; plain and original-control passes are independent cohorts.",
+    "Does not isolate hardware-cache locality or atomic read costs."
+  ],
+  "input_sha256": {
+    "timeline": "752f22f03976ed090fa6cd0b6056dfeb27815147ca84b74506024677d083caba",
+    "plain": "d9086a8a229649ad3de70c286d6dd3dcf7d965c8507ea1823f9eb351a9ee3f82",
+    "controls": "bd98553fe69eaf157d49d8acf3e6467518d98491443cef767135d28a1776ab3b"
+  },
+  "warm_hybrid_components": {
+    "zero": {
+      "prefix_worker_finish_gap_us": {
+        "process_medians": [
+          4509.875,
+          4974.667,
+          4787.6669999999995,
+          5022.375,
+          4690.7919999999995
+        ],
+        "median": 4787.6669999999995,
+        "minimum": 4509.875,
+        "maximum": 5022.375
+      },
+      "stream_first_worker_delay_us": {
+        "process_medians": [
+          13.25,
+          14.957999999999629,
+          14.875,
+          15.083000000000538,
+          13.832999999999629
+        ],
+        "median": 14.875,
+        "minimum": 13.25,
+        "maximum": 15.083000000000538
+      },
+      "stream_phase_us": {
+        "process_medians": [
+          872.7089999999998,
+          962.5000000000009,
+          854.25,
+          878.4170000000004,
+          879.3329999999996
+        ],
+        "median": 878.4170000000004,
+        "minimum": 854.25,
+        "maximum": 962.5000000000009
+      },
+      "stream_post_worker_join_us": {
+        "process_medians": [
+          10.207999999999629,
+          11.291000000001077,
+          11.041999999999462,
+          10.208000000000538,
+          9.41700000000128
+        ],
+        "median": 10.208000000000538,
+        "minimum": 9.41700000000128,
+        "maximum": 11.291000000001077
+      },
+      "stream_slot0_fill_us": {
+        "process_medians": [
+          557.5,
+          620.623,
+          571.54,
+          576.918,
+          573.331
+        ],
+        "median": 573.331,
+        "minimum": 557.5,
+        "maximum": 620.623
+      },
+      "stream_slot0_fills": {
+        "process_medians": [
+          39,
+          39,
+          39,
+          39,
+          39
+        ],
+        "median": 39,
+        "minimum": 39,
+        "maximum": 39
+      },
+      "stream_slot0_seed_us": {
+        "process_medians": [
+          0.0,
+          0.041,
+          0.041,
+          0.041,
+          0.042
+        ],
+        "median": 0.041,
+        "minimum": 0.0,
+        "maximum": 0.042
+      },
+      "stream_slot0_setup_us": {
+        "process_medians": [
+          1.25,
+          1.0,
+          3.333,
+          1.083,
+          4.5
+        ],
+        "median": 1.25,
+        "minimum": 1.0,
+        "maximum": 4.5
+      },
+      "stream_slot1_fill_us": {
+        "process_medians": [
+          601.251,
+          663.795,
+          623.042,
+          614.164,
+          630.211
+        ],
+        "median": 623.042,
+        "minimum": 601.251,
+        "maximum": 663.795
+      },
+      "stream_slot1_fills": {
+        "process_medians": [
+          39,
+          39,
+          39,
+          39,
+          39
+        ],
+        "median": 39,
+        "minimum": 39,
+        "maximum": 39
+      },
+      "stream_slot1_seed_us": {
+        "process_medians": [
+          0.334,
+          0.416,
+          0.458,
+          0.334,
+          0.292
+        ],
+        "median": 0.334,
+        "minimum": 0.292,
+        "maximum": 0.458
+      },
+      "stream_slot1_setup_us": {
+        "process_medians": [
+          1.25,
+          1.209,
+          1.042,
+          1.125,
+          1.209
+        ],
+        "median": 1.209,
+        "minimum": 1.042,
+        "maximum": 1.25
+      }
+    },
+    "meissel": {
+      "prefix_worker_finish_gap_us": {
+        "process_medians": [
+          4.20799999999997,
+          4.79200000000003,
+          5.0,
+          4.833000000000027,
+          4.915999999999997
+        ],
+        "median": 4.833000000000027,
+        "minimum": 4.20799999999997,
+        "maximum": 5.0
+      },
+      "stream_first_worker_delay_us": {
+        "process_medians": [
+          12.66700000000003,
+          12.709000000000003,
+          11.0,
+          11.540999999999997,
+          10.708000000000027
+        ],
+        "median": 11.540999999999997,
+        "minimum": 10.708000000000027,
+        "maximum": 12.709000000000003
+      },
+      "stream_phase_us": {
+        "process_medians": [
+          865.1670000000001,
+          936.75,
+          829.0419999999999,
+          806.6670000000001,
+          800.5409999999999
+        ],
+        "median": 829.0419999999999,
+        "minimum": 800.5409999999999,
+        "maximum": 936.75
+      },
+      "stream_post_worker_join_us": {
+        "process_medians": [
+          8.542000000000144,
+          9.832999999999856,
+          8.457999999999856,
+          8.707999999999856,
+          8.707999999999856
+        ],
+        "median": 8.707999999999856,
+        "minimum": 8.457999999999856,
+        "maximum": 9.832999999999856
+      },
+      "stream_slot0_fill_us": {
+        "process_medians": [
+          560.253,
+          630.877,
+          560.79,
+          565.957,
+          569.125
+        ],
+        "median": 565.957,
+        "minimum": 560.253,
+        "maximum": 630.877
+      },
+      "stream_slot0_fills": {
+        "process_medians": [
+          39,
+          39,
+          39,
+          39,
+          39
+        ],
+        "median": 39,
+        "minimum": 39,
+        "maximum": 39
+      },
+      "stream_slot0_seed_us": {
+        "process_medians": [
+          0.0,
+          0.0,
+          0.0,
+          0.041,
+          0.0
+        ],
+        "median": 0.0,
+        "minimum": 0.0,
+        "maximum": 0.041
+      },
+      "stream_slot0_setup_us": {
+        "process_medians": [
+          0.75,
+          2.417,
+          0.75,
+          0.708,
+          0.667
+        ],
+        "median": 0.75,
+        "minimum": 0.667,
+        "maximum": 2.417
+      },
+      "stream_slot1_fill_us": {
+        "process_medians": [
+          604.996,
+          666.915,
+          598.999,
+          608.29,
+          614.751
+        ],
+        "median": 608.29,
+        "minimum": 598.999,
+        "maximum": 666.915
+      },
+      "stream_slot1_fills": {
+        "process_medians": [
+          39,
+          39,
+          39,
+          39,
+          39
+        ],
+        "median": 39,
+        "minimum": 39,
+        "maximum": 39
+      },
+      "stream_slot1_seed_us": {
+        "process_medians": [
+          0.375,
+          0.334,
+          0.334,
+          0.333,
+          0.334
+        ],
+        "median": 0.334,
+        "minimum": 0.333,
+        "maximum": 0.375
+      },
+      "stream_slot1_setup_us": {
+        "process_medians": [
+          0.958,
+          0.958,
+          0.875,
+          0.792,
+          0.75
+        ],
+        "median": 0.875,
+        "minimum": 0.75,
+        "maximum": 0.958
+      }
+    }
+  },
+  "metric_definitions": {
+    "paired_comparisons": "Each process contributes first-call time or median of seven warmed calls; pair within nine matched blocks.",
+    "baseline_overlap": "All individual timeline samples: first5, warm25. Listed metrics are pooled trace distributions; incidence checks cover every trace.",
+    "warm_hybrid_components": "Five process medians, each over five warmed timeline calls. Times include clock/probe overhead; phase quantities overlap and are not additive CPU costs."
+  }
+}

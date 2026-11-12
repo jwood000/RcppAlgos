@@ -1,0 +1,22 @@
+{
+  "mode": "p2",
+  "seed": 202611122,
+  "configurations": 122,
+  "blocks": 366,
+  "processes": 3,
+  "repeats": 4,
+  "variants": [
+    "baseline",
+    "hybrid8",
+    "hybrid16",
+    "hybrid32",
+    "hybrid64",
+    "selector"
+  ],
+  "verified_rows": 8784,
+  "policy_sha256": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+  "first": "fresh process; isolated P2 has no preceding Phi phase",
+  "warm": "median of three subsequent calls, then median across processes",
+  "best_fixed": "hindsight minimum of baseline Phi-only and fixed8/16/32/64 medians per configuration/state; optimistic comparison",
+  "comparisons": "paired process ratios/deltas vs baseline, hindsight best fixed, and selector-chosen fixed"
+}

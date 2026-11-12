@@ -1,0 +1,282 @@
+[
+  {
+    "case_id": "p2-zero-80000000000-t1-L6over5",
+    "expected": 11238880589,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-zero-80000000000-t2-L6over5",
+    "expected": 11238880589,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-zero-80000000000-t4-L6over5",
+    "expected": 11238880589,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-zero-80000000000-t8-L6over5",
+    "expected": 11238880589,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-meissel-80000000000-t1-L6over5",
+    "expected": 2069687562,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-meissel-80000000000-t2-L6over5",
+    "expected": 2069687562,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-meissel-80000000000-t4-L6over5",
+    "expected": 2069687562,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-meissel-80000000000-t8-L6over5",
+    "expected": 2069687562,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-lehmer-80000000000-t1-L6over5",
+    "expected": 3425452695,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-lehmer-80000000000-t2-L6over5",
+    "expected": 3425452695,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-lehmer-80000000000-t4-L6over5",
+    "expected": 3425452695,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-lehmer-80000000000-t8-L6over5",
+    "expected": 3425452695,
+    "provenance": "independent-saved-sieve-and-primecount-terms"
+  },
+  {
+    "case_id": "p2-meissel-10000000000-t1-L1over1",
+    "expected": 279167372,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-meissel-10000000000-t2-L1over1",
+    "expected": 279167372,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-meissel-10000000000-t4-L1over1",
+    "expected": 279167372,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-meissel-10000000000-t8-L1over1",
+    "expected": 279167372,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-10000000000-t1-L1over1",
+    "expected": 463026862,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-10000000000-t2-L1over1",
+    "expected": 463026862,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-10000000000-t4-L1over1",
+    "expected": 463026862,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-10000000000-t8-L1over1",
+    "expected": 463026862,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-zero-10000000000-t2-L1over1",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-zero-10000000000-t8-L1over1",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "phases-meissel-10000000000-t1-L1over1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-meissel-10000000000-t2-L1over1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-meissel-10000000000-t4-L1over1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-meissel-10000000000-t8-L1over1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-10000000000-t1-L1over1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-10000000000-t2-L1over1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-10000000000-t4-L1over1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-10000000000-t8-L1over1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "p2-meissel-1000000000000-t1-L1over1",
+    "expected": 23729370364,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-meissel-1000000000000-t2-L1over1",
+    "expected": 23729370364,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-meissel-1000000000000-t4-L1over1",
+    "expected": 23729370364,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-meissel-1000000000000-t8-L1over1",
+    "expected": 23729370364,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-1000000000000-t1-L1over1",
+    "expected": 39098548800,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-1000000000000-t2-L1over1",
+    "expected": 39098548800,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-1000000000000-t4-L1over1",
+    "expected": 39098548800,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-1000000000000-t8-L1over1",
+    "expected": 39098548800,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-zero-1000000000000-t2-L1over1",
+    "expected": 131126017178,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-zero-1000000000000-t8-L1over1",
+    "expected": 131126017178,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "phases-meissel-1000000000000-t1-L1over1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-meissel-1000000000000-t2-L1over1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-meissel-1000000000000-t4-L1over1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-meissel-1000000000000-t8-L1over1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-1000000000000-t1-L1over1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-1000000000000-t2-L1over1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-1000000000000-t4-L1over1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "p2-meissel-100000000000000-t1-L1over1",
+    "expected": 2057293161289,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-meissel-100000000000000-t8-L1over1",
+    "expected": 2057293161289,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-100000000000000-t1-L1over1",
+    "expected": 3372429988632,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "p2-lehmer-100000000000000-t8-L1over1",
+    "expected": 3372429988632,
+    "provenance": "production-P2-differential"
+  },
+  {
+    "case_id": "phases-meissel-100000000000000-t1-L1over1",
+    "expected": 3204941750802,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-meissel-100000000000000-t8-L1over1",
+    "expected": 3204941750802,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-100000000000000-t1-L1over1",
+    "expected": 3204941750802,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+    "expected": 3204941750802,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  }
+]

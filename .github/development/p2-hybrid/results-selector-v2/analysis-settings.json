@@ -1,0 +1,33 @@
+{
+  "frozen_utc": "2026-11-07T03:27:22.494154+00:00",
+  "preserve_all_samples": true,
+  "isolated_relative_summary_min_best_fixed_median_ms": 0.01,
+  "near_best_bands_percent": [
+    5,
+    10,
+    20
+  ],
+  "best_fixed_pool": [
+    "baseline",
+    "hybrid8",
+    "hybrid16",
+    "hybrid32",
+    "hybrid64"
+  ],
+  "groups": [
+    "all",
+    "regression",
+    "new-evaluation",
+    "changed-partition",
+    "same-partition"
+  ],
+  "partition_equality": "same Phi/stream query counts for the same numeric context and thread budget; selected cap labels may differ while capped work agrees",
+  "comparisons": [
+    "v2-versus-v1",
+    "v2-versus-production",
+    "v1-and-v2-versus-best-fixed",
+    "each-selector-versus-own-selected-fixed"
+  ],
+  "small_case_reporting": "absolute paired deltas; retain percentages in detailed CSV but do not aggregate unstable ratios",
+  "retune": false
+}

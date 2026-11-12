@@ -1,0 +1,49 @@
+{
+  "commands": [
+    [
+      "clang++",
+      "-std=c++11",
+      "-O1",
+      "-g",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-fno-omit-frame-pointer",
+      "-fno-sanitize-recover=all",
+      "-fsanitize=address,undefined",
+      "-I/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-v3-ag0tbj0m/source/inst/include",
+      "-I/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-matched-phi-check-3wqgg02n/generated",
+      "/Users/owacasa/RcppAlgos/.github/development/p2-hybrid/matched-profile/phi-metrics-check.cpp",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-matched-phi-check-3wqgg02n/generated/Phi.cpp",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-v3-ag0tbj0m/source/src/Eratosthenes.cpp",
+      "-o",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-matched-phi-check-3wqgg02n/asan-ubsan"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O1",
+      "-g",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-fno-omit-frame-pointer",
+      "-fno-sanitize-recover=all",
+      "-fsanitize=thread",
+      "-I/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-v3-ag0tbj0m/source/inst/include",
+      "-I/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-matched-phi-check-3wqgg02n/generated",
+      "/Users/owacasa/RcppAlgos/.github/development/p2-hybrid/matched-profile/phi-metrics-check.cpp",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-matched-phi-check-3wqgg02n/generated/Phi.cpp",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-v3-ag0tbj0m/source/src/Eratosthenes.cpp",
+      "-o",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-matched-phi-check-3wqgg02n/tsan"
+    ]
+  ],
+  "sources": {
+    "phi-metrics-check.cpp": "52760c6b5decdedddc23504ce1614f0d182947914cd06b50f467cd3ac770c5ff",
+    "phi_metrics.h": "00984cb7d52eed315c82d8433190709b0145bcc6afe69df74362af51a15ed32f",
+    "instrument_phi.py": "c8eca94593e9fcdf75676991ba0648cd0f4e2ff199809e2609177d95089338e3"
+  }
+}

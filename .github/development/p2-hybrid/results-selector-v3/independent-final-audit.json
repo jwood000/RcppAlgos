@@ -1,0 +1,54 @@
+{
+  "report_sha256": "2998d23937a87f69e7b19661be062319b43fc9bd58e352b4ac4c267f84997f63",
+  "raw_rows_checked": {
+    "p2": 21888,
+    "phases": 2880
+  },
+  "summary_rows_checked": {
+    "p2": 3648,
+    "phases": 480
+  },
+  "aggregate_distributions_independently_verified": 270,
+  "aggregate_groups_thresholds_tiny_deltas_and_worst_case_lists_match": true,
+  "distinct_numeric_x_a": 48,
+  "distinct_numeric_x_a_table_contexts": 137,
+  "all_cross_table_P2_results_agree": true,
+  "rational_limits_exact": true,
+  "same_density_examples": [
+    {
+      "case": "p2-zero-80000000000-t2-L6over5",
+      "state": "first",
+      "v2_ms": 22.111458,
+      "v3_ms": 21.1025,
+      "paired_percent": -4.563055045940434
+    },
+    {
+      "case": "p2-meissel-80000000000-t2-L6over5",
+      "state": "first",
+      "v2_ms": 2.574667,
+      "v3_ms": 5.270167,
+      "paired_percent": 102.71329771744297
+    },
+    {
+      "case": "p2-zero-80000000000-t2-L6over5",
+      "state": "warm",
+      "v2_ms": 8.42175,
+      "v3_ms": 7.63425,
+      "paired_percent": -10.624775135809061
+    },
+    {
+      "case": "p2-meissel-80000000000-t2-L6over5",
+      "state": "warm",
+      "v2_ms": 1.258292,
+      "v3_ms": 1.374375,
+      "paired_percent": 8.857880364811987
+    }
+  ],
+  "retention": {
+    "p2": "lossless-byte-identical",
+    "phases": "lossless-byte-identical"
+  },
+  "report_tables_and_numeric_claims_match": true,
+  "no_actionable_findings": true,
+  "limits": "Read-only code/data audit; no benchmarks rerun. Preserved production/source history audit owned by root."
+}

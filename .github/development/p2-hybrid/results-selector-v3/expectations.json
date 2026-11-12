@@ -1,0 +1,1520 @@
+[
+  {
+    "id": "phases-meissel-30000000000-t2-L1",
+    "expected": 1300005926,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-30000000000-t2-L1",
+    "expected": 1300005926,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-70000000000-t2-L1",
+    "expected": 2925699539,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-70000000000-t2-L1",
+    "expected": 2925699539,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-90000000000-t2-L1",
+    "expected": 3722428991,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-90000000000-t4-L1",
+    "expected": 3722428991,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-90000000000-t2-L1",
+    "expected": 3722428991,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-90000000000-t4-L1",
+    "expected": 3722428991,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-50000000000-t2-L1",
+    "expected": 2119654578,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-50000000000-t4-L1",
+    "expected": 2119654578,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-50000000000-t2-L1",
+    "expected": 2119654578,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-50000000000-t4-L1",
+    "expected": 2119654578,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-80000000000-t2-L1",
+    "expected": 3325059246,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-80000000000-t4-L1",
+    "expected": 3325059246,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-80000000000-t2-L1",
+    "expected": 3325059246,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-80000000000-t4-L1",
+    "expected": 3325059246,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-10000000000-t1-L1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-10000000000-t4-L1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-10000000000-t1-L1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-10000000000-t4-L1",
+    "expected": 455052511,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-100000000000-t1-L1",
+    "expected": 4118054813,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-100000000000-t4-L1",
+    "expected": 4118054813,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-100000000000-t1-L1",
+    "expected": 4118054813,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-100000000000-t4-L1",
+    "expected": 4118054813,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-1000000000000-t1-L1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-1000000000000-t8-L1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-1000000000000-t1-L1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-1000000000000-t8-L1",
+    "expected": 37607912018,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-meissel-100000000000000-t8-L1",
+    "expected": 3204941750802,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "phases-lehmer-100000000000000-t8-L1",
+    "expected": 3204941750802,
+    "provenance": "primecount-gourdon-and-deleglise-rivat"
+  },
+  {
+    "id": "p2-zero-10000000000-t2-L1",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t4-L1",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t2-L9over8",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t4-L9over8",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t2-L6over5",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t4-L6over5",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t2-L5over4",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t4-L5over4",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t2-L3over2",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t4-L3over2",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t2-L7over4",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t4-L7over4",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t2-L2",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t4-L2",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t2-L3",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t4-L3",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t1-L2",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-10000000000-t8-L2",
+    "expected": 1493776443,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-meissel-10000000000-t2-L1",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t4-L1",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t2-L9over8",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t4-L9over8",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t2-L6over5",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t4-L6over5",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t2-L5over4",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t4-L5over4",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t2-L3over2",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t4-L3over2",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t2-L7over4",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t4-L7over4",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t2-L2",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t4-L2",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t2-L3",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t4-L3",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t1-L2",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-meissel-10000000000-t8-L2",
+    "expected": 279167372,
+    "provenance": "production-P2-differential",
+    "a": 325
+  },
+  {
+    "id": "p2-zero-70000000000-t2-L1",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t4-L1",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t2-L9over8",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t4-L9over8",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t2-L6over5",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t4-L6over5",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t2-L5over4",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t4-L5over4",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t2-L3over2",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t4-L3over2",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t2-L7over4",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t4-L7over4",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t2-L2",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t4-L2",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t2-L3",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t4-L3",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t1-L2",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-70000000000-t8-L2",
+    "expected": 9871546367,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-meissel-70000000000-t2-L1",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t4-L1",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t2-L9over8",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t4-L9over8",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t2-L6over5",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t4-L6over5",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t2-L5over4",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t4-L5over4",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t2-L3over2",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t4-L3over2",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t2-L7over4",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t4-L7over4",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t2-L2",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t4-L2",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t2-L3",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t4-L3",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t1-L2",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-meissel-70000000000-t8-L2",
+    "expected": 1821520417,
+    "provenance": "production-P2-differential",
+    "a": 566
+  },
+  {
+    "id": "p2-zero-50000000000-t2-L1",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t4-L1",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t2-L9over8",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t4-L9over8",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t2-L6over5",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t4-L6over5",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t2-L5over4",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t4-L5over4",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t2-L3over2",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t4-L3over2",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t2-L7over4",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t4-L7over4",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t2-L2",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t4-L2",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t2-L3",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t4-L3",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t1-L2",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-50000000000-t8-L2",
+    "expected": 7119669230,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-meissel-50000000000-t2-L1",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t4-L1",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t2-L9over8",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t4-L9over8",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t2-L6over5",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t4-L6over5",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t2-L5over4",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t4-L5over4",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t2-L3over2",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t4-L3over2",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t2-L7over4",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t4-L7over4",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t2-L2",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t4-L2",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t2-L3",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t4-L3",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t1-L2",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-meissel-50000000000-t8-L2",
+    "expected": 1316723389,
+    "provenance": "production-P2-differential",
+    "a": 514
+  },
+  {
+    "id": "p2-zero-80000000000-t2-L1",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t4-L1",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t2-L9over8",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t4-L9over8",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t2-L6over5",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t4-L6over5",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t2-L5over4",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t4-L5over4",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t2-L3over2",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t4-L3over2",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t2-L7over4",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t4-L7over4",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t2-L2",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t4-L2",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t2-L3",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t4-L3",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t1-L2",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-80000000000-t8-L2",
+    "expected": 11238880589,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-meissel-80000000000-t2-L1",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t4-L1",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t2-L9over8",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t4-L9over8",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t2-L6over5",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t4-L6over5",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t2-L5over4",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t4-L5over4",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t2-L3over2",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t4-L3over2",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t2-L7over4",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t4-L7over4",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t2-L2",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t4-L2",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t2-L3",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t4-L3",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t1-L2",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-meissel-80000000000-t8-L2",
+    "expected": 2069687562,
+    "provenance": "production-P2-differential",
+    "a": 590
+  },
+  {
+    "id": "p2-lehmer-50000000000-t2-L1",
+    "expected": 2172319744,
+    "provenance": "production-P2-differential",
+    "a": 91
+  },
+  {
+    "id": "p2-lehmer-50000000000-t4-L1",
+    "expected": 2172319744,
+    "provenance": "production-P2-differential",
+    "a": 91
+  },
+  {
+    "id": "p2-lehmer-50000000000-t2-L6over5",
+    "expected": 2172319744,
+    "provenance": "production-P2-differential",
+    "a": 91
+  },
+  {
+    "id": "p2-lehmer-50000000000-t4-L6over5",
+    "expected": 2172319744,
+    "provenance": "production-P2-differential",
+    "a": 91
+  },
+  {
+    "id": "p2-lehmer-50000000000-t2-L3over2",
+    "expected": 2172319744,
+    "provenance": "production-P2-differential",
+    "a": 91
+  },
+  {
+    "id": "p2-lehmer-50000000000-t4-L3over2",
+    "expected": 2172319744,
+    "provenance": "production-P2-differential",
+    "a": 91
+  },
+  {
+    "id": "p2-lehmer-50000000000-t2-L2",
+    "expected": 2172319744,
+    "provenance": "production-P2-differential",
+    "a": 91
+  },
+  {
+    "id": "p2-lehmer-50000000000-t4-L2",
+    "expected": 2172319744,
+    "provenance": "production-P2-differential",
+    "a": 91
+  },
+  {
+    "id": "p2-lehmer-80000000000-t2-L1",
+    "expected": 3425452695,
+    "provenance": "production-P2-differential",
+    "a": 99
+  },
+  {
+    "id": "p2-lehmer-80000000000-t4-L1",
+    "expected": 3425452695,
+    "provenance": "production-P2-differential",
+    "a": 99
+  },
+  {
+    "id": "p2-lehmer-80000000000-t2-L6over5",
+    "expected": 3425452695,
+    "provenance": "production-P2-differential",
+    "a": 99
+  },
+  {
+    "id": "p2-lehmer-80000000000-t4-L6over5",
+    "expected": 3425452695,
+    "provenance": "production-P2-differential",
+    "a": 99
+  },
+  {
+    "id": "p2-lehmer-80000000000-t2-L3over2",
+    "expected": 3425452695,
+    "provenance": "production-P2-differential",
+    "a": 99
+  },
+  {
+    "id": "p2-lehmer-80000000000-t4-L3over2",
+    "expected": 3425452695,
+    "provenance": "production-P2-differential",
+    "a": 99
+  },
+  {
+    "id": "p2-lehmer-80000000000-t2-L2",
+    "expected": 3425452695,
+    "provenance": "production-P2-differential",
+    "a": 99
+  },
+  {
+    "id": "p2-lehmer-80000000000-t4-L2",
+    "expected": 3425452695,
+    "provenance": "production-P2-differential",
+    "a": 99
+  },
+  {
+    "id": "p2-tail2-3000000000-t4-L1",
+    "expected": 7,
+    "provenance": "production-P2-differential",
+    "a": 5569
+  },
+  {
+    "id": "p2-tail2-3000000000-t4-L2",
+    "expected": 7,
+    "provenance": "production-P2-differential",
+    "a": 5569
+  },
+  {
+    "id": "p2-tail2048-3000000000-t4-L1",
+    "expected": 4927380,
+    "provenance": "production-P2-differential",
+    "a": 3523
+  },
+  {
+    "id": "p2-tail2048-3000000000-t4-L2",
+    "expected": 4927380,
+    "provenance": "production-P2-differential",
+    "a": 3523
+  },
+  {
+    "id": "p2-tail4095-3000000000-t4-L1",
+    "expected": 27102634,
+    "provenance": "production-P2-differential",
+    "a": 1476
+  },
+  {
+    "id": "p2-tail4095-3000000000-t4-L2",
+    "expected": 27102634,
+    "provenance": "production-P2-differential",
+    "a": 1476
+  },
+  {
+    "id": "p2-quarter-root-3000000000-t4-L1",
+    "expected": 28837688,
+    "provenance": "production-P2-differential",
+    "a": 1392
+  },
+  {
+    "id": "p2-quarter-root-3000000000-t4-L2",
+    "expected": 28837688,
+    "provenance": "production-P2-differential",
+    "a": 1392
+  },
+  {
+    "id": "p2-tail2-10000000000-t4-L1",
+    "expected": 5,
+    "provenance": "production-P2-differential",
+    "a": 9590
+  },
+  {
+    "id": "p2-tail2-10000000000-t4-L2",
+    "expected": 5,
+    "provenance": "production-P2-differential",
+    "a": 9590
+  },
+  {
+    "id": "p2-tail2048-10000000000-t4-L1",
+    "expected": 4534093,
+    "provenance": "production-P2-differential",
+    "a": 7544
+  },
+  {
+    "id": "p2-tail2048-10000000000-t4-L2",
+    "expected": 4534093,
+    "provenance": "production-P2-differential",
+    "a": 7544
+  },
+  {
+    "id": "p2-tail4095-10000000000-t4-L1",
+    "expected": 20340508,
+    "provenance": "production-P2-differential",
+    "a": 5497
+  },
+  {
+    "id": "p2-tail4095-10000000000-t4-L2",
+    "expected": 20340508,
+    "provenance": "production-P2-differential",
+    "a": 5497
+  },
+  {
+    "id": "p2-quarter-root-10000000000-t4-L1",
+    "expected": 85200751,
+    "provenance": "production-P2-differential",
+    "a": 2398
+  },
+  {
+    "id": "p2-quarter-root-10000000000-t4-L2",
+    "expected": 85200751,
+    "provenance": "production-P2-differential",
+    "a": 2398
+  },
+  {
+    "id": "p2-tail2-70000000000-t4-L1",
+    "expected": 7,
+    "provenance": "production-P2-differential",
+    "a": 23190
+  },
+  {
+    "id": "p2-tail2-70000000000-t4-L2",
+    "expected": 7,
+    "provenance": "production-P2-differential",
+    "a": 23190
+  },
+  {
+    "id": "p2-tail2048-70000000000-t4-L1",
+    "expected": 4380144,
+    "provenance": "production-P2-differential",
+    "a": 21144
+  },
+  {
+    "id": "p2-tail2048-70000000000-t4-L2",
+    "expected": 4380144,
+    "provenance": "production-P2-differential",
+    "a": 21144
+  },
+  {
+    "id": "p2-tail4095-70000000000-t4-L1",
+    "expected": 18014330,
+    "provenance": "production-P2-differential",
+    "a": 19097
+  },
+  {
+    "id": "p2-tail4095-70000000000-t4-L2",
+    "expected": 18014330,
+    "provenance": "production-P2-differential",
+    "a": 19097
+  },
+  {
+    "id": "p2-quarter-root-70000000000-t4-L1",
+    "expected": 498686735,
+    "provenance": "production-P2-differential",
+    "a": 5798
+  },
+  {
+    "id": "p2-quarter-root-70000000000-t4-L2",
+    "expected": 498686735,
+    "provenance": "production-P2-differential",
+    "a": 5798
+  },
+  {
+    "id": "p2-tail2-30000000000000-t4-L1",
+    "expected": 7,
+    "provenance": "production-P2-differential",
+    "a": 379331
+  },
+  {
+    "id": "p2-tail2-30000000000000-t4-L2",
+    "expected": 7,
+    "provenance": "production-P2-differential",
+    "a": 379331
+  },
+  {
+    "id": "p2-tail2048-30000000000000-t4-L1",
+    "expected": 4201540,
+    "provenance": "production-P2-differential",
+    "a": 377285
+  },
+  {
+    "id": "p2-tail2048-30000000000000-t4-L2",
+    "expected": 4201540,
+    "provenance": "production-P2-differential",
+    "a": 377285
+  },
+  {
+    "id": "p2-tail4095-30000000000000-t4-L1",
+    "expected": 16782244,
+    "provenance": "production-P2-differential",
+    "a": 375238
+  },
+  {
+    "id": "p2-tail4095-30000000000000-t4-L2",
+    "expected": 16782244,
+    "provenance": "production-P2-differential",
+    "a": 375238
+  },
+  {
+    "id": "p2-quarter-root-30000000000000-t4-L1",
+    "expected": 132700950326,
+    "provenance": "production-P2-differential",
+    "a": 94833
+  },
+  {
+    "id": "p2-quarter-root-30000000000000-t4-L2",
+    "expected": 132700950326,
+    "provenance": "production-P2-differential",
+    "a": 94833
+  },
+  {
+    "id": "p2-zero-99999999999-t4-L2",
+    "expected": 13959990342,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-meissel-99999999999-t4-L2",
+    "expected": 2571194450,
+    "provenance": "production-P2-differential",
+    "a": 626
+  },
+  {
+    "id": "p2-zero-100000000000-t4-L2",
+    "expected": 13959990342,
+    "provenance": "production-P2-differential",
+    "a": 0
+  },
+  {
+    "id": "p2-meissel-100000000000-t4-L2",
+    "expected": 2571194450,
+    "provenance": "production-P2-differential",
+    "a": 626
+  },
+  {
+    "id": "p2-last-10000000000-t4-L3",
+    "expected": 2,
+    "provenance": "production-P2-differential",
+    "a": 9591
+  },
+  {
+    "id": "p2-empty-10000000000-t4-L3",
+    "expected": 0,
+    "provenance": "production-P2-differential",
+    "a": 9592
+  },
+  {
+    "id": "p2-zero-100000000-t1-L1",
+    "expected": 17427258,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-100000000-t4-L1",
+    "expected": 17427258,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-100000000-t1-L5over4",
+    "expected": 17427258,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-100000000-t4-L5over4",
+    "expected": 17427258,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-100000000-t1-L2",
+    "expected": 17427258,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 0
+  },
+  {
+    "id": "p2-zero-100000000-t4-L2",
+    "expected": 17427258,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 0
+  },
+  {
+    "id": "p2-meissel-100000000-t1-L1",
+    "expected": 3349453,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 90
+  },
+  {
+    "id": "p2-meissel-100000000-t4-L1",
+    "expected": 3349453,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 90
+  },
+  {
+    "id": "p2-meissel-100000000-t1-L5over4",
+    "expected": 3349453,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 90
+  },
+  {
+    "id": "p2-meissel-100000000-t4-L5over4",
+    "expected": 3349453,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 90
+  },
+  {
+    "id": "p2-meissel-100000000-t1-L2",
+    "expected": 3349453,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 90
+  },
+  {
+    "id": "p2-meissel-100000000-t4-L2",
+    "expected": 3349453,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 90
+  },
+  {
+    "id": "p2-half-root-100000000-t1-L1",
+    "expected": 480679,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 614
+  },
+  {
+    "id": "p2-half-root-100000000-t4-L1",
+    "expected": 480679,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 614
+  },
+  {
+    "id": "p2-half-root-100000000-t1-L5over4",
+    "expected": 480679,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 614
+  },
+  {
+    "id": "p2-half-root-100000000-t4-L5over4",
+    "expected": 480679,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 614
+  },
+  {
+    "id": "p2-half-root-100000000-t1-L2",
+    "expected": 480679,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 614
+  },
+  {
+    "id": "p2-half-root-100000000-t4-L2",
+    "expected": 480679,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 614
+  },
+  {
+    "id": "p2-last-100000000-t1-L1",
+    "expected": 3,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1228
+  },
+  {
+    "id": "p2-last-100000000-t4-L1",
+    "expected": 3,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1228
+  },
+  {
+    "id": "p2-last-100000000-t1-L5over4",
+    "expected": 3,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1228
+  },
+  {
+    "id": "p2-last-100000000-t4-L5over4",
+    "expected": 3,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1228
+  },
+  {
+    "id": "p2-last-100000000-t1-L2",
+    "expected": 3,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1228
+  },
+  {
+    "id": "p2-last-100000000-t4-L2",
+    "expected": 3,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1228
+  },
+  {
+    "id": "p2-empty-100000000-t1-L1",
+    "expected": 0,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1229
+  },
+  {
+    "id": "p2-empty-100000000-t4-L1",
+    "expected": 0,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1229
+  },
+  {
+    "id": "p2-empty-100000000-t1-L5over4",
+    "expected": 0,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1229
+  },
+  {
+    "id": "p2-empty-100000000-t4-L5over4",
+    "expected": 0,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1229
+  },
+  {
+    "id": "p2-empty-100000000-t1-L2",
+    "expected": 0,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1229
+  },
+  {
+    "id": "p2-empty-100000000-t4-L2",
+    "expected": 0,
+    "provenance": "independent-dense-pi-and-production-P2",
+    "a": 1229
+  }
+]

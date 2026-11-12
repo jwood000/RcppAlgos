@@ -1,0 +1,13 @@
+{
+  ".github/development/testing.md": "f2fec8ec3cbc00a1b93c619bbad41ed625ac88a104d0208907aa284d0667cef4",
+  "inst/include/NumbersUtils/PartialSieve.h": "c9bfe9a244be726c926dd7af4ff923c2a55e387b60a37cc05fa5b01ec46d7c79",
+  "man/semiPrimeCount.Rd": "9e364abe1f4bfdf2d0fd6ad6f13218dcd72ecd843b5f1a96f2a9470d1753d181",
+  "src/P2.cpp": "df2bc230e0a36d72306cfe8dd1bd42986c9dad1bbfe84741be501443c6a9986d",
+  "tests/testthat/testPartialSieve.R": "54aa5cdea98d0f4f404850cf6f3ec74be5d290066da882bf05fb669a38400cdc",
+  "tests/testthat/testPrimeCount.R": "ca03b476b1a69c43f9cd17d17b449caa85726dcc8d7b112d570c5dfbd1e06861",
+  ".github/development/p2-hybrid/production-integration/helpers.cpp": "7e5aeb29d02982285ba84d2964bb56c083e3da889e765d1c18c30f24b7b26064",
+  ".github/development/p2-hybrid/production-integration/README.md": "07104f913b3830a9b208f5921cbf30716b48636d6b06c67776c089a5a2e22458",
+  ".github/development/p2-hybrid/production-integration/validate.py": "30a832be5ffda42add47442d1f2ba2f90328f495b624e57b6a8f3667793a5bc9",
+  ".github/development/p2-hybrid/production-integration/replay.py": "a53080bb4cf598cbbe94519b102c1fb3845ef58f6b678ec3ec3d57fd95d9597a",
+  ".github/development/p2-hybrid/production-integration/r-tests.R": "faba8b7ba93c9f55ff084115257995db7ec0a7bb0a84ea076547acbd73eed3fc"
+}

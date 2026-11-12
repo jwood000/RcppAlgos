@@ -1,0 +1,30 @@
+Matched zero cutoff: milliseconds and paired changes (negative means less time).
+t2 first: baseline 20.559, head1 16.734, head2 16.866, head32 20.430, hybrid 21.873; head1/base -18.09% [-22.17,-16.03], head1/head2 -0.03% [-1.71,+0.35].
+t2 warm: baseline 7.452, head1 6.218, head2 6.227, head32 7.481, hybrid 8.370; head1/base -16.00% [-17.26,-15.19], head1/head2 +0.45% [-0.84,+0.78].
+t4 first: baseline 18.765, head1 8.595, head2 9.314, head32 18.254, hybrid 20.670; head1/base -54.64% [-57.46,-53.12], head1/head2 -7.60% [-8.78,-5.09].
+t4 warm: baseline 7.448, head1 3.255, head2 3.449, head32 7.438, hybrid 8.008; head1/base -56.39% [-57.48,-55.84], head1/head2 -5.87% [-6.66,-5.15].
+t8 first: baseline 19.701, head1 8.370, head2 10.801, head32 19.474, hybrid 21.437; head1/base -57.51% [-63.29,-52.09], head1/head2 -22.51% [-41.27,-10.06].
+t8 warm: baseline 7.567, head1 2.721, head2 3.533, head32 7.555, hybrid 7.992; head1/base -64.24% [-64.35,-63.43], head1/head2 -22.99% [-25.55,-21.03].
+
+Large complete calls:
+phases-meissel-1000000000000-t1-L1over1 first: baseline 85.789, head1 86.795, head32 84.895, hybrid 56.211; head1/base +0.05% [-1.37,+3.52]; hybrid/base -34.35% [-34.68,-33.86].
+phases-meissel-1000000000000-t1-L1over1 warm: baseline 37.466, head1 38.132, head32 37.402, hybrid 29.023; head1/base +1.47% [+0.09,+2.09]; hybrid/base -22.97% [-23.52,-22.30].
+phases-meissel-1000000000000-t8-L1over1 first: baseline 23.473, head1 23.950, head32 23.783, hybrid 17.634; head1/base +1.55% [-0.23,+2.88]; hybrid/base -25.27% [-27.42,-23.29].
+phases-meissel-1000000000000-t8-L1over1 warm: baseline 12.421, head1 12.581, head32 12.441, hybrid 10.423; head1/base +0.35% [-0.31,+2.92]; hybrid/base -16.09% [-21.89,-15.57].
+phases-lehmer-1000000000000-t1-L1over1 first: baseline 88.978, head1 88.545, head32 88.227, hybrid 58.502; head1/base -0.49% [-27.80,+2.52]; hybrid/base -33.74% [-50.89,-32.56].
+phases-lehmer-1000000000000-t1-L1over1 warm: baseline 40.148, head1 40.120, head32 40.283, hybrid 31.220; head1/base -0.86% [-1.85,+0.48]; hybrid/base -22.94% [-23.73,-22.03].
+phases-lehmer-1000000000000-t8-L1over1 first: baseline 22.566, head1 22.511, head32 22.486, hybrid 16.729; head1/base -1.25% [-2.99,-0.24]; hybrid/base -26.90% [-28.61,-25.73].
+phases-lehmer-1000000000000-t8-L1over1 warm: baseline 11.807, head1 11.700, head32 11.740, hybrid 9.981; head1/base -0.54% [-2.89,+1.32]; hybrid/base -15.53% [-18.04,-14.43].
+phases-meissel-100000000000000-t1-L1over1 first: baseline 2484.111, head1 2479.640, head32 2509.099, hybrid 1547.838; head1/base -0.49% [-1.54,+1.24]; hybrid/base -37.37% [-39.60,-36.30].
+phases-meissel-100000000000000-t1-L1over1 warm: baseline 2267.169, head1 2265.008, head32 2259.510, hybrid 1356.005; head1/base -0.30% [-1.10,+0.26]; hybrid/base -39.97% [-41.41,-39.90].
+phases-meissel-100000000000000-t8-L1over1 first: baseline 597.543, head1 664.108, head32 644.928, hybrid 397.378; head1/base +12.06% [+3.42,+21.14]; hybrid/base -33.50% [-40.19,-24.91].
+phases-meissel-100000000000000-t8-L1over1 warm: baseline 567.939, head1 615.219, head32 617.936, hybrid 358.315; head1/base +11.23% [+1.65,+12.44]; hybrid/base -36.91% [-43.00,-31.66].
+phases-lehmer-100000000000000-t1-L1over1 first: baseline 2560.722, head1 2524.004, head32 2516.641, hybrid 1615.363; head1/base +0.24% [-1.43,+3.16]; hybrid/base -37.17% [-37.22,-28.14].
+phases-lehmer-100000000000000-t1-L1over1 warm: baseline 2316.818, head1 2313.883, head32 2302.074, hybrid 1395.105; head1/base +0.24% [-0.13,+1.14]; hybrid/base -39.82% [-40.01,-33.31].
+phases-lehmer-100000000000000-t8-L1over1 first: baseline 665.712, head1 666.763, head32 649.931, hybrid 417.967; head1/base -0.83% [-4.24,+0.56]; hybrid/base -37.09% [-39.97,-37.04].
+phases-lehmer-100000000000000-t8-L1over1 warm: baseline 611.714, head1 609.092, head32 598.988, hybrid 368.015; head1/base -0.43% [-12.65,+0.31]; hybrid/base -39.20% [-47.40,-39.12].
+
+Observed regressions remain material:
+Isolated Lehmer at1e10 requested8(actual4), first head1/base +8.50% allfiveblocks; head1/head32 +6.03% allfive. These are1.165ms baseline,1.261ms head1,1.183ms head32. Warm difference vshead32 is small/mixed.
+Complete Meissel1e14,t8: head1 warm+11.23% vsbaseline(allthree), but head32+8.80% and head1/head32+2.23% mixed. Both Phi andP2phase durations increase. Firsthead1P2phase vshead32+9.30% allthreeblocks; wholefirst vshead32mixed. This needs furtherisolation beforeunconditionalpromotion.
+At1thread queueisbypassed; observed serialhead1/head2 first case medians stay roughlywithin3%,warm within2%, with someall-block small differences. These differences cannot establishqueuebenefit.

@@ -1,0 +1,11 @@
+{
+  "checks_each_sanitizer": 93653,
+  "sanitizers": [
+    "address,undefined",
+    "thread"
+  ],
+  "compiler_warnings": 0,
+  "generator_mutation_rejections": 3,
+  "overwrite_rejection_preserves_files": true,
+  "counters_are_diagnostic_not_timing": true
+}

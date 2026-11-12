@@ -1,0 +1,20 @@
+{
+  "purpose": "harness correctness and schema checks; no benchmark measurements",
+  "source_sha256": {
+    "selector_v3_profile.cpp": "03d7cc03376facb83924562878a21155b2bb0b35564a107dfd071584acdc8585",
+    "selector_v3_cases.h": "3a5f3a9ae4c1adb0b85b53bf9657b119bbd428b7076f0e200e6ab502b12610b5",
+    "P2Selector.h": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+    "P2SelectorV2.h": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+    "P2SelectorV3.h": "b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931",
+    "P2Hybrid.cpp": "8be6319d634edce0032d1afd41496c2c05c3fb2f0dc2ecc86ea97c47495fce82",
+    "hybrid_metrics.h": "1dccf2262a0b095079c747ad59a431083931b7f47ab73dce43c12942105fb23b",
+    "options-check.cpp": "c79bd640494e8c060c5cb6bd3d7a7ea6a41a2b4b11030a6831221cc5b984132e"
+  },
+  "reused_objects": {
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-5kevyr5k/timing-build/Phi.o": "76bc4050843db58ce16a3a89c2a1be05c8b5181ba7ac2f01e99f8adfc89eb340",
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-5kevyr5k/timing-build/PhiParallel.o": "20a9fcc7ce9ae67356873dea11085063ad3b03ab9294d53ea7695f8476897f90",
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-5kevyr5k/timing-build/P3.o": "d27ebbb840451a7cd8f55ce4f0273fd690718668dd55f6a76338d71e19c71fff",
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-selector-5kevyr5k/timing-build/Eratosthenes.o": "c51a40fe3fab1ee7b13338e980bbfd6e42bfe9a84c8c1004e6fe550e3396639e"
+  },
+  "reused_sources_and_all_headers_identical": true
+}

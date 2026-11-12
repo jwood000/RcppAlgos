@@ -1,0 +1,7 @@
+{
+  "unchanged_repeated_v2_expectations": 49,
+  "independent_complete_input_values": 9,
+  "p2_reference_label_ratio_contexts": 125,
+  "independent_dense_oracle_configurations": 30,
+  "cases": 258
+}

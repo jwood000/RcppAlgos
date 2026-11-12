@@ -1,0 +1,2620 @@
+{
+  "policy_version": "v3-frozen-before-evaluation",
+  "frozen_utc": "2026-11-07T04:06:59.416166+00:00",
+  "policy_sha256": {
+    "P2Selector.h": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+    "P2SelectorV2.h": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+    "P2SelectorV3.h": "b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931"
+  },
+  "variants": [
+    "baseline",
+    "hybrid8",
+    "hybrid16",
+    "hybrid32",
+    "hybrid64",
+    "selector-v1",
+    "selector-v2",
+    "selector-v3"
+  ],
+  "processes": 3,
+  "repeats": 4,
+  "seeds": {
+    "p2": 202611141,
+    "phases": 202611142
+  },
+  "cases": [
+    {
+      "id": "phases-meissel-30000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 30000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-lehmer-30000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 30000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-meissel-70000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-lehmer-70000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-meissel-90000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 90000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-meissel-90000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 90000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-lehmer-90000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 90000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-lehmer-90000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 90000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-meissel-50000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-meissel-50000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-lehmer-50000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-lehmer-50000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-meissel-80000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-meissel-80000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-lehmer-80000000000-t2-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-lehmer-80000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-meissel-10000000000-t1-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-meissel-10000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-lehmer-10000000000-t1-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 10000000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-lehmer-10000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-meissel-100000000000-t1-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 100000000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-meissel-100000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 100000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-lehmer-100000000000-t1-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 100000000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-lehmer-100000000000-t4-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 100000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-meissel-1000000000000-t1-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 1000000000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-meissel-1000000000000-t8-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 1000000000000,
+      "threads": 8,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-lehmer-1000000000000-t1-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 1000000000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-lehmer-1000000000000-t8-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 1000000000000,
+      "threads": 8,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "phases-meissel-100000000000000-t8-L1",
+      "mode": "phases",
+      "cutoff": "meissel",
+      "x": 100000000000000,
+      "threads": 8,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "phases-lehmer-100000000000000-t8-L1",
+      "mode": "phases",
+      "cutoff": "lehmer",
+      "x": 100000000000000,
+      "threads": 8,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-10000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-10000000000-t2-L9over8",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L9over8",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t2-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t2-L7over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L7over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-10000000000-t2-L3",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-10000000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-10000000000-t8-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 10000000000,
+      "threads": 8,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-meissel-10000000000-t2-L9over8",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L9over8",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t2-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t2-L7over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L7over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-meissel-10000000000-t2-L3",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-10000000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-meissel-10000000000-t8-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 10000000000,
+      "threads": 8,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-70000000000-t2-L9over8",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t4-L9over8",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t2-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t2-L7over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t4-L7over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-70000000000-t2-L3",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-70000000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-70000000000-t8-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 70000000000,
+      "threads": 8,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-meissel-70000000000-t2-L9over8",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t4-L9over8",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t2-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t2-L7over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t4-L7over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-meissel-70000000000-t2-L3",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-70000000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-meissel-70000000000-t8-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 70000000000,
+      "threads": 8,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t2-L9over8",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t4-L9over8",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t2-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t2-L7over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t4-L7over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t2-L3",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-50000000000-t8-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 50000000000,
+      "threads": 8,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t2-L9over8",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t4-L9over8",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t2-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t2-L7over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t4-L7over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t2-L3",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-50000000000-t8-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 50000000000,
+      "threads": 8,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t2-L9over8",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t4-L9over8",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t2-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t2-L7over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t4-L7over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t2-L3",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-80000000000-t8-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 80000000000,
+      "threads": 8,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t2-L9over8",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t4-L9over8",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 9,
+      "table_denominator": 8,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t2-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t2-L7over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t4-L7over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 7,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t2-L3",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-80000000000-t8-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 80000000000,
+      "threads": 8,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-50000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-50000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-50000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-50000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-50000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-50000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-50000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-50000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 50000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-80000000000-t2-L1",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-80000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-80000000000-t2-L6over5",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-80000000000-t4-L6over5",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 6,
+      "table_denominator": 5,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-80000000000-t2-L3over2",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-80000000000-t4-L3over2",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 2,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-80000000000-t2-L2",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 2,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-lehmer-80000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "lehmer",
+      "x": 80000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2-3000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail2",
+      "x": 3000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-tail2-3000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail2",
+      "x": 3000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2048-3000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail2048",
+      "x": 3000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-tail2048-3000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail2048",
+      "x": 3000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail4095-3000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail4095",
+      "x": 3000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail4095-3000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail4095",
+      "x": 3000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-quarter-root-3000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "quarter-root",
+      "x": 3000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-quarter-root-3000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "quarter-root",
+      "x": 3000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2-10000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail2",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2-10000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail2",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2048-10000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail2048",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2048-10000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail2048",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail4095-10000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail4095",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-tail4095-10000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail4095",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-quarter-root-10000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "quarter-root",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-quarter-root-10000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "quarter-root",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2-70000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail2",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-tail2-70000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail2",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2048-70000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail2048",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-tail2048-70000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail2048",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail4095-70000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail4095",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail4095-70000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail4095",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-quarter-root-70000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "quarter-root",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-quarter-root-70000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "quarter-root",
+      "x": 70000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-tail2-30000000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail2",
+      "x": 30000000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2-30000000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail2",
+      "x": 30000000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2048-30000000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail2048",
+      "x": 30000000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail2048-30000000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail2048",
+      "x": 30000000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-tail4095-30000000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "tail4095",
+      "x": 30000000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-tail4095-30000000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "tail4095",
+      "x": 30000000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-quarter-root-30000000000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "quarter-root",
+      "x": 30000000000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-quarter-root-30000000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "quarter-root",
+      "x": 30000000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-99999999999-t4-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 99999999999,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-99999999999-t4-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 99999999999,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-100000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 100000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-100000000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 100000000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-last-10000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "last",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-empty-10000000000-t4-L3",
+      "mode": "p2",
+      "cutoff": "empty",
+      "x": 10000000000,
+      "threads": 4,
+      "table_multiplier": 3,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-100000000-t1-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-100000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-zero-100000000-t1-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-100000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-100000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-zero-100000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "zero",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-100000000-t1-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-meissel-100000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-meissel-100000000-t1-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-100000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-100000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-meissel-100000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "meissel",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-half-root-100000000-t1-L1",
+      "mode": "p2",
+      "cutoff": "half-root",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-half-root-100000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "half-root",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-half-root-100000000-t1-L5over4",
+      "mode": "p2",
+      "cutoff": "half-root",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-half-root-100000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "half-root",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-half-root-100000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "half-root",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-half-root-100000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "half-root",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-last-100000000-t1-L1",
+      "mode": "p2",
+      "cutoff": "last",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-last-100000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "last",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-last-100000000-t1-L5over4",
+      "mode": "p2",
+      "cutoff": "last",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-last-100000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "last",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-last-100000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "last",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-last-100000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "last",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-empty-100000000-t1-L1",
+      "mode": "p2",
+      "cutoff": "empty",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-empty-100000000-t4-L1",
+      "mode": "p2",
+      "cutoff": "empty",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 1,
+      "table_denominator": 1,
+      "cohort": "regression"
+    },
+    {
+      "id": "p2-empty-100000000-t1-L5over4",
+      "mode": "p2",
+      "cutoff": "empty",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-empty-100000000-t4-L5over4",
+      "mode": "p2",
+      "cutoff": "empty",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 5,
+      "table_denominator": 4,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-empty-100000000-t1-L2",
+      "mode": "p2",
+      "cutoff": "empty",
+      "x": 100000000,
+      "threads": 1,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    },
+    {
+      "id": "p2-empty-100000000-t4-L2",
+      "mode": "p2",
+      "cutoff": "empty",
+      "x": 100000000,
+      "threads": 4,
+      "table_multiplier": 2,
+      "table_denominator": 1,
+      "cohort": "new-evaluation"
+    }
+  ],
+  "cohort_definition": "regression repeats an exact v2 labeled configuration; new-evaluation adds input/cutoff/thread/table combinations. Labels or ratios may coincide numerically.",
+  "table_ratio_definition": "L=floor(isqrt(x)*numerator/denominator); suite table_multiplier and legacy CSV column mean numerator; explicit denominator must accompany them",
+  "analysis": {
+    "relative_p2_floor_ms": 0.01,
+    "near_best_percent": [
+      5,
+      10,
+      20
+    ],
+    "exclude_selectors_from_best_fixed": true,
+    "changed_partition_reference": "selector-v2",
+    "retune": false
+  }
+}

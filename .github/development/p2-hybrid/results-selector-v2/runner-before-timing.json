@@ -1,0 +1,13 @@
+{
+  "utc": "2026-11-07T03:28:03.649109+00:00",
+  "sha256": "c58f8e9454cdbfe42e6ada75c13b2d6b1fb380ce51202fa88983bc26c6c523c2",
+  "policy_sha256": {
+    "P2Selector.h": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+    "P2SelectorV2.h": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8"
+  },
+  "planned_matrix_order": [
+    "p2",
+    "phases"
+  ],
+  "order_rationale": "Finish isolated cases first so their analysis can proceed during longer complete calls; every timing process starts fresh."
+}

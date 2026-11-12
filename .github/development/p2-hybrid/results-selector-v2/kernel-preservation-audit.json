@@ -1,0 +1,103 @@
+{
+  "utc": "2026-11-07T03:39:00.561070+00:00",
+  "production": {
+    "files": 392,
+    "missing": [],
+    "changed": [],
+    "unmanifested_compiled_outputs": 140,
+    "unmanifested_other_files": [],
+    "compiled_outputs_modified_after_snapshot": []
+  },
+  "prior_results": {
+    "results": {
+      "expected_files": 24,
+      "current_files": 24,
+      "added": [],
+      "missing": [],
+      "changed": []
+    },
+    "results-wide": {
+      "expected_files": 18,
+      "current_files": 18,
+      "added": [],
+      "missing": [],
+      "changed": []
+    },
+    "results-extended": {
+      "expected_files": 19,
+      "current_files": 19,
+      "added": [],
+      "missing": [],
+      "changed": []
+    },
+    "results-selector": {
+      "expected_files": 29,
+      "current_files": 29,
+      "added": [],
+      "missing": [],
+      "changed": []
+    }
+  },
+  "prior_source": {
+    "files": 10,
+    "unchanged": [
+      "selector_bench.py",
+      "hybrid_metrics.h",
+      "selector_cases.h",
+      "P2Selector.h",
+      "selector_profile.cpp",
+      "selector-check.cpp",
+      "check.cpp",
+      "SELECTOR.md"
+    ],
+    "changed": [
+      "P2Hybrid.cpp",
+      "validate.py"
+    ],
+    "missing": []
+  },
+  "frozen_production_source": {
+    "files": 276,
+    "current_mismatches": []
+  },
+  "build": {
+    "inputs": 283,
+    "changed_inputs": [],
+    "binaries": 9,
+    "changed_binaries": []
+  },
+  "current_vs_built": {
+    "selector_v2_profile.cpp": true,
+    "selector_v2_cases.h": true,
+    "P2Hybrid.cpp": true,
+    "P2Selector.h": true,
+    "P2SelectorV2.h": true,
+    "hybrid_metrics.h": true
+  },
+  "policy": {
+    "P2Selector.h": {
+      "frozen": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+      "current": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+      "built": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+      "build_metadata": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6"
+    },
+    "P2SelectorV2.h": {
+      "frozen": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+      "current": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+      "built": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+      "build_metadata": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8"
+    }
+  },
+  "runner": {
+    "frozen_record": "c58f8e9454cdbfe42e6ada75c13b2d6b1fb380ce51202fa88983bc26c6c523c2",
+    "frozen_copy": "c58f8e9454cdbfe42e6ada75c13b2d6b1fb380ce51202fa88983bc26c6c523c2",
+    "current": "c58f8e9454cdbfe42e6ada75c13b2d6b1fb380ce51202fa88983bc26c6c523c2"
+  },
+  "existing_behavioral_audit_applicable": {
+    "kernel_hash_match": true,
+    "v2_header_hash_match": true,
+    "v1_header_matches_prior": true,
+    "support_header_matches_prior": true,
+    "production_matches_audited_version": true
+  }
+}

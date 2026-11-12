@@ -1,0 +1,78 @@
+{
+  "commands": [
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-DP2_HYBRID_MEMORY",
+      "-DP2_HYBRID_MULTIPLIER=2",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/inst/include",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-source",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-source/memory.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-source/P2Hybrid.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/P3.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/PhiParallel.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/Phi.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/Eratosthenes.cpp",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-2"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-DP2_HYBRID_MEMORY",
+      "-DP2_HYBRID_MULTIPLIER=4",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/inst/include",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-source",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-source/memory.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-source/P2Hybrid.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/P3.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/PhiParallel.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/Phi.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/Eratosthenes.cpp",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-4"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-DP2_HYBRID_MEMORY",
+      "-DP2_HYBRID_MULTIPLIER=8",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/inst/include",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-source",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-source/memory.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-source/P2Hybrid.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/P3.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/PhiParallel.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/Phi.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/source/src/Eratosthenes.cpp",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-hybrid-fd4j7ai5/memory-8"
+    ]
+  ],
+  "files": {
+    "memory.cpp": "4e2579dd19e8b535c674feb6668b3dd3c966df2ee892ed4cb7de58d4c5f34fb7",
+    "P2Hybrid.cpp": "6ee0adda475816564cb95022d236315a2d29e4643d7e32b53e8b40d5814f1445",
+    "hybrid_metrics.h": "1dccf2262a0b095079c747ad59a431083931b7f47ab73dce43c12942105fb23b"
+  },
+  "production_files": {
+    "P3.cpp": "31c1a2e73e85993122e11d7af0aa7635c3395c2e3936f52329f6be1db7fd26d3",
+    "PhiParallel.cpp": "afeceed0f06490bc013dbb082c036e6a18493cdcaf24c15f8d4decddc6cfb60d",
+    "Phi.cpp": "b15ba8e5422d755373cd334be9063184abc39d214cb5b212a23735adcf4a1a2b",
+    "Eratosthenes.cpp": "98904804fb7c2f79d31cb1161d4313e6c2c7e7f99089730694bfb019c67275c7"
+  }
+}

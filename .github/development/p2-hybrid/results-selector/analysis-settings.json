@@ -1,0 +1,11 @@
+{
+  "relative_summary_min_best_fixed_ms": 0.01,
+  "explanation": "Keep every raw result. Report sub-10-microsecond isolated cases mainly with absolute differences; their relative ratios are unstable.",
+  "near_best_percent_bands": [
+    5,
+    10,
+    20
+  ],
+  "comparison": "Minimum fixed median is a hindsight reference and includes Phi-only baseline; account for candidates with identical capped work.",
+  "declared_before_isolated_timing": true
+}

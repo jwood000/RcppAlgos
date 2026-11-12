@@ -1,0 +1,6 @@
+{
+  "verified_rows": 404,
+  "repeats": 2,
+  "instrumented": "selector only; separate executable, no timing",
+  "scratch": "conservative capacity payload; excludes tables/cache/stacks/ThreadBatch/allocator/RSS"
+}

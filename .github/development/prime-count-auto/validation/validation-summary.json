@@ -1,0 +1,19 @@
+{
+  "changed_existing_files": [
+    ".github/development/prime-count-dispatch-check.R",
+    ".github/development/testing.md",
+    "man/primeCount.Rd",
+    "src/PrimeCount.cpp",
+    "tests/testthat/testPrimeCount.R"
+  ],
+  "unchanged_existing_files": 1411,
+  "index_unchanged": true,
+  "package_snapshot_matches_live": true,
+  "adapter_sha256": "b43945058d577eca9a4ba3b097f6ae90465b09a5829174a119e27a64d5080656",
+  "p2_sha256": "b6553ed680d2445c1230d0b1f5e9522646a1f40643706c33a55b0bade50e2a8b",
+  "r_expectations": 867,
+  "r_files": 11,
+  "sentinel_checks": 253,
+  "package_build_warnings": 0,
+  "cxx11_preexisting_dependency_warnings": 9
+}

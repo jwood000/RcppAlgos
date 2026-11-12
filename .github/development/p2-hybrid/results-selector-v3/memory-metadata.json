@@ -1,0 +1,6 @@
+{
+  "verified_rows": 1548,
+  "repeats": 2,
+  "instrumented": "v1, v2 and v3; separate executables, no timing",
+  "scratch": "conservative capacity payload; excludes tables/cache/stacks/ThreadBatch/allocator/RSS"
+}

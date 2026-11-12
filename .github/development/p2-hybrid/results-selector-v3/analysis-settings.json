@@ -1,0 +1,40 @@
+{
+  "frozen_utc": "2026-11-07T04:11:37.440275+00:00",
+  "preserve_all_samples": true,
+  "isolated_relative_summary_min_best_fixed_median_ms": 0.01,
+  "near_best_percent": [
+    5,
+    10,
+    20
+  ],
+  "best_fixed_pool": [
+    "baseline",
+    "hybrid8",
+    "hybrid16",
+    "hybrid32",
+    "hybrid64"
+  ],
+  "groups": [
+    "all",
+    "regression",
+    "new-evaluation",
+    "changed-partition-vs-v2",
+    "same-partition-vs-v2"
+  ],
+  "comparisons": [
+    "v3-vs-v1",
+    "v3-vs-v2",
+    "all-selectors-vs-production",
+    "all-selectors-vs-best-fixed",
+    "each-selector-vs-own-chosen-fixed"
+  ],
+  "report_focus": [
+    "four-v2-doubled-table-regressions",
+    "new-rational-tables-near-density-threshold",
+    "preserve-v2-complete-call-gains",
+    "first-warm-tradeoffs"
+  ],
+  "ratio_key": "numeric x,a for count invariance; x,a,L for actual partition context; explicit numerator/denominator for trial identity",
+  "small_cases": "absolute paired differences; relative aggregates only above declared fixed-control floor",
+  "retune": false
+}

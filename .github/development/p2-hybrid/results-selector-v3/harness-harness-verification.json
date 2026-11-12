@@ -1,0 +1,679 @@
+{
+  "checked_rows": 2870,
+  "trace_checks": 2582,
+  "invalid_cases": 14,
+  "invalid_details": [
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "10000",
+        "1",
+        "1",
+        "0",
+        "0",
+        "1"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "10000",
+        "1",
+        "1",
+        "0",
+        "1",
+        "0"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "10000",
+        "1",
+        "1",
+        "0",
+        "1",
+        "2"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "10000",
+        "1",
+        "1",
+        "0",
+        "-1",
+        "1"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "10000",
+        "1",
+        "1",
+        "0",
+        "3",
+        "-1"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "10000",
+        "1",
+        "1",
+        "0",
+        "2147483648",
+        "1"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "9007199254740991",
+        "1",
+        "1",
+        "0",
+        "3",
+        "2"
+      ],
+      "error": "table ratio exceeds the prepared-table limit"
+    },
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "9007199254740992",
+        "1",
+        "1",
+        "0",
+        "1",
+        "1"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "phases",
+        "meissel",
+        "10000",
+        "1",
+        "1",
+        "1229",
+        "5",
+        "4"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "10000",
+        "1",
+        "1",
+        "-1",
+        "1",
+        "1"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "oracle",
+        "meissel",
+        "100000001",
+        "1",
+        "1",
+        "-1",
+        "1",
+        "1"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "p2",
+        "bad-cutoff",
+        "10000",
+        "1",
+        "1",
+        "0",
+        "1",
+        "1"
+      ],
+      "error": "invalid selector profile arguments"
+    },
+    {
+      "arguments": [
+        "p2",
+        "meissel",
+        "10000",
+        "1",
+        "1",
+        "0",
+        "1x",
+        "1"
+      ],
+      "error": "invalid integer: 1x"
+    },
+    {
+      "arguments": [
+        "v3 reference mode"
+      ],
+      "error": "reference mode requires a production baseline build"
+    }
+  ],
+  "options_without_allocation": [
+    {
+      "x": 121,
+      "numerator": 1,
+      "denominator": 1,
+      "limit": 11
+    },
+    {
+      "x": 121,
+      "numerator": 9,
+      "denominator": 8,
+      "limit": 12
+    },
+    {
+      "x": 121,
+      "numerator": 6,
+      "denominator": 5,
+      "limit": 13
+    },
+    {
+      "x": 121,
+      "numerator": 5,
+      "denominator": 4,
+      "limit": 13
+    },
+    {
+      "x": 121,
+      "numerator": 3,
+      "denominator": 2,
+      "limit": 16
+    },
+    {
+      "x": 121,
+      "numerator": 7,
+      "denominator": 4,
+      "limit": 19
+    },
+    {
+      "x": 121,
+      "numerator": 2,
+      "denominator": 1,
+      "limit": 22
+    },
+    {
+      "x": 121,
+      "numerator": 3,
+      "denominator": 1,
+      "limit": 33
+    },
+    {
+      "x": 9007199254740991,
+      "numerator": 1,
+      "denominator": 1,
+      "limit": 94906265
+    },
+    {
+      "x": 9007199254740991,
+      "numerator": 2147483647,
+      "denominator": 2147483647,
+      "limit": 94906265
+    },
+    {
+      "x": 9007199254740991,
+      "numerator": 2147483647,
+      "denominator": 2147483646,
+      "limit": 94906265
+    },
+    {
+      "x": 10000,
+      "numerator": 3,
+      "denominator": 2,
+      "limit": 150
+    }
+  ],
+  "labels": [
+    "meissel",
+    "lehmer",
+    "zero",
+    "one",
+    "half-meissel",
+    "double-meissel",
+    "half-root",
+    "near-root",
+    "last",
+    "empty",
+    "tail4095",
+    "tail4096",
+    "quarter-root",
+    "three-quarter-root",
+    "tail2",
+    "tail4",
+    "tail8",
+    "tail16",
+    "tail31",
+    "tail64",
+    "tail256",
+    "tail1024",
+    "tail2048",
+    "tail4094",
+    "tail4097",
+    "tail8192"
+  ],
+  "ratios": [
+    {
+      "numerator": 1,
+      "denominator": 1
+    },
+    {
+      "numerator": 9,
+      "denominator": 8
+    },
+    {
+      "numerator": 6,
+      "denominator": 5
+    },
+    {
+      "numerator": 5,
+      "denominator": 4
+    },
+    {
+      "numerator": 3,
+      "denominator": 2
+    },
+    {
+      "numerator": 7,
+      "denominator": 4
+    },
+    {
+      "numerator": 2,
+      "denominator": 1
+    },
+    {
+      "numerator": 3,
+      "denominator": 1
+    }
+  ],
+  "independent_factor_inputs": [
+    30,
+    121,
+    10000
+  ],
+  "differential_large_contexts": 29,
+  "complete_formula_rows": 16,
+  "schema_fields": 98,
+  "old_first96_fields_preserved": true,
+  "source": "Independent Python trial factor multiplicities, bounded C++ dense-pi oracle; larger cases production P2 differential only",
+  "candidate_oracle": "Python prime sieve and linear quotient partition; v3 density tested by exact multiplication",
+  "density_cases": [
+    {
+      "x": "10000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "1",
+      "table_denominator": "1",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "8780",
+      "candidate_stream_span": "1498210",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "10000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "9",
+      "table_denominator": "8",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "7879",
+      "candidate_stream_span": "1687032",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "10000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "6",
+      "table_denominator": "5",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "7442",
+      "candidate_stream_span": "1799754",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "3"
+    },
+    {
+      "x": "10000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "5",
+      "table_denominator": "4",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "7168",
+      "candidate_stream_span": "1873800",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "3"
+    },
+    {
+      "x": "10000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "3",
+      "table_denominator": "2",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "6072",
+      "candidate_stream_span": "2244062",
+      "candidate_stream_worker_budget": "2",
+      "phi_worker_budget": "3"
+    },
+    {
+      "x": "10000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "7",
+      "table_denominator": "4",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "5294",
+      "candidate_stream_span": "2617516",
+      "candidate_stream_worker_budget": "2",
+      "phi_worker_budget": "2"
+    },
+    {
+      "x": "10000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "2",
+      "table_denominator": "1",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "4688",
+      "candidate_stream_span": "2987759",
+      "candidate_stream_worker_budget": "2",
+      "phi_worker_budget": "2"
+    },
+    {
+      "x": "10000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "3",
+      "table_denominator": "1",
+      "selection_reason": "too-few-queries",
+      "candidate_stream_queries": "2996",
+      "candidate_stream_span": "2094062",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "1"
+    },
+    {
+      "x": "10000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "1",
+      "table_denominator": "1",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "8780",
+      "candidate_stream_span": "1498210",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "10000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "9",
+      "table_denominator": "8",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "7879",
+      "candidate_stream_span": "1687032",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "10000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "6",
+      "table_denominator": "5",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "7442",
+      "candidate_stream_span": "1799754",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "3"
+    },
+    {
+      "x": "10000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "5",
+      "table_denominator": "4",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "7168",
+      "candidate_stream_span": "1873800",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "3"
+    },
+    {
+      "x": "10000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "3",
+      "table_denominator": "2",
+      "selection_reason": "stream-worker-deficit",
+      "candidate_stream_queries": "6072",
+      "candidate_stream_span": "2244062",
+      "candidate_stream_worker_budget": "2",
+      "phi_worker_budget": "3"
+    },
+    {
+      "x": "10000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "7",
+      "table_denominator": "4",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "5294",
+      "candidate_stream_span": "2617516",
+      "candidate_stream_worker_budget": "2",
+      "phi_worker_budget": "2"
+    },
+    {
+      "x": "10000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "2",
+      "table_denominator": "1",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "4688",
+      "candidate_stream_span": "2987759",
+      "candidate_stream_worker_budget": "2",
+      "phi_worker_budget": "2"
+    },
+    {
+      "x": "10000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "3",
+      "table_denominator": "1",
+      "selection_reason": "too-few-queries",
+      "candidate_stream_queries": "2996",
+      "candidate_stream_span": "2094062",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "1"
+    },
+    {
+      "x": "70000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "5",
+      "table_denominator": "4",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "17374",
+      "candidate_stream_span": "4960687",
+      "candidate_stream_worker_budget": "4",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "70000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "3",
+      "table_denominator": "2",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "14693",
+      "candidate_stream_span": "5951192",
+      "candidate_stream_worker_budget": "4",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "70000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "2",
+      "table_denominator": "1",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "11314",
+      "candidate_stream_span": "7936202",
+      "candidate_stream_worker_budget": "4",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "70000000000",
+      "method": "zero",
+      "threads": "4",
+      "table_numerator": "3",
+      "table_denominator": "1",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "7827",
+      "candidate_stream_span": "11889732",
+      "candidate_stream_worker_budget": "4",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "70000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "5",
+      "table_denominator": "4",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "17374",
+      "candidate_stream_span": "4960687",
+      "candidate_stream_worker_budget": "4",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "70000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "3",
+      "table_denominator": "2",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "14693",
+      "candidate_stream_span": "5951192",
+      "candidate_stream_worker_budget": "4",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "70000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "2",
+      "table_denominator": "1",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "11314",
+      "candidate_stream_span": "7936202",
+      "candidate_stream_worker_budget": "4",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "70000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "3",
+      "table_denominator": "1",
+      "selection_reason": "stream-too-sparse",
+      "candidate_stream_queries": "7827",
+      "candidate_stream_span": "11889732",
+      "candidate_stream_worker_budget": "4",
+      "phi_worker_budget": "3"
+    },
+    {
+      "x": "30000000000",
+      "method": "meissel",
+      "threads": "2",
+      "table_numerator": "1",
+      "table_denominator": "1",
+      "selection_reason": "parallel-coverage",
+      "candidate_stream_queries": "14454",
+      "candidate_stream_span": "2596622",
+      "candidate_stream_worker_budget": "2",
+      "phi_worker_budget": "2"
+    },
+    {
+      "x": "10000000000",
+      "method": "meissel",
+      "threads": "1",
+      "table_numerator": "2",
+      "table_denominator": "1",
+      "selection_reason": "range-8",
+      "candidate_stream_queries": "4321",
+      "candidate_stream_span": "1398210",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "1"
+    },
+    {
+      "x": "100000000000",
+      "method": "meissel",
+      "threads": "4",
+      "table_numerator": "2",
+      "table_denominator": "1",
+      "selection_reason": "range-16",
+      "candidate_stream_queries": "13311",
+      "candidate_stream_span": "9485931",
+      "candidate_stream_worker_budget": "4",
+      "phi_worker_budget": "4"
+    },
+    {
+      "x": "3000000000",
+      "method": "tail2048",
+      "threads": "4",
+      "table_numerator": "1",
+      "table_denominator": "1",
+      "selection_reason": "short-full-range",
+      "candidate_stream_queries": "2048",
+      "candidate_stream_span": "36499",
+      "candidate_stream_worker_budget": "1",
+      "phi_worker_budget": "1"
+    },
+    {
+      "x": "10000000000",
+      "method": "last",
+      "threads": "-2",
+      "table_numerator": "1",
+      "table_denominator": "1",
+      "selection_reason": "at-most-one-query",
+      "candidate_stream_queries": "0",
+      "candidate_stream_span": "0",
+      "candidate_stream_worker_budget": "0",
+      "phi_worker_budget": "1"
+    }
+  ]
+}

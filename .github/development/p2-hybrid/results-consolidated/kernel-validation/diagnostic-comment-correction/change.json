@@ -1,0 +1,9 @@
+{
+  "reason": "Clarify that diagnostic choice reconstruction is outside timers; actual dispatch is timed.",
+  "changed_outputs": [
+    "selector_profile.cpp",
+    "generation.json"
+  ],
+  "all_compiled_kernels_byte_identical": true,
+  "original_generator_and_metadata": "diagnostic-comment-correction/before/"
+}

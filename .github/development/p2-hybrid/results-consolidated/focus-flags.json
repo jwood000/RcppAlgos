@@ -1,0 +1,32 @@
+[
+  {
+    "cohort": "focus",
+    "case_id": "p2-lehmer-10000000000-t8-L1over1",
+    "mode": "p2",
+    "cutoff": "lehmer",
+    "x": 10000000000,
+    "threads": 8,
+    "numerator": 1,
+    "denominator": 1,
+    "left": "candidate",
+    "right": "baseline",
+    "cache_state": "first",
+    "field": "p2_ms",
+    "blocks": 5,
+    "left_median_ms": 1.245666,
+    "right_median_ms": 1.16025,
+    "delta_median_ms": 0.07891599999999999,
+    "delta_min_ms": 0.013333999999999957,
+    "delta_max_ms": 0.1308339999999999,
+    "percent_median": 6.763745446753799,
+    "percent_min": 1.0328763600365054,
+    "percent_max": 11.476253924200952,
+    "percent_pairs": 5,
+    "improved_blocks": 0,
+    "regressed_blocks": 5,
+    "all_improve": false,
+    "all_regress": true,
+    "absolute_allowance_ms": 0.05,
+    "classification": "material-regression"
+  }
+]

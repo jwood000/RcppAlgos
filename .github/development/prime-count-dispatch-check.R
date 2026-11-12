@@ -109,24 +109,44 @@ main <- function() {
         checks <<- checks + 1L
     }
 
-    # Expected dispatch table: tiny auto lookup, auto sieve, auto Legendre;
-    # every explicit choice selects its native driver, even for n == 1.
+    # Expected automatic dispatch: retain tiny lookup/sieve, then select from
+    # the input and usable thread budget. Sentinels distinguish actual driver
+    # selection even though the mathematical algorithms return equal counts.
     tiny <- c(0L, 1L, 2L, 2L, 3L, 3L, 4L, 4L, 4L)
     for (n in seq_along(tiny)) {
         check(call("primeCount", n), 0, expected = tiny[[n]])
     }
     for (n in c(10, 99999)) check(call("primeCount", n), 1, n)
-    for (n in c(100000, 100001, 1e10)) {
-        check(call("primeCount", n), 2, n, 1, 3)
-        check(call("primeCount", n, 2L, "auto"), 2, n, 2, 3)
+    inputs <- c(100000, 100001, 1e10 - 1, 1e10, 1e10 + 1,
+                1e12 - 1, 1e12, 1e12 + 1, 2^53 - 1)
+    serial <- c(2, 2, 2, 3, 3, 3, 3, 3, 3)
+    parallel <- c(2, 2, 2, 3, 3, 3, 3, 3, 3)
+    for (i in seq_along(inputs)) {
+        n <- inputs[[i]]
+        check(call("primeCount", n), serial[[i]], n, 1, 3)
+        check(call("primeCount", n, 1L, "auto"), serial[[i]], n, 1, 3)
+        check(call("primeCount", n, 2L, "auto"), parallel[[i]], n, 2, 3)
     }
+    sandbox$pkgEnv$maxThreads <- 8L
+    inputs <- c(1e12 - 1, 1e12, 1e12 + 1, 2^53 - 1)
+    sixThreads <- c(3, 4, 4, 4)
+    for (i in seq_along(inputs)) {
+        n <- inputs[[i]]
+        check(call("primeCount", n, 5L, "auto"), 3, n, 5, 8)
+        check(call("primeCount", n, 6L, "auto"), sixThreads[[i]], n, 6, 8)
+        check(call("primeCount", n, 8L, "auto"), sixThreads[[i]], n, 8, 8)
+    }
+    sandbox$pkgEnv$maxThreads <- 3L
+
+    # Explicit methods retain their native driver for every input, including
+    # small inputs and both sides of the automatic method boundaries.
     ids <- c(legendre = 2, meissel = 3, lehmer = 4)
     for (method in names(ids)) {
         for (n in c(1, 9, 10, 99999)) {
             check(call("primeCount", n, NULL, method), ids[[method]], n, 1, 3)
             check(call("primeCount", n, "ignored", method), ids[[method]], n, 1, 3)
         }
-        for (n in c(100000, 1e10)) {
+        for (n in c(100000, 1e10 - 1, 1e10, 1e12 - 1, 1e12, 2^53 - 1)) {
             check(call("primeCount", n, NULL, method), ids[[method]], n, 1, 3)
             check(call("primeCount", n, 1000L, method), ids[[method]], n, 1000, 3)
         }
@@ -138,14 +158,53 @@ main <- function() {
           4, 100000, 4, 3)
     sandbox$pkgEnv$maxThreads <- 7L
     check(quote(primeCount(100000, 100L, "meissel")), 3, 100000, 100, 7)
+
+    # Selection uses the usable budget; drivers still receive the original
+    # request and cap separately. NULL remains a request for one thread.
+    sandbox$pkgEnv$maxThreads <- 1L
+    check(quote(primeCount(1e12, 8L)), 3, 1e12, 8, 1)
+    check(quote(primeCount(2^53 - 1, .Machine$integer.max)),
+          3, 2^53 - 1, .Machine$integer.max, 1)
+    check(quote(primeCount(1e12, NULL)), 3, 1e12, 1, 1)
+    sandbox$pkgEnv$maxThreads <- 2L
+    check(quote(primeCount(1e12, 1L)), 3, 1e12, 1, 2)
+    check(quote(primeCount(1e12, 2L)), 3, 1e12, 2, 2)
+    check(quote(primeCount(1e12, .Machine$integer.max)),
+          3, 1e12, .Machine$integer.max, 2)
+    check(quote(primeCount(1e12 - 1, .Machine$integer.max)),
+          3, 1e12 - 1, .Machine$integer.max, 2)
+    check(quote(primeCount(1e12, NULL)), 3, 1e12, 1, 2)
+    sandbox$pkgEnv$maxThreads <- 5L
+    check(quote(primeCount(1e12, .Machine$integer.max)),
+          3, 1e12, .Machine$integer.max, 5)
+    check(quote(primeCount(2^53 - 1, 6L)), 3, 2^53 - 1, 6, 5)
+    sandbox$pkgEnv$maxThreads <- 6L
+    check(quote(primeCount(1e12, 5L)), 3, 1e12, 5, 6)
+    check(quote(primeCount(1e12, 6L)), 4, 1e12, 6, 6)
+    check(quote(primeCount(1e12, .Machine$integer.max)),
+          4, 1e12, .Machine$integer.max, 6)
+    check(quote(primeCount(1e12 - 1, 6L)), 3, 1e12 - 1, 6, 6)
+    check(quote(primeCount(1e12, NULL)), 3, 1e12, 1, 6)
+    check(quote(primeCount(1e12, 6L, NULL)), 4, 1e12, 6, 6)
+    check(quote(primeCount(1e12, 6L, "a")), 4, 1e12, 6, 6)
+    check(quote(primeCount(1e12, 6L, "leg")), 2, 1e12, 6, 6)
+    check(quote(primeCount(1e12, 6L, "m")), 3, 1e12, 6, 6)
+    check(quote(primeCount(1e12, 6L, "leh")), 4, 1e12, 6, 6)
     sandbox$pkgEnv$maxThreads <- 3L
+    check(quote(primeCount(1e12, 2L, NULL)), 3, 1e12, 2, 3)
+    check(quote(primeCount(1e12, 2L, "a")), 3, 1e12, 2, 3)
+    check(quote(primeCount(1e12, 2L, "leg")), 2, 1e12, 2, 3)
+    check(quote(primeCount(1e12, 2L, "m")), 3, 1e12, 2, 3)
+    check(quote(primeCount(1e12, 2L, "leh")), 4, 1e12, 2, 3)
 
     for (method in c("auto", names(ids))) {
         for (n in list(0, -1, 1.5, NA_real_, NaN, Inf, 2^53, "10", c(1, 2))) {
             check_error(sandbox$primeCount(n, method = method))
         }
-        for (threads in list(0, -1, 1.5, NA_real_, Inf, "2", c(1L, 2L))) {
-            check_error(sandbox$primeCount(100000, threads, method))
+        for (n in c(100000, 1e12)) {
+            for (threads in list(0, -1, 1.5, NA_real_, Inf, "2", c(1L, 2L))) {
+                check_error(sandbox$primeCount(n, threads, method))
+            }
         }
         for (value in c(.Machine$integer.max, .Machine$integer.max + 1)) {
             reset(value)
@@ -160,6 +219,8 @@ main <- function() {
     }
     check_error(compiled$PrimeCountCpp(100000, NULL, 3L, "unknown"),
                 "Unknown prime-counting method")
+    check_error(compiled$PrimeCountCpp(1e12, "invalid", 3L, "unknown"),
+                "Unknown prime-counting method")
 
     # This checks cpp11 translation on the calling thread only. There are no
     # worker threads in the sentinel fixture and no worker-safety claim here.
@@ -170,6 +231,21 @@ main <- function() {
               identical(as.numeric(compiled$dispatch_trace()), c(4, 100000, 1, 3, 1)))
     checks <- checks + 1L
     check(quote(primeCount(100000, method = "lehmer")), 4, 100000, 1, 3)
+    sandbox$pkgEnv$maxThreads <- 6L
+    for (i in 1:2) {
+        n <- c(1e10, 1e12)[[i]]
+        threads <- c(1L, 6L)[[i]]
+        method <- c(3, 4)[[i]]
+        reset(fault = TRUE)
+        message <- tryCatch({ sandbox$primeCount(n, threads); NA_character_ },
+                            error = conditionMessage)
+        stopifnot(identical(message, "injected dispatch failure"),
+                  identical(as.numeric(compiled$dispatch_trace()),
+                            c(method, n, threads, 6, 1)))
+        checks <- checks + 1L
+        check(call("primeCount", n, threads), method, n, threads, 6)
+    }
+    sandbox$pkgEnv$maxThreads <- 3L
     cat(sprintf("PASS dispatch/type/validation checks=%d build_directory=%s\n", checks, build))
 }
 main()

@@ -1,0 +1,16 @@
+{
+  "p2": {
+    "rows": 21888,
+    "raw_bytes": 13077208,
+    "gzip_bytes": 598043,
+    "raw_sha256": "0e81c6c8b08a6b57846f8fd37d42494efa0960e8475a0a3b42d0b262257a4879",
+    "gzip_sha256": "629d793457ecfcfc08f8bd82dbafd6f5633f254f9545147356315e7c9fa0dcb2"
+  },
+  "phases": {
+    "rows": 2880,
+    "raw_bytes": 2005315,
+    "gzip_bytes": 118411,
+    "raw_sha256": "3a894f8c1c8398deaf57b622f04a60976abc34307864276a98b2f55730d5fce1",
+    "gzip_sha256": "ac6aec4c08ee8eb1aeead5fd787fbc95b0c3662e3d254122aa248f904b1d6f3f"
+  }
+}

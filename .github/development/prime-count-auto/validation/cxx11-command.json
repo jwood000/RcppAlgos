@@ -1,0 +1,13 @@
+[
+  "clang++",
+  "-std=c++11",
+  "-fsyntax-only",
+  "-Wall",
+  "-Wextra",
+  "-Wpedantic",
+  "-I/Users/owacasa/RcppAlgos/inst/include",
+  "-I/Library/Frameworks/R.framework/Resources/include",
+  "-I/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include",
+  "-I/opt/homebrew/include",
+  "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/package-source/src/PrimeCount.cpp"
+]

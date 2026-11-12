@@ -1,0 +1,34 @@
+{
+  "artifact_root": "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o",
+  "production_sha256": "df2bc230e0a36d72306cfe8dd1bd42986c9dad1bbfe84741be501443c6a9986d",
+  "package_install": {
+    "command": [
+      "R",
+      "CMD",
+      "INSTALL",
+      "--preclean",
+      "--no-multiarch",
+      "--library=/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/library",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o/package-source"
+    ],
+    "MAKEFLAGS": "-j4",
+    "exit_code": 0,
+    "warnings": 0
+  },
+  "r_tests": {
+    "command": [
+      "Rscript",
+      "--vanilla",
+      ".github/development/p2-hybrid/production-integration/r-tests.R",
+      "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-production-kiq0c98o",
+      "/Users/owacasa/RcppAlgos"
+    ],
+    "exit_code": 0,
+    "passed": 864,
+    "failures": 0,
+    "warnings": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "scope": "Clean isolated package build, eleven focused R files, changed Rd/examples, production native sanitizers and targeted parity replay. No normal-library replacement, package check or other-platform run."
+}

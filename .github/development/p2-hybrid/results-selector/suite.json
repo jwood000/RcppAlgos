@@ -1,0 +1,1636 @@
+{
+  "policy": "frozen-v1",
+  "policy_sha256": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+  "variants": [
+    "baseline",
+    "hybrid8",
+    "hybrid16",
+    "hybrid32",
+    "hybrid64",
+    "selector"
+  ],
+  "processes": 3,
+  "repeats": 4,
+  "seeds": {
+    "phases": 202611121,
+    "p2": 202611122
+  },
+  "cases": [
+    {
+      "id": "phases-meissel-30000000000-t1-L1",
+      "mode": "phases",
+      "x": 30000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-30000000000-t2-L1",
+      "mode": "phases",
+      "x": 30000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-30000000000-t4-L1",
+      "mode": "phases",
+      "x": 30000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-30000000000-t8-L1",
+      "mode": "phases",
+      "x": 30000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-30000000000-t1-L1",
+      "mode": "phases",
+      "x": 30000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-30000000000-t2-L1",
+      "mode": "phases",
+      "x": 30000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-30000000000-t4-L1",
+      "mode": "phases",
+      "x": 30000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-30000000000-t8-L1",
+      "mode": "phases",
+      "x": 30000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-100000000000-t1-L1",
+      "mode": "phases",
+      "x": 100000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-100000000000-t2-L1",
+      "mode": "phases",
+      "x": 100000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-100000000000-t4-L1",
+      "mode": "phases",
+      "x": 100000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-100000000000-t8-L1",
+      "mode": "phases",
+      "x": 100000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-100000000000-t1-L1",
+      "mode": "phases",
+      "x": 100000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-100000000000-t2-L1",
+      "mode": "phases",
+      "x": 100000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-100000000000-t4-L1",
+      "mode": "phases",
+      "x": 100000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-100000000000-t8-L1",
+      "mode": "phases",
+      "x": 100000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-300000000000-t1-L1",
+      "mode": "phases",
+      "x": 300000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-300000000000-t2-L1",
+      "mode": "phases",
+      "x": 300000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-300000000000-t4-L1",
+      "mode": "phases",
+      "x": 300000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-300000000000-t8-L1",
+      "mode": "phases",
+      "x": 300000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-300000000000-t1-L1",
+      "mode": "phases",
+      "x": 300000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-300000000000-t2-L1",
+      "mode": "phases",
+      "x": 300000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-300000000000-t4-L1",
+      "mode": "phases",
+      "x": 300000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-300000000000-t8-L1",
+      "mode": "phases",
+      "x": 300000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-1000000000000-t1-L1",
+      "mode": "phases",
+      "x": 1000000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-1000000000000-t2-L1",
+      "mode": "phases",
+      "x": 1000000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-1000000000000-t4-L1",
+      "mode": "phases",
+      "x": 1000000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-1000000000000-t8-L1",
+      "mode": "phases",
+      "x": 1000000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-1000000000000-t1-L1",
+      "mode": "phases",
+      "x": 1000000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-1000000000000-t2-L1",
+      "mode": "phases",
+      "x": 1000000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-1000000000000-t4-L1",
+      "mode": "phases",
+      "x": 1000000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-1000000000000-t8-L1",
+      "mode": "phases",
+      "x": 1000000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-3000000000000-t1-L1",
+      "mode": "phases",
+      "x": 3000000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-3000000000000-t2-L1",
+      "mode": "phases",
+      "x": 3000000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-3000000000000-t4-L1",
+      "mode": "phases",
+      "x": 3000000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-3000000000000-t8-L1",
+      "mode": "phases",
+      "x": 3000000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-3000000000000-t1-L1",
+      "mode": "phases",
+      "x": 3000000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-3000000000000-t2-L1",
+      "mode": "phases",
+      "x": 3000000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-3000000000000-t4-L1",
+      "mode": "phases",
+      "x": 3000000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-3000000000000-t8-L1",
+      "mode": "phases",
+      "x": 3000000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-10000000000000-t1-L1",
+      "mode": "phases",
+      "x": 10000000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-10000000000000-t2-L1",
+      "mode": "phases",
+      "x": 10000000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-10000000000000-t4-L1",
+      "mode": "phases",
+      "x": 10000000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-10000000000000-t8-L1",
+      "mode": "phases",
+      "x": 10000000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-10000000000000-t1-L1",
+      "mode": "phases",
+      "x": 10000000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-10000000000000-t2-L1",
+      "mode": "phases",
+      "x": 10000000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-10000000000000-t4-L1",
+      "mode": "phases",
+      "x": 10000000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-10000000000000-t8-L1",
+      "mode": "phases",
+      "x": 10000000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-30000000000000-t1-L1",
+      "mode": "phases",
+      "x": 30000000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-30000000000000-t2-L1",
+      "mode": "phases",
+      "x": 30000000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-30000000000000-t4-L1",
+      "mode": "phases",
+      "x": 30000000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-30000000000000-t8-L1",
+      "mode": "phases",
+      "x": 30000000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-30000000000000-t1-L1",
+      "mode": "phases",
+      "x": 30000000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-30000000000000-t2-L1",
+      "mode": "phases",
+      "x": 30000000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-30000000000000-t4-L1",
+      "mode": "phases",
+      "x": 30000000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-30000000000000-t8-L1",
+      "mode": "phases",
+      "x": 30000000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-50000000000000-t1-L1",
+      "mode": "phases",
+      "x": 50000000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-50000000000000-t2-L1",
+      "mode": "phases",
+      "x": 50000000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-50000000000000-t4-L1",
+      "mode": "phases",
+      "x": 50000000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-50000000000000-t8-L1",
+      "mode": "phases",
+      "x": 50000000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-50000000000000-t1-L1",
+      "mode": "phases",
+      "x": 50000000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-50000000000000-t2-L1",
+      "mode": "phases",
+      "x": 50000000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-50000000000000-t4-L1",
+      "mode": "phases",
+      "x": 50000000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-50000000000000-t8-L1",
+      "mode": "phases",
+      "x": 50000000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-100000000000000-t1-L1",
+      "mode": "phases",
+      "x": 100000000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-100000000000000-t2-L1",
+      "mode": "phases",
+      "x": 100000000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-100000000000000-t4-L1",
+      "mode": "phases",
+      "x": 100000000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-100000000000000-t8-L1",
+      "mode": "phases",
+      "x": 100000000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-100000000000000-t1-L1",
+      "mode": "phases",
+      "x": 100000000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-100000000000000-t2-L1",
+      "mode": "phases",
+      "x": 100000000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-100000000000000-t4-L1",
+      "mode": "phases",
+      "x": 100000000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-100000000000000-t8-L1",
+      "mode": "phases",
+      "x": 100000000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-2000000000000-t1-L1",
+      "mode": "phases",
+      "x": 2000000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-2000000000000-t4-L1",
+      "mode": "phases",
+      "x": 2000000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-2000000000000-t1-L1",
+      "mode": "phases",
+      "x": 2000000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-2000000000000-t4-L1",
+      "mode": "phases",
+      "x": 2000000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-20000000000000-t1-L1",
+      "mode": "phases",
+      "x": 20000000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-meissel-20000000000000-t4-L1",
+      "mode": "phases",
+      "x": 20000000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-20000000000000-t1-L1",
+      "mode": "phases",
+      "x": 20000000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "phases-lehmer-20000000000000-t4-L1",
+      "mode": "phases",
+      "x": 20000000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-zero-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "zero",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-zero-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "zero",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-one-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "one",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-one-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "one",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "half-meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "half-meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "double-meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "double-meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "half-root",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "half-root",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "near-root",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "near-root",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "tail4095",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "tail4095",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "tail4096",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "tail4096",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-last-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "last",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-last-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "last",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-empty-100000000-t1-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "empty",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-empty-100000000-t4-L1",
+      "mode": "p2",
+      "x": 100000000,
+      "cutoff": "empty",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-zero-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "zero",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-zero-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "zero",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "zero",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-zero-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "zero",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-one-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "one",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-one-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "one",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-one-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "one",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-one-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "one",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "lehmer",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "lehmer",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "double-meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "double-meissel",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "double-meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "double-meissel",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-root",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-root",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-root",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-root",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "near-root",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "near-root",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "near-root",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "near-root",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4095",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4095",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4095",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4095",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4096",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4096",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4096",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4096",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-last-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "last",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-last-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "last",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-last-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "last",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-last-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "last",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-empty-10000000000-t1-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "empty",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-empty-10000000000-t2-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "empty",
+      "threads": 2,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-empty-10000000000-t4-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "empty",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-empty-10000000000-t8-L1",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "empty",
+      "threads": 8,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-zero-2000000000-t1-L1",
+      "mode": "p2",
+      "x": 2000000000,
+      "cutoff": "zero",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-zero-2000000000-t4-L1",
+      "mode": "p2",
+      "x": 2000000000,
+      "cutoff": "zero",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-2000000000-t1-L1",
+      "mode": "p2",
+      "x": 2000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-2000000000-t4-L1",
+      "mode": "p2",
+      "x": 2000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-2000000000-t1-L1",
+      "mode": "p2",
+      "x": 2000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-2000000000-t4-L1",
+      "mode": "p2",
+      "x": 2000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "half-meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "half-meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-meissel-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "lehmer",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-lehmer-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "lehmer",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "double-meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "double-meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "half-root",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "half-root",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "near-root",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "near-root",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "tail4095",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "tail4095",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "tail4096",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "tail4096",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-last-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "last",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-last-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "last",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-empty-3000000000000-t1-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "empty",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-empty-3000000000000-t4-L1",
+      "mode": "p2",
+      "x": 3000000000000,
+      "cutoff": "empty",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-30000000000000-t1-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "half-meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-meissel-30000000000000-t4-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "half-meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-30000000000000-t1-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "double-meissel",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-double-meissel-30000000000000-t4-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "double-meissel",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-30000000000000-t1-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "half-root",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-half-root-30000000000000-t4-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "half-root",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-30000000000000-t1-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "near-root",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-near-root-30000000000000-t4-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "near-root",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-30000000000000-t1-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "tail4095",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4095-30000000000000-t4-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "tail4095",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-30000000000000-t1-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "tail4096",
+      "threads": 1,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-tail4096-30000000000000-t4-L1",
+      "mode": "p2",
+      "x": 30000000000000,
+      "cutoff": "tail4096",
+      "threads": 4,
+      "table_multiplier": 1
+    },
+    {
+      "id": "p2-zero-10000000000-t1-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "zero",
+      "threads": 1,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-zero-10000000000-t4-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "zero",
+      "threads": 4,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-meissel-10000000000-t1-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "meissel",
+      "threads": 1,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-meissel-10000000000-t4-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "meissel",
+      "threads": 4,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-half-root-10000000000-t1-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-root",
+      "threads": 1,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-half-root-10000000000-t4-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "half-root",
+      "threads": 4,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-near-root-10000000000-t1-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "near-root",
+      "threads": 1,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-near-root-10000000000-t4-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "near-root",
+      "threads": 4,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-tail4096-10000000000-t1-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4096",
+      "threads": 1,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-tail4096-10000000000-t4-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "tail4096",
+      "threads": 4,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-empty-10000000000-t1-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "empty",
+      "threads": 1,
+      "table_multiplier": 2
+    },
+    {
+      "id": "p2-empty-10000000000-t4-L2",
+      "mode": "p2",
+      "x": 10000000000,
+      "cutoff": "empty",
+      "threads": 4,
+      "table_multiplier": 2
+    }
+  ]
+}

@@ -1,0 +1,154 @@
+{
+  "report_sha256": "c4e831f78f2c62c1129feae9e3494f4185b70219d9be389e3aca9b7b29afe51e",
+  "analysis_sha256": "897237fb234d4afde1eef40d1008018ecc39beb86a18d126bece717eec4e295b",
+  "query_analysis_sha256": "b98d68e28c464e29e6dc8e159e30ca491a462f89ef4356d3ef8133c0df608697",
+  "numeric_claims_and_tables_match": true,
+  "explicit_percent_checks": [
+    {
+      "case_id": "p2-zero-80000000000-t2-L6over5",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "p2_ms",
+      "reported_percent": -16.0
+    },
+    {
+      "case_id": "p2-zero-80000000000-t4-L6over5",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "p2_ms",
+      "reported_percent": -56.39
+    },
+    {
+      "case_id": "p2-zero-80000000000-t8-L6over5",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "p2_ms",
+      "reported_percent": -64.24
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t8-L1over1",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "first",
+      "metric": "p2_ms",
+      "reported_percent": 8.5
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t8-L1over1",
+      "candidate": "head1",
+      "reference": "head32",
+      "state": "first",
+      "metric": "p2_ms",
+      "reported_percent": 6.03
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t8-L1over1",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": 0.35
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t8-L1over1",
+      "candidate": "hybrid16",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": -16.09
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": -0.54
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+      "candidate": "hybrid16",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": -15.53
+    },
+    {
+      "case_id": "phases-meissel-100000000000000-t8-L1over1",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": 11.23
+    },
+    {
+      "case_id": "phases-meissel-100000000000000-t8-L1over1",
+      "candidate": "hybrid16",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": -36.91
+    },
+    {
+      "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": -0.43
+    },
+    {
+      "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+      "candidate": "hybrid16",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": -39.2
+    },
+    {
+      "case_id": "phases-meissel-10000000000-t8-L1over1",
+      "candidate": "hybrid16",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": 62.14
+    },
+    {
+      "case_id": "phases-lehmer-10000000000-t8-L1over1",
+      "candidate": "hybrid16",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "total_ms",
+      "reported_percent": 57.9
+    },
+    {
+      "case_id": "p2-zero-10000000000-t8-L1over1",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "p2_ms",
+      "reported_percent": -58.99
+    },
+    {
+      "case_id": "p2-zero-1000000000000-t8-L1over1",
+      "candidate": "head1",
+      "reference": "baseline",
+      "state": "warm",
+      "metric": "p2_ms",
+      "reported_percent": -60.45
+    }
+  ],
+  "worker_budget_label_correct": true,
+  "serial_and_null_control_limits_preserved": true,
+  "cold_lehmer_and_large_meissel_adverse_observations_retained": true,
+  "production_promotion_not_claimed": true,
+  "reproduction_commands_coherent_by_inspection": true,
+  "no_benchmarks_rerun": true,
+  "no_actionable_findings": true,
+  "limits": "Read-only report/source/data audit; retention links are being populated by root, production preservation audit owned by root.",
+  "post_audit_wording_change": "Applied reviewer suggestion: large gains did not require reducing every chunk; no all-small-chunk variant was tested.",
+  "final_report_sha256": "2c5665fea2aacf66080095cd65773c1f136e45d899feb543c2a0321308b1283e"
+}

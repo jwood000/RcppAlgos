@@ -1,0 +1,8 @@
+{
+  "selector_thresholds_and_guards_unchanged": true,
+  "comparison": "User staged selector versus current, allowing only substitution of the duplicated budget expression with streamWorkerBudget call; strip comments and whitespace.",
+  "p2_sha256": "b6553ed680d2445c1230d0b1f5e9522646a1f40643706c33a55b0bade50e2a8b",
+  "package_snapshot_matches_working_sources": true,
+  "index_unchanged": true,
+  "install_warnings": []
+}

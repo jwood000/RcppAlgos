@@ -1,0 +1,31 @@
+{
+  "compared_bodies": {
+    "countP2Range": "fd6469217ac9a089f701a2c78f681ca19cb00a78a43b19fec4575da3402b811a",
+    "piAt": "1e1a76b8a9caa0f93180c286fad93995599b8e77a6abea3b5b1c3e966a536f88",
+    "countStreamRange": "7970276c8b796333b5df6de20f1d65f30821e4c04e3f3e00213745cc24686fe3"
+  },
+  "intentionally_revised_bodies": {
+    "countPhiPrefix": {
+      "production_sha256": "b839164e2db72888b77349b8c6e5d15797d636eec73a58251e06a87427ca356c",
+      "candidate_sha256": "8fbb613933b14081aae43bb21fb7587a26183e35b9bf5573605a05dd1da449a3",
+      "reason": "Cap actual launches by fixed-queue job count, tested by observing real ThreadBatch launches."
+    },
+    "PrimeCountStream": {
+      "production_sha256": "a754364bdb3ca314b1ca32e8c168dc13de60c317e1d6493a05e505291a6ef4c3",
+      "candidate_sha256": "a39d07157133d4734b5893998c6cfb7e28c235cc3d9c2aad7852fbdb5d266b43",
+      "reason": "Signed offset/length and renamed crossing vector; checked against independent stream-window prime oracle."
+    },
+    "countStreamingTail": {
+      "production_sha256": "9742d9493998dfd6bda9decbf086b166dda90de198e3432890b3b0c592daa238",
+      "candidate_sha256": "6dc28393c4225c6e7f2e96b1e46c00f0843f1f45860c5dcbe5dce7e9d710159a",
+      "reason": "Shared stream worker budget and bounded int conversion; common differential/parallel coverage."
+    }
+  },
+  "production_sha256": "b6553ed680d2445c1230d0b1f5e9522646a1f40643706c33a55b0bade50e2a8b",
+  "candidate_sha256": "be14e82f7a060bb76d1cfd785f631db6c20a45c8d135518642fd442fb1ddb61a",
+  "shared_worker_grain": 1048576,
+  "normalization": "Preprocess instrumentation away; discard whitespace; rename Queue<1> to PhiWorkQueue; replace identical local/shared 1048576 constants with their literal value; normalize only the added braces around the piAt direct-table return.",
+  "selector": "Compared at runtime against the frozen candidate, including cap/admission boundaries.",
+  "queue": "Signed tickets compared against frozen K=1 mapping, negative/extreme tickets, independent coverage.",
+  "worker_budget": "Shared helper used once by chooser and launcher; runtime grain/clamp/extreme checks; actual Phi launch counts checked against independently generated jobs."
+}

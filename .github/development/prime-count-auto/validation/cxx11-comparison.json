@@ -1,0 +1,29 @@
+{
+  "current_exit": 0,
+  "baseline_exit": 0,
+  "identical_third_party_warnings": 9,
+  "warning_lines": [
+    "/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/integers.hpp:43:10: warning: unused parameter 'is_altrep' [-Wunused-parameter]",
+    "/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/doubles.hpp:42:10: warning: unused parameter 'is_altrep' [-Wunused-parameter]",
+    "/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:52:45: warning: unused parameter 'x' [-Wunused-parameter]",
+    "/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:52:57: warning: unused parameter 'i' [-Wunused-parameter]",
+    "/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:52:69: warning: unused parameter 'n' [-Wunused-parameter]",
+    "/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:53:76: warning: unused parameter 'buf' [-Wunused-parameter]",
+    "/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/list.hpp:58:58: warning: unused parameter 'is_altrep' [-Wunused-parameter]",
+    "/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/r_vector.hpp:274:12: warning: definition of implicit copy constructor for 'proxy' is deprecated because it has a user-provided copy assignment operator [-Wdeprecated-copy-with-user-provided-copy]",
+    "/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include/cpp11/r_vector.hpp:274:12: warning: definition of implicit copy constructor for 'proxy' is deprecated because it has a user-provided copy assignment operator [-Wdeprecated-copy-with-user-provided-copy]"
+  ],
+  "baseline_command": [
+    "clang++",
+    "-std=c++11",
+    "-fsyntax-only",
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic",
+    "-I/Users/owacasa/RcppAlgos/inst/include",
+    "-I/Library/Frameworks/R.framework/Resources/include",
+    "-I/Library/Frameworks/R.framework/Versions/4.6/Resources/library/cpp11/include",
+    "-I/opt/homebrew/include",
+    "/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/before/src/PrimeCount.cpp"
+  ]
+}

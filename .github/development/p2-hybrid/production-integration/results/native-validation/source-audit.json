@@ -1,0 +1,16 @@
+{
+  "compared_bodies": {
+    "countP2Range": "fd6469217ac9a089f701a2c78f681ca19cb00a78a43b19fec4575da3402b811a",
+    "countPhiPrefix": "8fbb613933b14081aae43bb21fb7587a26183e35b9bf5573605a05dd1da449a3",
+    "PrimeCountStream": "a39d07157133d4734b5893998c6cfb7e28c235cc3d9c2aad7852fbdb5d266b43",
+    "piAt": "1e1a76b8a9caa0f93180c286fad93995599b8e77a6abea3b5b1c3e966a536f88",
+    "countStreamRange": "7970276c8b796333b5df6de20f1d65f30821e4c04e3f3e00213745cc24686fe3",
+    "countStreamingTail": "6dc28393c4225c6e7f2e96b1e46c00f0843f1f45860c5dcbe5dce7e9d710159a"
+  },
+  "production_sha256": "df2bc230e0a36d72306cfe8dd1bd42986c9dad1bbfe84741be501443c6a9986d",
+  "candidate_sha256": "be14e82f7a060bb76d1cfd785f631db6c20a45c8d135518642fd442fb1ddb61a",
+  "shared_worker_grain": 1048576,
+  "normalization": "Preprocess instrumentation away; discard whitespace; rename Queue<1> to PhiWorkQueue; replace identical local/shared 1048576 constants with their literal value.",
+  "selector": "Compared at runtime against the frozen candidate, including cap/admission boundaries.",
+  "queue": "Compared at runtime against the frozen K=1 mapping and independent coverage."
+}

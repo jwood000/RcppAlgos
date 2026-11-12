@@ -1,0 +1,1221 @@
+{
+  "input_sha256": "a0705db4f2be6904a2fb66fc00d9b4f743c7d7704f8d1de9a776f5a274b6ba35",
+  "rows": 192,
+  "worker_phase_objects_checked": 1080,
+  "all_counter_identities_hold": true,
+  "all_attribution_query_counts_match": true,
+  "all_warmed_misses_stores_and_allocations_zero": true,
+  "warmed_phase_aggregates": {
+    "prefix:zero": {
+      "public_phi": 1724,
+      "public_zero": 0,
+      "public_a_zero": 0,
+      "public_one": 0,
+      "public_tiny": 0,
+      "public_pi": 0,
+      "kernel_entries": 2333105,
+      "recursive_entries": 2331381,
+      "kernel_tiny": 194178,
+      "expansions": 194178,
+      "tiny_calls": 388356,
+      "pi_suffix_terms": 8718120,
+      "cache_gets": 2138927,
+      "cache_eligible": 1944749,
+      "cache_ineligible": 194178,
+      "cache_hits": 1944749,
+      "cache_misses": 0,
+      "cache_no_page": 0,
+      "cache_empty_cell": 0,
+      "top_cache_gets": 1724,
+      "top_cache_eligible": 0,
+      "top_cache_hits": 0,
+      "top_cache_misses": 0,
+      "put_calls": 194178,
+      "put_eligible": 0,
+      "lock_attempts": 0,
+      "page_alloc_attempts": 0,
+      "page_alloc_success": 0,
+      "page_alloc_failed": 0,
+      "cache_stores": 0
+    },
+    "phi_tail": {
+      "public_phi": 19161,
+      "public_zero": 0,
+      "public_a_zero": 0,
+      "public_one": 0,
+      "public_tiny": 0,
+      "public_pi": 0,
+      "kernel_entries": 387836,
+      "recursive_entries": 368675,
+      "kernel_tiny": 23426,
+      "expansions": 23426,
+      "tiny_calls": 46852,
+      "pi_suffix_terms": 2605094,
+      "cache_gets": 364410,
+      "cache_eligible": 340984,
+      "cache_ineligible": 23426,
+      "cache_hits": 340984,
+      "cache_misses": 0,
+      "cache_no_page": 0,
+      "cache_empty_cell": 0,
+      "top_cache_gets": 19161,
+      "top_cache_eligible": 0,
+      "top_cache_hits": 0,
+      "top_cache_misses": 0,
+      "put_calls": 23426,
+      "put_eligible": 0,
+      "lock_attempts": 0,
+      "page_alloc_attempts": 0,
+      "page_alloc_success": 0,
+      "page_alloc_failed": 0,
+      "cache_stores": 0
+    },
+    "prefix:meissel": {
+      "public_phi": 1134,
+      "public_zero": 0,
+      "public_a_zero": 0,
+      "public_one": 0,
+      "public_tiny": 0,
+      "public_pi": 0,
+      "kernel_entries": 142343,
+      "recursive_entries": 141209,
+      "kernel_tiny": 15760,
+      "expansions": 15760,
+      "tiny_calls": 31520,
+      "pi_suffix_terms": 464256,
+      "cache_gets": 126583,
+      "cache_eligible": 110823,
+      "cache_ineligible": 15760,
+      "cache_hits": 110823,
+      "cache_misses": 0,
+      "cache_no_page": 0,
+      "cache_empty_cell": 0,
+      "top_cache_gets": 1134,
+      "top_cache_eligible": 0,
+      "top_cache_hits": 0,
+      "top_cache_misses": 0,
+      "put_calls": 15760,
+      "put_eligible": 0,
+      "lock_attempts": 0,
+      "page_alloc_attempts": 0,
+      "page_alloc_success": 0,
+      "page_alloc_failed": 0,
+      "cache_stores": 0
+    },
+    "stream_seed": {
+      "public_phi": 1,
+      "public_zero": 0,
+      "public_a_zero": 0,
+      "public_one": 0,
+      "public_tiny": 0,
+      "public_pi": 0,
+      "kernel_entries": 30,
+      "recursive_entries": 29,
+      "kernel_tiny": 2,
+      "expansions": 2,
+      "tiny_calls": 4,
+      "pi_suffix_terms": 231,
+      "cache_gets": 28,
+      "cache_eligible": 26,
+      "cache_ineligible": 2,
+      "cache_hits": 26,
+      "cache_misses": 0,
+      "cache_no_page": 0,
+      "cache_empty_cell": 0,
+      "top_cache_gets": 1,
+      "top_cache_eligible": 0,
+      "top_cache_hits": 0,
+      "top_cache_misses": 0,
+      "put_calls": 2,
+      "put_eligible": 0,
+      "lock_attempts": 0,
+      "page_alloc_attempts": 0,
+      "page_alloc_success": 0,
+      "page_alloc_failed": 0,
+      "cache_stores": 0
+    }
+  },
+  "cold_tail_history_ranges": [
+    {
+      "threads": 1,
+      "mode": "tail-phi",
+      "history": "none",
+      "ranges": {
+        "public_phi": [
+          19161,
+          19161
+        ],
+        "kernel_entries": [
+          1234235,
+          1234235
+        ],
+        "recursive_entries": [
+          1215074,
+          1215074
+        ],
+        "expansions": [
+          319053,
+          319053
+        ],
+        "tiny_calls": [
+          618287,
+          618287
+        ],
+        "pi_suffix_terms": [
+          4605467,
+          4605467
+        ],
+        "cache_gets": [
+          935001,
+          935001
+        ],
+        "cache_eligible": [
+          911575,
+          911575
+        ],
+        "cache_ineligible": [
+          23426,
+          23426
+        ],
+        "cache_hits": [
+          615948,
+          615948
+        ],
+        "cache_misses": [
+          295627,
+          295627
+        ],
+        "cache_no_page": [
+          526,
+          526
+        ],
+        "cache_empty_cell": [
+          295101,
+          295101
+        ],
+        "page_alloc_success": [
+          526,
+          526
+        ],
+        "cache_stores": [
+          295627,
+          295627
+        ]
+      }
+    },
+    {
+      "threads": 1,
+      "mode": "tail-phi",
+      "history": "zero-prefix",
+      "ranges": {
+        "public_phi": [
+          19161,
+          19161
+        ],
+        "kernel_entries": [
+          907858,
+          907858
+        ],
+        "recursive_entries": [
+          888697,
+          888697
+        ],
+        "expansions": [
+          157598,
+          157598
+        ],
+        "tiny_calls": [
+          315196,
+          315196
+        ],
+        "pi_suffix_terms": [
+          3648790,
+          3648790
+        ],
+        "cache_gets": [
+          750260,
+          750260
+        ],
+        "cache_eligible": [
+          726834,
+          726834
+        ],
+        "cache_ineligible": [
+          23426,
+          23426
+        ],
+        "cache_hits": [
+          592662,
+          592662
+        ],
+        "cache_misses": [
+          134172,
+          134172
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          134172,
+          134172
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          134172,
+          134172
+        ]
+      }
+    },
+    {
+      "threads": 1,
+      "mode": "tail-phi",
+      "history": "meissel-prefix",
+      "ranges": {
+        "public_phi": [
+          19161,
+          19161
+        ],
+        "kernel_entries": [
+          1222239,
+          1222239
+        ],
+        "recursive_entries": [
+          1203078,
+          1203078
+        ],
+        "expansions": [
+          291875,
+          291875
+        ],
+        "tiny_calls": [
+          582530,
+          582530
+        ],
+        "pi_suffix_terms": [
+          4543527,
+          4543527
+        ],
+        "cache_gets": [
+          931584,
+          931584
+        ],
+        "cache_eligible": [
+          908158,
+          908158
+        ],
+        "cache_ineligible": [
+          23426,
+          23426
+        ],
+        "cache_hits": [
+          639709,
+          639709
+        ],
+        "cache_misses": [
+          268449,
+          268449
+        ],
+        "cache_no_page": [
+          461,
+          461
+        ],
+        "cache_empty_cell": [
+          267988,
+          267988
+        ],
+        "page_alloc_success": [
+          461,
+          461
+        ],
+        "cache_stores": [
+          268449,
+          268449
+        ]
+      }
+    },
+    {
+      "threads": 1,
+      "mode": "tail-phi",
+      "history": "tail",
+      "ranges": {
+        "public_phi": [
+          19161,
+          19161
+        ],
+        "kernel_entries": [
+          387836,
+          387836
+        ],
+        "recursive_entries": [
+          368675,
+          368675
+        ],
+        "expansions": [
+          23426,
+          23426
+        ],
+        "tiny_calls": [
+          46852,
+          46852
+        ],
+        "pi_suffix_terms": [
+          2605094,
+          2605094
+        ],
+        "cache_gets": [
+          364410,
+          364410
+        ],
+        "cache_eligible": [
+          340984,
+          340984
+        ],
+        "cache_ineligible": [
+          23426,
+          23426
+        ],
+        "cache_hits": [
+          340984,
+          340984
+        ],
+        "cache_misses": [
+          0,
+          0
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          0,
+          0
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "threads": 1,
+      "mode": "tail-stream",
+      "history": "none",
+      "ranges": {
+        "public_phi": [
+          0,
+          0
+        ],
+        "kernel_entries": [
+          0,
+          0
+        ],
+        "recursive_entries": [
+          0,
+          0
+        ],
+        "expansions": [
+          0,
+          0
+        ],
+        "tiny_calls": [
+          0,
+          0
+        ],
+        "pi_suffix_terms": [
+          0,
+          0
+        ],
+        "cache_gets": [
+          0,
+          0
+        ],
+        "cache_eligible": [
+          0,
+          0
+        ],
+        "cache_ineligible": [
+          0,
+          0
+        ],
+        "cache_hits": [
+          0,
+          0
+        ],
+        "cache_misses": [
+          0,
+          0
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          0,
+          0
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "threads": 1,
+      "mode": "tail-stream",
+      "history": "zero-prefix",
+      "ranges": {
+        "public_phi": [
+          0,
+          0
+        ],
+        "kernel_entries": [
+          0,
+          0
+        ],
+        "recursive_entries": [
+          0,
+          0
+        ],
+        "expansions": [
+          0,
+          0
+        ],
+        "tiny_calls": [
+          0,
+          0
+        ],
+        "pi_suffix_terms": [
+          0,
+          0
+        ],
+        "cache_gets": [
+          0,
+          0
+        ],
+        "cache_eligible": [
+          0,
+          0
+        ],
+        "cache_ineligible": [
+          0,
+          0
+        ],
+        "cache_hits": [
+          0,
+          0
+        ],
+        "cache_misses": [
+          0,
+          0
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          0,
+          0
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "threads": 1,
+      "mode": "tail-stream",
+      "history": "meissel-prefix",
+      "ranges": {
+        "public_phi": [
+          0,
+          0
+        ],
+        "kernel_entries": [
+          0,
+          0
+        ],
+        "recursive_entries": [
+          0,
+          0
+        ],
+        "expansions": [
+          0,
+          0
+        ],
+        "tiny_calls": [
+          0,
+          0
+        ],
+        "pi_suffix_terms": [
+          0,
+          0
+        ],
+        "cache_gets": [
+          0,
+          0
+        ],
+        "cache_eligible": [
+          0,
+          0
+        ],
+        "cache_ineligible": [
+          0,
+          0
+        ],
+        "cache_hits": [
+          0,
+          0
+        ],
+        "cache_misses": [
+          0,
+          0
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          0,
+          0
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "threads": 1,
+      "mode": "tail-stream",
+      "history": "tail",
+      "ranges": {
+        "public_phi": [
+          0,
+          0
+        ],
+        "kernel_entries": [
+          0,
+          0
+        ],
+        "recursive_entries": [
+          0,
+          0
+        ],
+        "expansions": [
+          0,
+          0
+        ],
+        "tiny_calls": [
+          0,
+          0
+        ],
+        "pi_suffix_terms": [
+          0,
+          0
+        ],
+        "cache_gets": [
+          0,
+          0
+        ],
+        "cache_eligible": [
+          0,
+          0
+        ],
+        "cache_ineligible": [
+          0,
+          0
+        ],
+        "cache_hits": [
+          0,
+          0
+        ],
+        "cache_misses": [
+          0,
+          0
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          0,
+          0
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "threads": 2,
+      "mode": "tail-phi",
+      "history": "none",
+      "ranges": {
+        "public_phi": [
+          19161,
+          19161
+        ],
+        "kernel_entries": [
+          1234246,
+          1234247
+        ],
+        "recursive_entries": [
+          1215085,
+          1215086
+        ],
+        "expansions": [
+          319059,
+          319063
+        ],
+        "tiny_calls": [
+          618299,
+          618306
+        ],
+        "pi_suffix_terms": [
+          4605516,
+          4605548
+        ],
+        "cache_gets": [
+          935004,
+          935006
+        ],
+        "cache_eligible": [
+          911578,
+          911580
+        ],
+        "cache_ineligible": [
+          23426,
+          23426
+        ],
+        "cache_hits": [
+          615941,
+          615947
+        ],
+        "cache_misses": [
+          295633,
+          295637
+        ],
+        "cache_no_page": [
+          556,
+          559
+        ],
+        "cache_empty_cell": [
+          295077,
+          295078
+        ],
+        "page_alloc_success": [
+          526,
+          526
+        ],
+        "cache_stores": [
+          295633,
+          295637
+        ]
+      }
+    },
+    {
+      "threads": 2,
+      "mode": "tail-phi",
+      "history": "zero-prefix",
+      "ranges": {
+        "public_phi": [
+          19161,
+          19161
+        ],
+        "kernel_entries": [
+          907860,
+          907861
+        ],
+        "recursive_entries": [
+          888699,
+          888700
+        ],
+        "expansions": [
+          157599,
+          157599
+        ],
+        "tiny_calls": [
+          315198,
+          315198
+        ],
+        "pi_suffix_terms": [
+          3648790,
+          3648793
+        ],
+        "cache_gets": [
+          750261,
+          750262
+        ],
+        "cache_eligible": [
+          726835,
+          726836
+        ],
+        "cache_ineligible": [
+          23426,
+          23426
+        ],
+        "cache_hits": [
+          592662,
+          592663
+        ],
+        "cache_misses": [
+          134173,
+          134173
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          134173,
+          134173
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          134173,
+          134173
+        ]
+      }
+    },
+    {
+      "threads": 2,
+      "mode": "tail-phi",
+      "history": "meissel-prefix",
+      "ranges": {
+        "public_phi": [
+          19161,
+          19161
+        ],
+        "kernel_entries": [
+          1222258,
+          1222259
+        ],
+        "recursive_entries": [
+          1203097,
+          1203098
+        ],
+        "expansions": [
+          291885,
+          291888
+        ],
+        "tiny_calls": [
+          582550,
+          582556
+        ],
+        "pi_suffix_terms": [
+          4543596,
+          4543662
+        ],
+        "cache_gets": [
+          931590,
+          931594
+        ],
+        "cache_eligible": [
+          908164,
+          908168
+        ],
+        "cache_ineligible": [
+          23426,
+          23426
+        ],
+        "cache_hits": [
+          639702,
+          639709
+        ],
+        "cache_misses": [
+          268459,
+          268462
+        ],
+        "cache_no_page": [
+          483,
+          485
+        ],
+        "cache_empty_cell": [
+          267974,
+          267979
+        ],
+        "page_alloc_success": [
+          461,
+          461
+        ],
+        "cache_stores": [
+          268459,
+          268462
+        ]
+      }
+    },
+    {
+      "threads": 2,
+      "mode": "tail-phi",
+      "history": "tail",
+      "ranges": {
+        "public_phi": [
+          19161,
+          19161
+        ],
+        "kernel_entries": [
+          387836,
+          387836
+        ],
+        "recursive_entries": [
+          368675,
+          368675
+        ],
+        "expansions": [
+          23426,
+          23426
+        ],
+        "tiny_calls": [
+          46852,
+          46852
+        ],
+        "pi_suffix_terms": [
+          2605094,
+          2605094
+        ],
+        "cache_gets": [
+          364410,
+          364410
+        ],
+        "cache_eligible": [
+          340984,
+          340984
+        ],
+        "cache_ineligible": [
+          23426,
+          23426
+        ],
+        "cache_hits": [
+          340984,
+          340984
+        ],
+        "cache_misses": [
+          0,
+          0
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          0,
+          0
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "threads": 2,
+      "mode": "tail-stream",
+      "history": "none",
+      "ranges": {
+        "public_phi": [
+          1,
+          1
+        ],
+        "kernel_entries": [
+          146,
+          146
+        ],
+        "recursive_entries": [
+          145,
+          145
+        ],
+        "expansions": [
+          116,
+          116
+        ],
+        "tiny_calls": [
+          146,
+          146
+        ],
+        "pi_suffix_terms": [
+          700,
+          700
+        ],
+        "cache_gets": [
+          116,
+          116
+        ],
+        "cache_eligible": [
+          114,
+          114
+        ],
+        "cache_ineligible": [
+          2,
+          2
+        ],
+        "cache_hits": [
+          0,
+          0
+        ],
+        "cache_misses": [
+          114,
+          114
+        ],
+        "cache_no_page": [
+          33,
+          33
+        ],
+        "cache_empty_cell": [
+          81,
+          81
+        ],
+        "page_alloc_success": [
+          33,
+          33
+        ],
+        "cache_stores": [
+          114,
+          114
+        ]
+      }
+    },
+    {
+      "threads": 2,
+      "mode": "tail-stream",
+      "history": "zero-prefix",
+      "ranges": {
+        "public_phi": [
+          1,
+          1
+        ],
+        "kernel_entries": [
+          144,
+          144
+        ],
+        "recursive_entries": [
+          143,
+          143
+        ],
+        "expansions": [
+          28,
+          28
+        ],
+        "tiny_calls": [
+          56,
+          56
+        ],
+        "pi_suffix_terms": [
+          494,
+          494
+        ],
+        "cache_gets": [
+          116,
+          116
+        ],
+        "cache_eligible": [
+          114,
+          114
+        ],
+        "cache_ineligible": [
+          2,
+          2
+        ],
+        "cache_hits": [
+          88,
+          88
+        ],
+        "cache_misses": [
+          26,
+          26
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          26,
+          26
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          26,
+          26
+        ]
+      }
+    },
+    {
+      "threads": 2,
+      "mode": "tail-stream",
+      "history": "meissel-prefix",
+      "ranges": {
+        "public_phi": [
+          1,
+          1
+        ],
+        "kernel_entries": [
+          144,
+          144
+        ],
+        "recursive_entries": [
+          143,
+          143
+        ],
+        "expansions": [
+          48,
+          48
+        ],
+        "tiny_calls": [
+          76,
+          76
+        ],
+        "pi_suffix_terms": [
+          536,
+          536
+        ],
+        "cache_gets": [
+          116,
+          116
+        ],
+        "cache_eligible": [
+          114,
+          114
+        ],
+        "cache_ineligible": [
+          2,
+          2
+        ],
+        "cache_hits": [
+          68,
+          68
+        ],
+        "cache_misses": [
+          46,
+          46
+        ],
+        "cache_no_page": [
+          26,
+          26
+        ],
+        "cache_empty_cell": [
+          20,
+          20
+        ],
+        "page_alloc_success": [
+          26,
+          26
+        ],
+        "cache_stores": [
+          46,
+          46
+        ]
+      }
+    },
+    {
+      "threads": 2,
+      "mode": "tail-stream",
+      "history": "tail",
+      "ranges": {
+        "public_phi": [
+          1,
+          1
+        ],
+        "kernel_entries": [
+          128,
+          128
+        ],
+        "recursive_entries": [
+          127,
+          127
+        ],
+        "expansions": [
+          24,
+          24
+        ],
+        "tiny_calls": [
+          48,
+          48
+        ],
+        "pi_suffix_terms": [
+          428,
+          428
+        ],
+        "cache_gets": [
+          104,
+          104
+        ],
+        "cache_eligible": [
+          102,
+          102
+        ],
+        "cache_ineligible": [
+          2,
+          2
+        ],
+        "cache_hits": [
+          80,
+          80
+        ],
+        "cache_misses": [
+          22,
+          22
+        ],
+        "cache_no_page": [
+          0,
+          0
+        ],
+        "cache_empty_cell": [
+          22,
+          22
+        ],
+        "page_alloc_success": [
+          0,
+          0
+        ],
+        "cache_stores": [
+          22,
+          22
+        ]
+      }
+    }
+  ],
+  "interpretation": [
+    "Warm Phi-tail work is exactly identical across every measured cutoff, history, mode, 1/2-worker budget and block where the tail is evaluated by Phi.",
+    "The common warmed tail has 19161 public calls, 387836 kernel entries, 23426 uncached expansions, 2605094 direct suffix terms and 340984 eligible lookups, all hits.",
+    "Warm zero prefix is much heavier than Meissel prefix: 2333105 versus 142343 entries; 194178 versus 15760 expansions; 8718120 versus 464256 direct suffix terms.",
+    "The software cache substantially changes first calls. Zero-prefix priming eliminates tail page allocations but leaves about134k eligible misses; Meissel-prefix priming leaves about268k and461 pages; fresh tail has about296k misses and526 pages.",
+    "A software-cache hit only establishes a present memoized value, not an L1/L2/LLC hardware hit. These counters do not measure hardware locality, coherency stalls, core placement, or per-operation cycles.",
+    "No counter-build elapsed values were used for performance conclusions; instrumentation perturbs execution cost and scheduling.",
+    "Cold parallel counts are not unique-key counts: duplicate computations may occur. Overlapping baseline prefix/tail can also attribute shared computation differently than separated phases."
+  ]
+}

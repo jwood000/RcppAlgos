@@ -1,0 +1,221 @@
+{
+  "x": 80000000000,
+  "table_limit": 339410,
+  "ratio": [
+    6,
+    5
+  ],
+  "split_index": 1725,
+  "last_index": 20886,
+  "cases": [
+    {
+      "mode": "baseline",
+      "cutoff": "zero",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "hybrid",
+      "cutoff": "zero",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "split-phi",
+      "cutoff": "zero",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "prefix",
+      "cutoff": "zero",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "baseline",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "hybrid",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "split-phi",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "prefix",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "tail-phi",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "tail-phi",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "zero-prefix"
+    },
+    {
+      "mode": "tail-phi",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "meissel-prefix"
+    },
+    {
+      "mode": "tail-phi",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "tail"
+    },
+    {
+      "mode": "tail-stream",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "none"
+    },
+    {
+      "mode": "tail-stream",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "zero-prefix"
+    },
+    {
+      "mode": "tail-stream",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "meissel-prefix"
+    },
+    {
+      "mode": "tail-stream",
+      "cutoff": "meissel",
+      "threads": 1,
+      "history": "tail"
+    },
+    {
+      "mode": "baseline",
+      "cutoff": "zero",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "hybrid",
+      "cutoff": "zero",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "split-phi",
+      "cutoff": "zero",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "prefix",
+      "cutoff": "zero",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "baseline",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "hybrid",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "split-phi",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "prefix",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "tail-phi",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "tail-phi",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "zero-prefix"
+    },
+    {
+      "mode": "tail-phi",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "meissel-prefix"
+    },
+    {
+      "mode": "tail-phi",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "tail"
+    },
+    {
+      "mode": "tail-stream",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "none"
+    },
+    {
+      "mode": "tail-stream",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "zero-prefix"
+    },
+    {
+      "mode": "tail-stream",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "meissel-prefix"
+    },
+    {
+      "mode": "tail-stream",
+      "cutoff": "meissel",
+      "threads": 2,
+      "history": "tail"
+    }
+  ],
+  "timing_blocks": 9,
+  "timing_repeats": 8,
+  "timeline_blocks": 5,
+  "timeline_repeats": 6,
+  "counts_blocks": 2,
+  "counts_repeats": 3,
+  "frozen_at_utc": "2026-11-07T15:27:05.972580+00:00",
+  "sources_sha256": {
+    "run.py": "c4ee438411f8725a56a0e59d134c29266083130ba3d206b4ee7fb5a0a7a3c6c3",
+    "instrument_phi.py": "c8eca94593e9fcdf75676991ba0648cd0f4e2ff199809e2609177d95089338e3",
+    "phi_metrics.h": "00984cb7d52eed315c82d8433190709b0145bcc6afe69df74362af51a15ed32f",
+    "instrument_p2.py": "ceb08d8481218bed8f6b7a197238a10a44d1e9de13f372e4019de4e1c79fff40",
+    "trace.h": "ebb51a98cbb6b6d68645a7ece07a3b60449ea576a89bb9df089b74a90ee1a993",
+    "driver.cpp": "aacf8ad4cbcc373949b76b8a32331dfc6f7cdee700c003349b45eb4a06f0fff2",
+    "phi-metrics-check.cpp": "52760c6b5decdedddc23504ce1614f0d182947914cd06b50f467cd3ac770c5ff",
+    "reference_check.py": "695bf4060de6b14bda4fab5221330a3b23ea39ab65b0045c6131484782c2b7ca"
+  }
+}

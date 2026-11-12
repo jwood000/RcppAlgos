@@ -1,0 +1,128 @@
+{
+  "utc": "2026-11-07T04:23:37.043756+00:00",
+  "production": {
+    "files": 392,
+    "missing": [],
+    "changed": [],
+    "unmanifested_compiled_outputs": 140,
+    "unmanifested_other_files": [],
+    "compiled_outputs_modified_after_snapshot": []
+  },
+  "prior_results": {
+    "results": {
+      "expected_files": 24,
+      "current_files": 24,
+      "added": [],
+      "missing": [],
+      "changed": []
+    },
+    "results-wide": {
+      "expected_files": 18,
+      "current_files": 18,
+      "added": [],
+      "missing": [],
+      "changed": []
+    },
+    "results-extended": {
+      "expected_files": 19,
+      "current_files": 19,
+      "added": [],
+      "missing": [],
+      "changed": []
+    },
+    "results-selector": {
+      "expected_files": 29,
+      "current_files": 29,
+      "added": [],
+      "missing": [],
+      "changed": []
+    },
+    "results-selector-v2": {
+      "expected_files": 35,
+      "current_files": 35,
+      "added": [],
+      "missing": [],
+      "changed": []
+    }
+  },
+  "prior_source": {
+    "files": 17,
+    "unchanged": [
+      "selector_v2_cases.h",
+      "SELECTOR_V2.md",
+      "selector_bench.py",
+      "selector_v2_profile.cpp",
+      "selector-v2-check.cpp",
+      "selector_v2_analyze.py",
+      "hybrid_metrics.h",
+      "selector_cases.h",
+      "P2Selector.h",
+      "selector_profile.cpp",
+      "selector_v2_bench.py",
+      "selector-check.cpp",
+      "P2SelectorV2.h",
+      "check.cpp",
+      "SELECTOR.md"
+    ],
+    "changed": [
+      "P2Hybrid.cpp",
+      "validate.py"
+    ],
+    "missing": []
+  },
+  "frozen_production_source": {
+    "files": 276,
+    "current_mismatches": []
+  },
+  "build": {
+    "inputs": 284,
+    "changed_inputs": [],
+    "binaries": 11,
+    "changed_binaries": []
+  },
+  "current_vs_built": {
+    "selector_v3_profile.cpp": true,
+    "selector_v3_cases.h": true,
+    "P2Hybrid.cpp": true,
+    "P2Selector.h": true,
+    "P2SelectorV2.h": true,
+    "P2SelectorV3.h": true,
+    "hybrid_metrics.h": true
+  },
+  "policy": {
+    "P2Selector.h": {
+      "frozen": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+      "current": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+      "built": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+      "build_metadata": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6"
+    },
+    "P2SelectorV2.h": {
+      "frozen": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+      "current": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+      "built": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8",
+      "build_metadata": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8"
+    },
+    "P2SelectorV3.h": {
+      "frozen": "b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931",
+      "current": "b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931",
+      "built": "b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931",
+      "build_metadata": "b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931"
+    }
+  },
+  "runner": {
+    "frozen_record": "612a47f743a0a39d1e74c80039e392da06c5b4c07e31b0e43ce8951ad2e33e0e",
+    "frozen_copy": "612a47f743a0a39d1e74c80039e392da06c5b4c07e31b0e43ce8951ad2e33e0e",
+    "current": "612a47f743a0a39d1e74c80039e392da06c5b4c07e31b0e43ce8951ad2e33e0e"
+  },
+  "existing_behavioral_audit_applicable": {
+    "kernel_hash_match": true,
+    "header_hashes_match": {
+      "P2Selector.h": true,
+      "P2SelectorV2.h": true,
+      "P2SelectorV3.h": true,
+      "hybrid_metrics.h": true
+    },
+    "prior_kernel_match": true,
+    "production_matches_audited_version": true
+  }
+}

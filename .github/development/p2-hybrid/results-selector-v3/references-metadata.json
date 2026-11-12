@@ -1,0 +1,171 @@
+{
+  "primecount_path": "/opt/homebrew/bin/primecount",
+  "primecount_sha256": "6a79ff1b8d5a0fda9fa317715aa57bfc6176e932c4bd892dfefdccdbab023c2a",
+  "primecount_version": "primecount 8.0, <https://github.com/kimwalisch/primecount>\nCopyright (C) 2013 - 2025 Kim Walisch\nBSD 2-Clause License <https://opensource.org/licenses/BSD-2-Clause>\n",
+  "independent_counts": [
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "10000000000",
+        "--gourdon",
+        "--threads=1"
+      ],
+      "result": 455052511
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "10000000000",
+        "--deleglise-rivat",
+        "--threads=1"
+      ],
+      "result": 455052511
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "30000000000",
+        "--gourdon",
+        "--threads=1"
+      ],
+      "result": 1300005926
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "30000000000",
+        "--deleglise-rivat",
+        "--threads=1"
+      ],
+      "result": 1300005926
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "50000000000",
+        "--gourdon",
+        "--threads=1"
+      ],
+      "result": 2119654578
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "50000000000",
+        "--deleglise-rivat",
+        "--threads=1"
+      ],
+      "result": 2119654578
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "70000000000",
+        "--gourdon",
+        "--threads=1"
+      ],
+      "result": 2925699539
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "70000000000",
+        "--deleglise-rivat",
+        "--threads=1"
+      ],
+      "result": 2925699539
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "80000000000",
+        "--gourdon",
+        "--threads=1"
+      ],
+      "result": 3325059246
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "80000000000",
+        "--deleglise-rivat",
+        "--threads=1"
+      ],
+      "result": 3325059246
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "90000000000",
+        "--gourdon",
+        "--threads=1"
+      ],
+      "result": 3722428991
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "90000000000",
+        "--deleglise-rivat",
+        "--threads=1"
+      ],
+      "result": 3722428991
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "100000000000",
+        "--gourdon",
+        "--threads=1"
+      ],
+      "result": 4118054813
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "100000000000",
+        "--deleglise-rivat",
+        "--threads=1"
+      ],
+      "result": 4118054813
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "1000000000000",
+        "--gourdon",
+        "--threads=1"
+      ],
+      "result": 37607912018
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "1000000000000",
+        "--deleglise-rivat",
+        "--threads=1"
+      ],
+      "result": 37607912018
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "100000000000000",
+        "--gourdon",
+        "--threads=1"
+      ],
+      "result": 3204941750802
+    },
+    {
+      "command": [
+        "/opt/homebrew/bin/primecount",
+        "100000000000000",
+        "--deleglise-rivat",
+        "--threads=1"
+      ],
+      "result": 3204941750802
+    }
+  ],
+  "unique_p2_references": 125,
+  "cases": 258
+}

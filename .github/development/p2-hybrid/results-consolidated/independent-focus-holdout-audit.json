@@ -1,0 +1,39 @@
+{
+  "auditor": "independent read/recompute; analyzer not imported",
+  "auditor_sha256": "4c44b49d89338e6e6441b2743c4eaed5df0eedfbb81e7328736db058eb0a1dab",
+  "cohorts": [
+    {
+      "cohort": "focus",
+      "rows": 8840,
+      "cases": 45,
+      "processes": 2210,
+      "process_distributions": 26520,
+      "summaries": 5400,
+      "comparisons": 7020,
+      "best_controls": 90,
+      "flags": 1,
+      "raw_sha256": "b6a61faefe1f35976718bc3e19db79108ba1a9cb71f6605a52a755c7cc1533a0",
+      "all_verified": true
+    },
+    {
+      "cohort": "holdout",
+      "rows": 3264,
+      "cases": 28,
+      "processes": 816,
+      "process_distributions": 9792,
+      "summaries": 2016,
+      "comparisons": 2016,
+      "best_controls": 56,
+      "flags": 0,
+      "raw_sha256": "9e72a5015f9120c7ce18569f5885a1bc5d021aba15898230104673b92b71823f",
+      "all_verified": true
+    }
+  ],
+  "frozen_inputs_verified": 798,
+  "binaries_verified": 10,
+  "production_files_matched_to_snapshot": 394,
+  "candidate_sha256": "2d6e81e0964aa354b45708c6e99cd96cb32aab83773523f4ca78d32326b9649c",
+  "numeric_p2_values_consistent_across_modes_tables_threads_variants": 39,
+  "prime_counts_consistent": 9,
+  "all_verified": true
+}

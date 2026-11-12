@@ -1,0 +1,10 @@
+{
+  "timed_results": 24768,
+  "all_expected_results_match": true,
+  "all_numeric_x_a_results_agree_across_modes_tables_variants_threads_repeats": true,
+  "distinct_numeric_x_a": 48,
+  "distinct_numeric_x_a_table_contexts": 137,
+  "all_rational_limits_exact": true,
+  "finite_nonnegative_times": true,
+  "phase_sum_tolerance_ms": 5e-06
+}

@@ -1,0 +1,15 @@
+{
+  "production_commit": "8b43ed790435b22eb9ec02627379082fe7deb103",
+  "production_files_checked": 392,
+  "production_changes": [],
+  "prior_result_files_unchanged": {
+    "results": 24,
+    "results-wide": 18,
+    "results-extended": 19
+  },
+  "build_inputs_checked": 282,
+  "binaries_checked": 7,
+  "policy_and_runner_unchanged": true,
+  "staged_changes": "",
+  "validation_scope": "Native experimental builds only; no full R package check or other-platform run; production untouched."
+}

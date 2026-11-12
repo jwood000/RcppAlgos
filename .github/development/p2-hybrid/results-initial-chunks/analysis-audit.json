@@ -1,0 +1,11 @@
+{
+  "raw_sha256": "4dc749dd201739bdc33701de7ff05964acb75062e9fd501439dee91e5285cdb1",
+  "analysis_sha256": "897237fb234d4afde1eef40d1008018ecc39beb86a18d126bece717eec4e295b",
+  "rows": 10752,
+  "processes": 1848,
+  "aggregate_distributions_checked": 4704,
+  "paired_distributions_checked": 2128,
+  "group_summaries_checked": 84,
+  "all_checks_passed": true,
+  "method": "Independent direct CSV grouping/reduction and arithmetic, without calling analyzer functions; report summaries retain every collected block."
+}

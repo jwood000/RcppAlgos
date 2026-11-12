@@ -1,0 +1,17 @@
+{
+  "rows": 288,
+  "paired_distributions": 144,
+  "flags": 0,
+  "production_sha256": "df2bc230e0a36d72306cfe8dd1bd42986c9dad1bbfe84741be501443c6a9986d",
+  "package_and_native_snapshots_match": true,
+  "preservation": {
+    "tracked_unchanged": {
+      "files": 780,
+      "changed": []
+    },
+    "prior_experiments": {
+      "files": 495,
+      "changed": []
+    }
+  }
+}

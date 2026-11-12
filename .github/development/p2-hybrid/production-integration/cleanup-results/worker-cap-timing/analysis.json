@@ -1,0 +1,265 @@
+{
+  "rows": 80,
+  "processes": 20,
+  "expected": 127245583,
+  "seed": 20261111,
+  "geometry": {
+    "x": 1000000000000,
+    "L": 1000000,
+    "first": 3305,
+    "last": 3369,
+    "terms": 64,
+    "jobs": 33
+  },
+  "note": "Five randomized matched blocks; fresh process first call and median of three warm calls. Time only Phi prefix, excluding table setup. Before is maintainer staged P2, after is cleanup. Budget8 is an unchanged-launch control; budget36 changes36 launches to33. Timings on this host are evidence for these cases only, not selector tuning or general scaling. The normal R thread ceiling is10; this private-helper diagnostic deliberately exercises a larger budget.",
+  "summary": [
+    {
+      "budget": 8,
+      "state": "first",
+      "before_median_ms": 0.533125,
+      "after_median_ms": 0.569625,
+      "paired_delta_ms": 0.04620800000000003,
+      "paired_percent": 9.069283611383705,
+      "all_slower": false,
+      "all_faster": false
+    },
+    {
+      "budget": 8,
+      "state": "warm",
+      "before_median_ms": 0.10925,
+      "after_median_ms": 0.110791,
+      "paired_delta_ms": 0.002833000000000002,
+      "paired_percent": 2.6590452591466196,
+      "all_slower": false,
+      "all_faster": false
+    },
+    {
+      "budget": 36,
+      "state": "first",
+      "before_median_ms": 0.702583,
+      "after_median_ms": 0.623709,
+      "paired_delta_ms": -0.16695799999999994,
+      "paired_percent": -23.76345570558922,
+      "all_slower": false,
+      "all_faster": false
+    },
+    {
+      "budget": 36,
+      "state": "warm",
+      "before_median_ms": 0.228166,
+      "after_median_ms": 0.216083,
+      "paired_delta_ms": -0.02795800000000001,
+      "paired_percent": -12.579527559055126,
+      "all_slower": false,
+      "all_faster": true
+    }
+  ],
+  "commands": [
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/inst/include",
+      "-c",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/src/Phi.cpp",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/Phi.o"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/inst/include",
+      "-c",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/src/PhiParallel.cpp",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/PhiParallel.o"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/inst/include",
+      "-c",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/src/P3.cpp",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/P3.o"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/inst/include",
+      "-c",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/src/PiMeissel.cpp",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/PiMeissel.o"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/inst/include",
+      "-c",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/src/PiLehmer.cpp",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/PiLehmer.o"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/inst/include",
+      "-c",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/src/Eratosthenes.cpp",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/Eratosthenes.o"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/inst/include",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/Phi.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/PhiParallel.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/P3.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/PiMeissel.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/PiLehmer.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/Eratosthenes.o",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing"
+    ],
+    [
+      "clang++",
+      "-std=c++11",
+      "-O3",
+      "-pthread",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/native-validation/source/inst/include",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing.cpp",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/Phi.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/PhiParallel.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/P3.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/PiMeissel.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/PiLehmer.o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/Eratosthenes.o",
+      "-o",
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "36"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "36"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "36"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "36"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "36"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "36"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "36"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "36"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "8"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/before/timing",
+      "36"
+    ],
+    [
+      "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-cleanup-ntlp0qu5/worker-cap-timing/after/timing",
+      "36"
+    ]
+  ],
+  "source_sha256": {
+    "before": "2a887d0e82d74099d3fdee0c3d32965572b91e7bd04221b8bf5b3dd619a354a2",
+    "after": "b6553ed680d2445c1230d0b1f5e9522646a1f40643706c33a55b0bade50e2a8b"
+  }
+}

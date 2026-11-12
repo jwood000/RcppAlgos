@@ -1,0 +1,12 @@
+First process completed four correct counts, but emitted this warning on stderr:
+Warning message:
+In tick() :
+  less accurate nanosecond times to avoid potential integer overflows
+
+method,n,threads,repeat_index,result,total_ms,maxThreads
+legendre,1e+11,1,0,4118054813,16.655963,10
+legendre,1e+11,1,1,4118054813,5.933438,10
+legendre,1e+11,1,2,4118054813,5.306589,10
+legendre,1e+11,1,3,4118054813,5.501667,10
+
+Runner aborted on stderr before accepting any matrix rows. Replace uptime-based timer with test-only per-process steady_clock timer; restart the complete predeclared matrix/order. No package source changed.

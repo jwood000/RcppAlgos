@@ -1,0 +1,28 @@
+{
+  "mode": "phases",
+  "seed": 202611131,
+  "configurations": 88,
+  "blocks": 264,
+  "started_utc": "2026-11-07T03:33:26.771370+00:00",
+  "finished_utc": "2026-11-07T03:52:49.830823+00:00",
+  "processes": 3,
+  "repeats": 4,
+  "variants": [
+    "baseline",
+    "hybrid8",
+    "hybrid16",
+    "hybrid32",
+    "hybrid64",
+    "selector-v1",
+    "selector-v2"
+  ],
+  "verified_rows": 7392,
+  "policy_sha256": {
+    "P2Selector.h": "2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6",
+    "P2SelectorV2.h": "e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8"
+  },
+  "first": "fresh process; complete Phi phase precedes P2",
+  "warm": "median of three subsequent calls, then median across processes",
+  "best_fixed": "hindsight minimum of baseline Phi-only and fixed8/16/32/64 medians per configuration/state; optimistic comparison",
+  "comparisons": "paired process ratios/deltas vs baseline, hindsight best fixed, own selected fixed, v1, and v2"
+}

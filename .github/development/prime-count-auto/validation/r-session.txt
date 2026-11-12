@@ -1,0 +1,12 @@
+list(R = "R version 4.6.1 (2026-06-24)", testthat = "3.3.2", 
+    package = "2.10.3", dll = "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-prime-count-auto-emmr8i33/library/RcppAlgos/libs/RcppAlgos.so", 
+    maxThreads = 10L, session = c("R version 4.6.1 (2026-06-24)", 
+    "Platform: aarch64-apple-darwin23", "Running under: macOS Sequoia 15.7.4", 
+    "", "Matrix products: default", "BLAS:   /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRblas.0.dylib ", 
+    "LAPACK: /Library/Frameworks/R.framework/Versions/4.6/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.1", 
+    "", "locale:", "[1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8", 
+    "", "time zone: America/New_York", "tzcode source: internal", 
+    "", "attached base packages:", "[1] stats     graphics  grDevices utils     datasets  methods   base     ", 
+    "", "other attached packages:", "[1] RcppAlgos_2.10.3", "", 
+    "loaded via a namespace (and not attached):", "[1] compiler_4.6.1 parallel_4.6.1 gmp_0.7-5.1   "
+    ))

@@ -1,0 +1,13 @@
+{
+  "cohort": "focus",
+  "rows": 8840,
+  "processes": 2210,
+  "cases": 45,
+  "first_warm_groups": 4420,
+  "raw_sha256": "b6a61faefe1f35976718bc3e19db79108ba1a9cb71f6605a52a755c7cc1533a0",
+  "checked": "Complete matrix, identities, hashes, references, exact results, stable selection, phase sums, process pairing.",
+  "summary_distributions": 5400,
+  "paired_distributions": 7020,
+  "flagged_comparisons": 1,
+  "analyzer_sha256": "b9f3e7ba8bb048f596328bc02e5508574292e8d55024c295cea337d5f2a484e2"
+}

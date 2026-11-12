@@ -1,0 +1,38 @@
+{
+  "rows": 1416,
+  "choices_by_variant": {
+    "selector-v1": {
+      "range-8": 33,
+      "small-parallel": 68,
+      "range-16": 30,
+      "parallel-promotion": 2,
+      "range-32": 50,
+      "range-64": 28,
+      "too-few-queries": 118,
+      "empty": 10,
+      "too-few-stream-queries": 3,
+      "direct-only": 12
+    },
+    "selector-v2": {
+      "range-8": 29,
+      "parallel-coverage": 12,
+      "stream-worker-deficit": 48,
+      "range-16": 28,
+      "parallel-promotion": 2,
+      "range-32": 44,
+      "range-64": 26,
+      "too-few-queries": 16,
+      "short-full-range": 116,
+      "at-most-one-query": 8,
+      "empty": 10,
+      "too-few-stream-queries": 3,
+      "direct-only": 12
+    }
+  },
+  "same_actual_partition": 240,
+  "changed_actual_partition": 114,
+  "max_scratch_bytes": {
+    "selector-v1": 396344,
+    "selector-v2": 396344
+  }
+}

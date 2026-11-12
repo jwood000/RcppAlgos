@@ -1,0 +1,31 @@
+{
+  "input_csv": "/Users/owacasa/RcppAlgos/.github/development/p2-hybrid/results-selector-v2/memory.csv",
+  "input_csv_sha256": "f6295fa70de68df3f8f09be2f4cc0b5c766c275599855fb24217dd0677ea5c89",
+  "filter": {
+    "variant": "selector-v2",
+    "repeat": "0"
+  },
+  "contexts": 354,
+  "columns": [
+    "case_id",
+    "x",
+    "a",
+    "table_limit",
+    "threads",
+    "b",
+    "non_table_queries",
+    "direct_queries",
+    "phi_worker_budget",
+    "selected_q",
+    "selected_k",
+    "selection_reason",
+    "phi_queries",
+    "stream_queries",
+    "candidate_q",
+    "candidate_stream_first",
+    "candidate_stream_queries",
+    "candidate_stream_span",
+    "candidate_stream_worker_budget"
+  ],
+  "maximum_table_limit": 10000000
+}

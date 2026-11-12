@@ -1,0 +1,14 @@
+[
+  {
+    "sanitizer": "asan-ubsan",
+    "checks": 5622,
+    "choice_cases": 201,
+    "kernel_cases": 173
+  },
+  {
+    "sanitizer": "tsan",
+    "checks": 5622,
+    "choice_cases": 201,
+    "kernel_cases": 173
+  }
+]

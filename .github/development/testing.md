@@ -30,8 +30,10 @@ investigation does not replace the normally installed package.
   tables, and shared atomic cache. `inst/include/NumbersUtils/Phi.h` declares
   `Phi`, `PhiParallel`, and the reusable tables, including a read-only prime
   sequence. Worker evaluation through `Phi` remains serial.
-- `src/P2.cpp` counts two-prime products using direct pi lookups and shared
-  serial Phi for larger quotients. `src/P3.cpp` counts three-prime
+- `src/P2.cpp` counts two-prime products using direct pi lookups, shared
+  serial Phi, and a bounded segmented-sieve tail selected from the numeric
+  workload. Its Phi workers claim individual jobs for the first 32 queries,
+  then 32-query jobs, through one dynamic queue. `src/P3.cpp` counts three-prime
   products with direct lookups. `NumbersUtils/PartialSieve.h` declares these
   internal kernels; `PartialSieveUtils.h` shares validation and corrected roots.
   Neither kernel changes the R driver or selects a prime-counting method.
@@ -39,10 +41,14 @@ investigation does not replace the normally installed package.
   without R dependencies. It does not expose cache internals or phi helpers.
 
 The R method selector exposes Legendre, Meissel and Lehmer. The default `auto`
-policy preserves the historical small-input dispatch and Legendre cutoff;
-broader performance and memory measurements are needed before tuning that
-policy. The legacy `PhiTinyLookup.h` is retained but is no longer included by
-production code; the shared evaluator owns the tiny tables.
+policy keeps the historical lookup/sieve below `1e5`, uses Legendre below
+`1e10`, and uses Meissel for larger inputs except that `n >= 1e12` with at
+least six usable threads selects Lehmer. The usable budget is the requested
+thread count capped by the package's detected maximum; `NULL` means one.
+The [dispatch benchmark](prime-count-auto/README.md) records the empirical
+policy and its first/warmed-call tradeoffs. The legacy `PhiTinyLookup.h` is
+retained but is no longer included by production code; the shared evaluator
+owns the tiny tables.
 
 ## R partial-sieve functions
 
@@ -125,13 +131,17 @@ existing positional thread arguments keep their meaning. `match.arg` accepts
 `le` is ambiguous and errors, while `leg` and `leh` distinguish the two methods.
 As with standard `match.arg`, `NULL` selects the first choice, `auto`.
 
-The current automatic policy is the previous implementation: a tiny lookup
-below 10, the sieve counter from 10 through 99,999, and Legendre from 100,000
-upward. Explicit choices call the named native algorithm for every accepted
-positive input, including small values. Legendre's native positive-input
-contract is now documented as `1 <= n <= 2^53 - 1`; its algorithm is unchanged.
-The automatic policy may be tuned after broader measurement and does not
-promise the fastest method for every input or machine.
+The automatic policy uses a tiny lookup below 10, the sieve counter from 10
+through 99,999, and Legendre from `1e5` through `1e10 - 1`. From `1e10`
+upward it uses Meissel, except that `n >= 1e12` with at least six usable
+threads selects Lehmer. Method selection uses `min(nThreads, maxThreads)`;
+the original request and maximum are still forwarded to the selected driver.
+This rule uses no runtime timing or cache-state inspection. Explicit choices
+call the named native algorithm for every accepted positive input, including
+small values. Legendre's native contract remains `1 <= n <= 2^53 - 1`.
+The policy may change after further measurement and does not promise the
+fastest method for every input or machine. See the retained
+[matched R-level benchmark and tradeoffs](prime-count-auto/README.md).
 
 Input validation and result types retain the existing contract: `n` must be a
 positive whole number at most `2^53 - 1`, and the result is integer when the
@@ -152,7 +162,10 @@ continues to use its handwritten R wrappers, with no generated `R/cpp11.R`.
 `tests/testthat/testPrimeCount.R` includes an independent base-R sieve, cutoff
 neighbors, known counts and result types, positional compatibility, method
 matching, parallel calls, and validation/recovery. Existing parallel cache
-tests remain first so focused runs retain their cold-cache coverage.
+and batch-boundary tests explicitly select Legendre and remain first so
+focused runs retain their original cold-cache and scheduling coverage.
+Automatic-selection boundary tests check known counts and result types
+separately; the sentinel fixture verifies which algorithm actually ran.
 
 To verify dispatch independently of the algorithms agreeing on a count, run:
 
@@ -169,7 +182,31 @@ at `INT_MAX`, invalid inputs, and C++ exception translation/recovery. It does
 not validate counting mathematics, actual worker scheduling, or worker failures;
 the independent counting and thread-failure checks cover those separately.
 
-### API validation
+### Automatic default validation (November 11, 2026)
+
+The [matched R benchmark](prime-count-auto/README.md) and separate follow-up
+verified 1,980 counts from 495 fresh processes. They support the current
+`1e10`/`1e12` size boundaries and six-usable-thread Lehmer requirement, with
+documented first-call costs around `3e10`–`4e10` at four threads. The original
+benchmark candidate and final-policy analysis are retained separately.
+
+A clean isolated installation passed 867 expectations across eleven
+number-theory/error test files, with no failures, errors, warnings or skips.
+The sentinel fixture passed 253 routing/type/validation/recovery checks,
+including capped requests and the five/six-thread boundary. The installed
+prime-count help/examples, unchanged public formals and four-argument native
+registration passed their checks. Package and fixture builds were clean.
+An explicit C++11 syntax check passed with the same nine installed-cpp11
+header warnings as the previous adapter. See
+[integration validation](prime-count-auto/VALIDATION.md) for commands, logs,
+the diagnostic-harness correction and remaining limits.
+
+Only the R-facing adapter changes selection; the numerical kernels, shared
+cache and worker launchers are unchanged. Their prior sanitizer evidence
+remains separate. No full package check or new peak-memory measurement was
+performed for this dispatch change.
+
+### Initial API validation (historical sieve/Legendre default)
 
 A clean isolated installation passed 540 expectations across the ten focused
 number-theory/error test files: 115 in `testPrimeCount.R`, 207 in `testErrors.R`,
@@ -517,6 +554,122 @@ are retained under the directory recorded by `/tmp/rcppalgos-phi-parallel-path`:
 
 ## P2 and P3 counting kernels
 
+Production P2 now integrates the reviewed
+[consolidated policy](p2-hybrid/CONSOLIDATED.md): common K=1 initial scheduling,
+the established 8L/16L/32L/64L caps, a short-complete-range exception, and
+conservative small-parallel fallbacks for insufficient stream workers,
+enlarged tables and early cutoffs. Selector and queue helpers remain private
+to `src/P2.cpp`; the R interface, default prime-counting method, Phi cache,
+inherited worker budgets and counting identities are unchanged. Actual Phi
+workers are additionally capped by the queue's available jobs. Integration validation
+is recorded in [production-integration/](p2-hybrid/production-integration/).
+
+A clean isolated installation on arm64 macOS with R 4.6.1 passed 864
+expectations across the eleven number-theory/error files: 119 in
+`testPrimeCount.R`, 320 in `testPartialSieve.R`, 207 in `testErrors.R`, and
+218 across the other eight files. There were no failures, errors, warnings
+or skips. Added cases cover independently counted short streaming tails around
+a prime square, singleton/empty cutoffs, known `8e10` semiprime counts across
+cutoffs and worker budgets, and serial/parallel Meissel/Lehmer at `1e12`.
+The updated `semiPrimeCount.Rd` passed parsing/checking and its installed
+examples ran successfully. No registration or R signature changed.
+
+The reusable [R runner](p2-hybrid/production-integration/r-tests.R) verifies
+that the loaded DLL belongs to the temporary library before running tests:
+
+```sh
+Rscript --vanilla .github/development/p2-hybrid/production-integration/r-tests.R \
+    /path/to/integration/artifacts /path/to/RcppAlgos
+```
+
+The artifact directory must contain the clean installed library in `library/`.
+Prime-count tests run first in a fresh process to preserve their existing
+cold-cache coverage. Full package checking and other platforms remain outside
+this focused integration check; native sanitizer and performance-parity
+results are recorded separately in the integration notes.
+
+The [November 11 cleanup validation](p2-hybrid/production-integration/CLEANUP.md)
+reran all 864 R expectations after the maintainer's signed-index changes,
+shared stream-budget helper and Phi job cap. ASan/UBSan and TSan each passed
+60,322 common checks, 71,120 queue checks, 15,013 selector comparisons, 739
+worker-budget/actual-launch checks and 88 private stream-window checks.
+The selector thresholds and guard order remain unchanged. Fresh logs and a
+focused before/after worker-cap timing check are retained separately from the
+historical integration results.
+
+The following study summaries describe their frozen experimental snapshots,
+before production integration. Their code and results remain unchanged.
+
+The [doubled-cache profile and bounded-streaming P2 experiment](p2-hybrid/README.md)
+reports measurements at the committed 131,071 cache endpoint and
+compares temporary `2L`, `4L`, and `8L` streaming tails. The 8L variant improves
+the larger tested calls but regresses at the small parallel case; production
+P2 and dispatch remain unchanged pending review. Raw timings, memory/work
+observations, sanitizer results and the reproduction tools are retained there.
+
+The [16L/32L follow-up](p2-hybrid/WIDE.md) remeasures baseline and `8L` in
+matched blocks with the wider temporary endpoints. At `1e13`–`1e14`, warmed
+complete `32L` calls improve another 18–22% over `8L`; smaller cases retain
+size/thread-dependent tradeoffs. Its results are stored separately, and no
+production change is made.
+
+The [64L/128L follow-up](p2-hybrid/EXTENDED.md) finds diminishing returns:
+warmed complete calls favor `32L` at `1e13`, while `64L` retains a small
+serial and larger parallel gain at `1e14`. Every matched complete-call `128L`
+comparison against `64L` at `1e12`–`1e14` regresses for both first and warmed calls.
+The wider variants remain temporary; boundary tests include bounded stream
+windows beyond 32-bit coordinates and the larger buffer threshold.
+
+The [temporary dynamic-selector study](p2-hybrid/SELECTOR.md) freezes a simple
+size/thread/query-count rule before evaluating intermediate inputs and arbitrary
+cutoffs. All 14,544 timed results match; the six variants pass the shared
+ASan/UBSan and TSan suites, with additional policy-boundary and concurrency
+checks. Complete warmed calls finish within 5% of the fastest fixed candidate
+in 74/80 configurations, but the 4,096-query fallback misses large savings for
+short quotient intervals. Production remains unchanged. Separate first/warmed
+results, memory probes, frozen source hashes and lossless raw timing archives
+are retained for review; the policy has not been retuned using these results.
+
+The [interval-aware selector v2 study](p2-hybrid/SELECTOR_V2.md) compares v1,
+v2 and fixed variants across 354 configurations. All 29,736 timed results match,
+and the seven variants pass ASan/UBSan and TSan. V2 removes major narrow-tail
+misses and improves all eight complete-call configurations where its partition
+changes, but some enlarged-table cases regress when warmed. Both selectors
+remain frozen experimental variants; production and prior results are unchanged.
+The report retains first/warmed comparisons, lossless raw samples, memory/work
+probes, policy-boundary fixtures and reproduction commands.
+
+The [stream-density selector v3 study](p2-hybrid/SELECTOR_V3.md) adds one
+small-parallel guard and compares eight variants across exact rational table
+sizes. All 24,768 counts match, and all variants pass ASan/UBSan and TSan.
+V3 restores the four known warmed doubled-table cases and improves 89 of 99
+changed warmed cases, while slowing 55 first-call cases. Identical tail density
+can still have opposite warmed preferences at different cutoffs. Production,
+v1/v2 policies and prior results remain unchanged; no retuning or promotion is
+included. The report retains raw data, scope replay, boundary fixtures and
+reproduction commands.
+
+The [matched-cutoff P2 profile](p2-hybrid/MATCHED_PROFILE.md) separates dynamic
+worker overlap, Phi cache reuse and streaming costs at `8e10`, two threads and
+a 6/5-sized table. All 2,880 uninstrumented timings and 372 diagnostic results
+match independent references; final harness validation adds 480 results across
+plain, traced, counted, ASan/UBSan and TSan builds. Separate Phi instrumentation
+passes 93,653 independent checks under each sanitizer configuration. A split-Phi
+control and traces show that the hybrid loses useful overlap for zero cutoff,
+while Meissel's prefix is balanced. Production and prior policies stay unchanged.
+Sources, compressed raw data, counter/trace audits and reproduction commands are
+retained with the study.
+
+The [smaller-initial-chunks study](p2-hybrid/INITIAL_CHUNKS.md) keeps production
+unchanged and tests a single ticket queue with 1/2/4/8-query initial chunks,
+then the original 32-query chunks. All 10,752 timed results match; seven variants
+pass 60,322 common checks each under ASan/UBSan and TSan, with 174,907 queue
+checks per sanitizer. Independent diagnostics validate 216 first-query traces
+and 224 distinct prime-count queries. Zero-cutoff parallel calls improve
+substantially, but Meissel/Lehmer show no general scheduling gain and some first
+calls regress. The report retains the K=32 queue control, complete-call results,
+unresolved timing variation, compressed raw data and reproduction commands.
+
 The initial [P2 profiling study](p2-profile/README.md) separates complete-driver
 phase timing, isolated cold/warm P2, OS stack sampling, and diagnostic work
 counters. It retains reproducible harnesses and measured results without
@@ -541,7 +694,7 @@ all greater than `p[a]`. `a == 0` permits all primes. They borrow immutable
 validate `0 <= x <= 2^53 - 1` and `0 <= a <= tables.primeCount()` before any
 empty-sum return. `nThreads <= 1` requests serial evaluation. The APIs are
 internal C++ interfaces; the R method selector calls the complete counting
-drivers rather than exposing these partial counts directly.
+drivers, while `semiPrimeCount` and `triPrimeCount` expose the partial counts.
 
 ### Preparation and counting invariants
 
@@ -553,20 +706,30 @@ sum is zero without accessing `p[a+1]`.
 
 P2 answers quotients within the prepared table directly. The exact split is
 `floor(x/p) <= limit` iff `p > floor(x/(limit+1))`; it separates this suffix once
-instead of testing table membership in every expensive iteration. Larger
-quotients use `pi(q) = Phi(q, pi(floor(sqrt(q))), tables) +
+instead of testing table membership in every expensive iteration. For larger
+quotients the Phi path uses `pi(q) = Phi(q, pi(floor(sqrt(q))), tables) +
 pi(floor(sqrt(q))) - 1`. Since `q >= p[i] >= 2` and `sqrt(q) <= sqrt(x)`, both
 the identity and the prepared-table coverage hold. The existing serial Phi
-implementation and its bounded atomic cache are reused. No additional dense
-pi table, segmented sieve, or vector of quotient results is allocated.
+implementation and its bounded atomic cache are reused. The selector can
+instead stream a bounded lower range of these quotients with a segmented
+sieve. Each stream worker counts upward through its numeric interval, seeded
+by the prepared pi table or one serial Phi evaluation. It owns one byte per
+odd candidate in a segment and the next crossing position for each required
+odd base prime. No additional dense pi table or quotient-result vector is
+allocated. Phi-prefix workers finish before stream workers start.
 
-P2 workers obtain contiguous chunks of 32 indices from a relaxed atomic
-counter. Each claim owns disjoint work; the counter does not publish other
-data. Thread launch makes immutable tables visible, and join makes independent
+P2 Phi workers obtain single-query jobs for the first 32 indices, followed
+by contiguous 32-query jobs, from one relaxed atomic ticket counter. There is
+no intermediate barrier. Each claim owns disjoint work; the counter does not
+publish other data. Thread launch makes immutable tables visible, and join makes independent
 subtotals visible. Dynamic assignment accommodates the uneven cost of pi
 queries. Worker selection initially requires 2,048 terms per worker, and
 small jobs remain serial. These are measured implementation choices, not
 mathematical limits or universally optimal settings for arbitrary cutoffs.
+The Phi budget is computed from the full non-table range, so removing a
+streamed tail does not reduce the prefix budget by itself. Stream workers
+divide the actual numeric span, with a 1,048,576-integer grain and no more
+workers than queries or the requested thread budget.
 
 An initial segmented P2 prototype passed correctness checks and scaled across
 threads, but the simpler Phi-backed formula was substantially faster for some
@@ -579,7 +742,7 @@ three shuffled fresh processes and one cold plus two warm calls each, with
 prepared-table setup excluded. All 234 timed partial counts in that initial
 screen matched their expected values.
 
-The maintainer chose the simpler Phi-backed implementation after this result.
+The maintainer initially chose the simpler Phi-backed implementation after this result.
 The segmented source, executable, and full timing results are retained in the
 `segmented-experiment` directory under the artifact path recorded below. P2
 still evaluates its explicit pair-count sum; neither kernel delegates the

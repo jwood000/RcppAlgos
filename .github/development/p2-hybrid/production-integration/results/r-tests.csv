@@ -1,0 +1,12 @@
+"file","tests","expectations","passed","failed","errors","warnings","skipped"
+"testPrimeCount.R",11,119,119,0,0,0,0
+"testPartialSieve.R",11,320,320,0,0,0,0
+"testErrors.R",21,207,207,0,0,0,0
+"testPrimeSieve.R",16,117,117,0,0,0,0
+"testPrimeFactorize.R",1,15,15,0,0,0,0
+"testPrimeFactorizeSieve.R",1,13,13,0,0,0,0
+"testIsPrimeRcpp.R",1,13,13,0,0,0,0
+"testEulerPhiSieve.R",1,15,15,0,0,0,0
+"testDivisorsRcpp.R",1,14,14,0,0,0,0
+"testDivisorsSieve.R",1,17,17,0,0,0,0
+"testNumDivisorSieve.R",1,14,14,0,0,0,0

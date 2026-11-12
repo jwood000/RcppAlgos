@@ -1,0 +1,1056 @@
+{
+  "rows": 73,
+  "instrumented_build": [
+    "clang++",
+    "-std=c++11",
+    "-O3",
+    "-g",
+    "-fno-omit-frame-pointer",
+    "-pthread",
+    "-Wall",
+    "-Wextra",
+    "-Wpedantic",
+    "-DP2_HYBRID_MEMORY",
+    "-DP2_HYBRID_SELECTOR_CANDIDATE",
+    "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/source/inst/include",
+    "-I/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/build",
+    "-I/Users/owacasa/RcppAlgos/.github/development/p2-hybrid",
+    "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/build/selector_profile.cpp",
+    "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/build/P2HybridInitial.cpp",
+    "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/build/Phi.o",
+    "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/build/PhiParallel.o",
+    "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/build/P3.o",
+    "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/build/Eratosthenes.o",
+    "-o",
+    "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate"
+  ],
+  "binary_sha256": "d04784323f16584a8b73bbb8ebd242277815ab3b1898da65e4b93485e0a4a5a7",
+  "raw_sha256": "76d8a6ef6fdf3b1e4e7f0025e8a6e3464584c5b479a8ce144fe7c4b57fce52f2",
+  "runs": [
+    {
+      "case_id": "p2-zero-80000000000-t2-L6over5",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "80000000000",
+        "2",
+        "1",
+        "11238880589",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "p2-zero-80000000000-t8-L6over5",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "80000000000",
+        "8",
+        "1",
+        "11238880589",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-80000000000-t2-L6over5",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "80000000000",
+        "2",
+        "1",
+        "2069687562",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-80000000000-t8-L6over5",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "80000000000",
+        "8",
+        "1",
+        "2069687562",
+        "6",
+        "5"
+      ]
+    },
+    {
+      "case_id": "p2-zero-10000000000-t4-L2over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "10000000000",
+        "4",
+        "1",
+        "1493776443",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-10000000000-t4-L2over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "10000000000",
+        "4",
+        "1",
+        "279167372",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-70000000000-t4-L2over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "70000000000",
+        "4",
+        "1",
+        "9871546367",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-70000000000-t4-L2over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "70000000000",
+        "4",
+        "1",
+        "1821520417",
+        "2",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-50000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "50000000000",
+        "2",
+        "1",
+        "7119669230",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-50000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "50000000000",
+        "2",
+        "1",
+        "1316723389",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-50000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "50000000000",
+        "2",
+        "1",
+        "2172319744",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-80000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "80000000000",
+        "2",
+        "1",
+        "11238880589",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-80000000000-t4-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "80000000000",
+        "4",
+        "1",
+        "11238880589",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-80000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "80000000000",
+        "2",
+        "1",
+        "2069687562",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-80000000000-t4-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "80000000000",
+        "4",
+        "1",
+        "2069687562",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-80000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "80000000000",
+        "2",
+        "1",
+        "3425452695",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-80000000000-t4-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "80000000000",
+        "4",
+        "1",
+        "3425452695",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "10000000000",
+        "8",
+        "1",
+        "463026862",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-10000000000-t1-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "10000000000",
+        "1",
+        "1",
+        "279167372",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-10000000000-t1-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "10000000000",
+        "1",
+        "1",
+        "463026862",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-1000000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "1000000000000",
+        "8",
+        "1",
+        "131126017178",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-1000000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "1000000000000",
+        "8",
+        "1",
+        "23729370364",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-1000000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "1000000000000",
+        "8",
+        "1",
+        "39098548800",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail2048-3000000000-t1-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "tail2048",
+        "3000000000",
+        "1",
+        "1",
+        "4927380",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail4094-7000000000000-t1-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "tail4094",
+        "7000000000000",
+        "1",
+        "1",
+        "16866511",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-99999999999-t4-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "99999999999",
+        "4",
+        "1",
+        "2571194450",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-100000000000-t4-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "100000000000",
+        "4",
+        "1",
+        "2571194450",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-10000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "10000000000",
+        "2",
+        "1",
+        "455052511",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-10000000000-t4-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "10000000000",
+        "4",
+        "1",
+        "455052511",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-10000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "10000000000",
+        "8",
+        "1",
+        "455052511",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-10000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "10000000000",
+        "2",
+        "1",
+        "455052511",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-10000000000-t4-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "10000000000",
+        "4",
+        "1",
+        "455052511",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-10000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "10000000000",
+        "8",
+        "1",
+        "455052511",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-70000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "70000000000",
+        "2",
+        "1",
+        "2925699539",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-70000000000-t4-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "70000000000",
+        "4",
+        "1",
+        "2925699539",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-70000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "70000000000",
+        "8",
+        "1",
+        "2925699539",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-70000000000-t2-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "70000000000",
+        "2",
+        "1",
+        "2925699539",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-70000000000-t4-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "70000000000",
+        "4",
+        "1",
+        "2925699539",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-70000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "70000000000",
+        "8",
+        "1",
+        "2925699539",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t1-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "1",
+        "1",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1000000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "1000000000000",
+        "8",
+        "1",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t1-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "1",
+        "1",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1000000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "1000000000000",
+        "8",
+        "1",
+        "37607912018",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-100000000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "100000000000000",
+        "8",
+        "1",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-100000000000000-t8-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "100000000000000",
+        "8",
+        "1",
+        "3204941750802",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-60000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "60000000000",
+        "3",
+        "1",
+        "8498793416",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-one-60000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "one",
+        "60000000000",
+        "3",
+        "1",
+        "7198787490",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-half-meissel-60000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "half-meissel",
+        "60000000000",
+        "3",
+        "1",
+        "1953783550",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-60000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "60000000000",
+        "3",
+        "1",
+        "1570399156",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-60000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "60000000000",
+        "3",
+        "1",
+        "2592200746",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-zero-85000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "85000000000",
+        "6",
+        "1",
+        "11920743503",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-85000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "85000000000",
+        "6",
+        "1",
+        "2197267765",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-85000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "85000000000",
+        "6",
+        "1",
+        "3642485059",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-60000000000-t3-L1001over1000",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "60000000000",
+        "3",
+        "1",
+        "1570399156",
+        "1001",
+        "1000"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-60000000000-t3-L3over2",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "60000000000",
+        "3",
+        "1",
+        "1570399156",
+        "3",
+        "2"
+      ]
+    },
+    {
+      "case_id": "p2-zero-110000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "zero",
+        "110000000000",
+        "6",
+        "1",
+        "15314812520",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-110000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "110000000000",
+        "6",
+        "1",
+        "2818069346",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-800000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "800000000000",
+        "3",
+        "1",
+        "19132060931",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-800000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "800000000000",
+        "3",
+        "1",
+        "31533379121",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-meissel-1200000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "meissel",
+        "1200000000000",
+        "6",
+        "1",
+        "28312578260",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-lehmer-1200000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "lehmer",
+        "1200000000000",
+        "6",
+        "1",
+        "46600482303",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail2048-4000000000-t1-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "tail2048",
+        "4000000000",
+        "1",
+        "1",
+        "4826439",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "p2-tail4097-6000000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "p2",
+        "tail4097",
+        "6000000000000",
+        "3",
+        "1",
+        "16944732",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-60000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "60000000000",
+        "3",
+        "1",
+        "2524038155",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-60000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "60000000000",
+        "3",
+        "1",
+        "2524038155",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-85000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "85000000000",
+        "6",
+        "1",
+        "3523979003",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-85000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "85000000000",
+        "6",
+        "1",
+        "3523979003",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-800000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "800000000000",
+        "3",
+        "1",
+        "30341383527",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-800000000000-t3-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "800000000000",
+        "3",
+        "1",
+        "30341383527",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-1200000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "1200000000000",
+        "6",
+        "1",
+        "44821651132",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-1200000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "1200000000000",
+        "6",
+        "1",
+        "44821651132",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-meissel-80000000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "meissel",
+        "80000000000000",
+        "6",
+        "1",
+        "2582444113487",
+        "1",
+        "1"
+      ]
+    },
+    {
+      "case_id": "phases-lehmer-80000000000000-t6-L1over1",
+      "command": [
+        "/private/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-p2-consolidated-jee7hu58/memory-candidate",
+        "phases",
+        "lehmer",
+        "80000000000000",
+        "6",
+        "1",
+        "2582444113487",
+        "1",
+        "1"
+      ]
+    }
+  ],
+  "instrumentation_sha256": "1dccf2262a0b095079c747ad59a431083931b7f47ab73dce43c12942105fb23b",
+  "runner_sha256": "d68c5d255d09a1df8b83d085aa642c92ab077a65345d5f6e36f3d5e853cf0deb",
+  "scope": "Vector capacities and actual selected ranges, checked against diagnostic selector description. Not RSS; excludes allocator bookkeeping, stack/thread storage and shared Phi cache. One first process per frozen case; no timings reported."
+}

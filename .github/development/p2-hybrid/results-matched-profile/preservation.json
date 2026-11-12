@@ -1,0 +1,13 @@
+{
+  "production_files_checked": 390,
+  "production_changes": [],
+  "prior_result_files_checked": 166,
+  "prior_result_changes": [],
+  "prior_source_changes": [
+    ".github/development/p2-hybrid/README.md"
+  ],
+  "prior_source_change_reason": "Navigation link to this new study only.",
+  "build_input_count": 284,
+  "binaries_checked": 5,
+  "frozen_suite_sources_unchanged": true
+}

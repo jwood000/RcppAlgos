@@ -1,0 +1,14 @@
+{
+  "production_files_checked": 390,
+  "production_changes": [],
+  "prior_result_files_checked": 208,
+  "prior_result_changes": [],
+  "prior_source_changes": [
+    ".github/development/p2-hybrid/README.md"
+  ],
+  "prior_source_reason": "New study navigation only.",
+  "build_inputs_checked": 284,
+  "binaries_checked": 7,
+  "bench_frozen": true,
+  "staged_diff": ""
+}

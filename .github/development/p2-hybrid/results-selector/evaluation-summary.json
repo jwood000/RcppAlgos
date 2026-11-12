@@ -1,0 +1,396 @@
+{
+  "phases-first": {
+    "configurations": 80,
+    "relative_summary_configurations": 80,
+    "below_0.01ms_best_fixed": 0,
+    "baseline": {
+      "median_paired_change_percent_across_cases": -34.15273515046097,
+      "min": -44.663569464510935,
+      "max": 7.064834750398341,
+      "at_most_5_percent_slower": 79,
+      "at_most_10_percent_slower": 80,
+      "at_most_20_percent_slower": 80
+    },
+    "best_fixed": {
+      "median_paired_change_percent_across_cases": 0.7196847190281908,
+      "min": -4.834716213616952,
+      "max": 30.630939078241237,
+      "at_most_5_percent_slower": 64,
+      "at_most_10_percent_slower": 71,
+      "at_most_20_percent_slower": 78
+    },
+    "chosen": {
+      "median_paired_change_percent_across_cases": -0.01329922031680919,
+      "min": -12.673143223207529,
+      "max": 19.234808942218407,
+      "at_most_5_percent_slower": 73,
+      "at_most_10_percent_slower": 76,
+      "at_most_20_percent_slower": 80
+    },
+    "best_fixed_worst_cases": [
+      {
+        "case_id": "phases-lehmer-30000000000-t2-L1",
+        "selected_k": "0",
+        "selection_reason": "small-parallel",
+        "best_fixed": "hybrid16",
+        "best_fixed_paired_change_percent": "30.630939078241237",
+        "best_fixed_paired_delta_ms": "1.2212049999999994"
+      },
+      {
+        "case_id": "phases-meissel-30000000000-t2-L1",
+        "selected_k": "0",
+        "selection_reason": "small-parallel",
+        "best_fixed": "hybrid16",
+        "best_fixed_paired_change_percent": "30.267729798200914",
+        "best_fixed_paired_delta_ms": "1.320417"
+      },
+      {
+        "case_id": "phases-lehmer-100000000000-t2-L1",
+        "selected_k": "16",
+        "selection_reason": "range-16",
+        "best_fixed": "hybrid16",
+        "best_fixed_paired_change_percent": "19.234808942218407",
+        "best_fixed_paired_delta_ms": "1.683166"
+      },
+      {
+        "case_id": "phases-meissel-30000000000-t8-L1",
+        "selected_k": "0",
+        "selection_reason": "small-parallel",
+        "best_fixed": "hybrid64",
+        "best_fixed_paired_change_percent": "16.998551533914743",
+        "best_fixed_paired_delta_ms": "0.4228320000000001"
+      },
+      {
+        "case_id": "phases-lehmer-30000000000-t4-L1",
+        "selected_k": "0",
+        "selection_reason": "small-parallel",
+        "best_fixed": "hybrid32",
+        "best_fixed_paired_change_percent": "16.657983749826542",
+        "best_fixed_paired_delta_ms": "0.45499899999999993"
+      },
+      {
+        "case_id": "phases-lehmer-50000000000000-t8-L1",
+        "selected_k": "64",
+        "selection_reason": "range-64",
+        "best_fixed": "hybrid64",
+        "best_fixed_paired_change_percent": "14.455410923405099",
+        "best_fixed_paired_delta_ms": "43.075166999999965"
+      },
+      {
+        "case_id": "phases-lehmer-30000000000-t8-L1",
+        "selected_k": "0",
+        "selection_reason": "small-parallel",
+        "best_fixed": "hybrid32",
+        "best_fixed_paired_change_percent": "13.077619999129485",
+        "best_fixed_paired_delta_ms": "0.357542"
+      },
+      {
+        "case_id": "phases-meissel-100000000000-t8-L1",
+        "selected_k": "16",
+        "selection_reason": "range-16",
+        "best_fixed": "hybrid32",
+        "best_fixed_paired_change_percent": "11.253888124012024",
+        "best_fixed_paired_delta_ms": "0.8276249999999994"
+      }
+    ]
+  },
+  "phases-warm": {
+    "configurations": 80,
+    "relative_summary_configurations": 80,
+    "below_0.01ms_best_fixed": 0,
+    "baseline": {
+      "median_paired_change_percent_across_cases": -26.78302733630749,
+      "min": -48.67610345646304,
+      "max": 9.964882827887745,
+      "at_most_5_percent_slower": 79,
+      "at_most_10_percent_slower": 80,
+      "at_most_20_percent_slower": 80
+    },
+    "best_fixed": {
+      "median_paired_change_percent_across_cases": 0.5063997924066199,
+      "min": -10.240939892318924,
+      "max": 19.765185265400586,
+      "at_most_5_percent_slower": 74,
+      "at_most_10_percent_slower": 77,
+      "at_most_20_percent_slower": 80
+    },
+    "chosen": {
+      "median_paired_change_percent_across_cases": 0.03291338610394989,
+      "min": -9.95173259052924,
+      "max": 19.765185265400586,
+      "at_most_5_percent_slower": 76,
+      "at_most_10_percent_slower": 78,
+      "at_most_20_percent_slower": 80
+    },
+    "best_fixed_worst_cases": [
+      {
+        "case_id": "phases-lehmer-100000000000-t2-L1",
+        "selected_k": "16",
+        "selection_reason": "range-16",
+        "best_fixed": "hybrid16",
+        "best_fixed_paired_change_percent": "19.765185265400586",
+        "best_fixed_paired_delta_ms": "0.784834"
+      },
+      {
+        "case_id": "phases-lehmer-50000000000000-t8-L1",
+        "selected_k": "64",
+        "selection_reason": "range-64",
+        "best_fixed": "hybrid64",
+        "best_fixed_paired_change_percent": "12.509191202103121",
+        "best_fixed_paired_delta_ms": "29.69387499999999"
+      },
+      {
+        "case_id": "phases-lehmer-30000000000000-t1-L1",
+        "selected_k": "64",
+        "selection_reason": "range-64",
+        "best_fixed": "hybrid32",
+        "best_fixed_paired_change_percent": "10.064422153832876",
+        "best_fixed_paired_delta_ms": "45.14625100000001"
+      },
+      {
+        "case_id": "phases-meissel-30000000000-t2-L1",
+        "selected_k": "0",
+        "selection_reason": "small-parallel",
+        "best_fixed": "hybrid16",
+        "best_fixed_paired_change_percent": "9.602346440080556",
+        "best_fixed_paired_delta_ms": "0.15920699999999988"
+      },
+      {
+        "case_id": "phases-lehmer-100000000000-t1-L1",
+        "selected_k": "16",
+        "selection_reason": "range-16",
+        "best_fixed": "hybrid8",
+        "best_fixed_paired_change_percent": "7.199458848775131",
+        "best_fixed_paired_delta_ms": "0.3446259999999999"
+      },
+      {
+        "case_id": "phases-lehmer-30000000000-t2-L1",
+        "selected_k": "0",
+        "selection_reason": "small-parallel",
+        "best_fixed": "hybrid16",
+        "best_fixed_paired_change_percent": "6.249853655714688",
+        "best_fixed_paired_delta_ms": "0.1361270000000001"
+      },
+      {
+        "case_id": "phases-meissel-100000000000-t2-L1",
+        "selected_k": "16",
+        "selection_reason": "range-16",
+        "best_fixed": "hybrid8",
+        "best_fixed_paired_change_percent": "4.87499863492129",
+        "best_fixed_paired_delta_ms": "0.16516900000000012"
+      },
+      {
+        "case_id": "phases-lehmer-2000000000000-t1-L1",
+        "selected_k": "16",
+        "selection_reason": "range-16",
+        "best_fixed": "hybrid32",
+        "best_fixed_paired_change_percent": "4.660020417590882",
+        "best_fixed_paired_delta_ms": "2.3671679999999995"
+      }
+    ]
+  },
+  "p2-first": {
+    "configurations": 122,
+    "relative_summary_configurations": 90,
+    "below_0.01ms_best_fixed": 32,
+    "baseline": {
+      "median_paired_change_percent_across_cases": -1.0394417243579146,
+      "min": -96.45907358463211,
+      "max": 7.70265779197401,
+      "at_most_5_percent_slower": 86,
+      "at_most_10_percent_slower": 90,
+      "at_most_20_percent_slower": 90
+    },
+    "best_fixed": {
+      "median_paired_change_percent_across_cases": 9.739716532150677,
+      "min": -7.892183683141085,
+      "max": 2666.031195840555,
+      "at_most_5_percent_slower": 35,
+      "at_most_10_percent_slower": 46,
+      "at_most_20_percent_slower": 53
+    },
+    "chosen": {
+      "median_paired_change_percent_across_cases": -0.12676570761461226,
+      "min": -14.528538957830383,
+      "max": 7.70265779197401,
+      "at_most_5_percent_slower": 85,
+      "at_most_10_percent_slower": 90,
+      "at_most_20_percent_slower": 90
+    },
+    "best_fixed_worst_cases": [
+      {
+        "case_id": "p2-tail4095-30000000000000-t1-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid32",
+        "best_fixed_paired_change_percent": "2666.031195840555",
+        "best_fixed_paired_delta_ms": "1.905959"
+      },
+      {
+        "case_id": "p2-tail4095-30000000000000-t4-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid32",
+        "best_fixed_paired_change_percent": "2610.034602076125",
+        "best_fixed_paired_delta_ms": "1.88575"
+      },
+      {
+        "case_id": "p2-tail4095-3000000000000-t4-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid8",
+        "best_fixed_paired_change_percent": "1837.0277578331475",
+        "best_fixed_paired_delta_ms": "1.2025000000000001"
+      },
+      {
+        "case_id": "p2-tail4095-3000000000000-t1-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid64",
+        "best_fixed_paired_change_percent": "1733.2699619771863",
+        "best_fixed_paired_delta_ms": "1.139625"
+      },
+      {
+        "case_id": "p2-tail4095-10000000000-t4-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid16",
+        "best_fixed_paired_change_percent": "577.9179084063979",
+        "best_fixed_paired_delta_ms": "0.409875"
+      },
+      {
+        "case_id": "p2-half-root-10000000000-t1-L2",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid16",
+        "best_fixed_paired_change_percent": "576.7061768386955",
+        "best_fixed_paired_delta_ms": "0.07025"
+      },
+      {
+        "case_id": "p2-half-root-10000000000-t4-L2",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid32",
+        "best_fixed_paired_change_percent": "563.1963026027731",
+        "best_fixed_paired_delta_ms": "0.069459"
+      },
+      {
+        "case_id": "p2-tail4095-10000000000-t1-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid8",
+        "best_fixed_paired_change_percent": "562.9736142993474",
+        "best_fixed_paired_delta_ms": "0.397875"
+      }
+    ]
+  },
+  "p2-warm": {
+    "configurations": 122,
+    "relative_summary_configurations": 86,
+    "below_0.01ms_best_fixed": 36,
+    "baseline": {
+      "median_paired_change_percent_across_cases": -9.422359695065108,
+      "min": -96.91192607619264,
+      "max": 11.005287402168463,
+      "at_most_5_percent_slower": 85,
+      "at_most_10_percent_slower": 85,
+      "at_most_20_percent_slower": 86
+    },
+    "best_fixed": {
+      "median_paired_change_percent_across_cases": 0.10772805594471135,
+      "min": -66.33725490196079,
+      "max": 3348.8398812753326,
+      "at_most_5_percent_slower": 65,
+      "at_most_10_percent_slower": 69,
+      "at_most_20_percent_slower": 71
+    },
+    "chosen": {
+      "median_paired_change_percent_across_cases": -0.626240664633293,
+      "min": -66.33725490196079,
+      "max": 20.015536521045863,
+      "at_most_5_percent_slower": 81,
+      "at_most_10_percent_slower": 84,
+      "at_most_20_percent_slower": 85
+    },
+    "best_fixed_worst_cases": [
+      {
+        "case_id": "p2-tail4095-30000000000000-t1-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid64",
+        "best_fixed_paired_change_percent": "3348.8398812753326",
+        "best_fixed_paired_delta_ms": "1.046792"
+      },
+      {
+        "case_id": "p2-tail4095-30000000000000-t4-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid64",
+        "best_fixed_paired_change_percent": "3303.5717651493733",
+        "best_fixed_paired_delta_ms": "1.049125"
+      },
+      {
+        "case_id": "p2-tail4095-3000000000000-t4-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid64",
+        "best_fixed_paired_change_percent": "1673.414876033058",
+        "best_fixed_paired_delta_ms": "0.5056240000000001"
+      },
+      {
+        "case_id": "p2-tail4095-3000000000000-t1-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid8",
+        "best_fixed_paired_change_percent": "1603.344081374863",
+        "best_fixed_paired_delta_ms": "0.48233400000000004"
+      },
+      {
+        "case_id": "p2-tail4095-10000000000-t1-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid8",
+        "best_fixed_paired_change_percent": "201.4582164890634",
+        "best_fixed_paired_delta_ms": "0.07516600000000001"
+      },
+      {
+        "case_id": "p2-tail4095-10000000000-t2-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid64",
+        "best_fixed_paired_change_percent": "188.65591955214595",
+        "best_fixed_paired_delta_ms": "0.072791"
+      },
+      {
+        "case_id": "p2-tail4095-10000000000-t4-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid32",
+        "best_fixed_paired_change_percent": "183.87712511452713",
+        "best_fixed_paired_delta_ms": "0.07224900000000001"
+      },
+      {
+        "case_id": "p2-tail4095-10000000000-t8-L1",
+        "selected_k": "0",
+        "selection_reason": "too-few-queries",
+        "best_fixed": "hybrid8",
+        "best_fixed_paired_change_percent": "179.5221843003413",
+        "best_fixed_paired_delta_ms": "0.06575"
+      }
+    ]
+  },
+  "definitions": {
+    "percent": "median of three block-paired ratios of process medians, minus one, times100",
+    "across_cases": "unweighted distribution summary; not an overall workload speedup",
+    "best_fixed": "hindsight minimum median among baseline,8L,16L,32L,64L",
+    "p2_filter": "use relative aggregate only when best fixed median p2_ms >=0.01; retain all raw samples",
+    "negative_percent": "selector is faster",
+    "small_sample_warning": "three process blocks, one host; medians do not remove all system variation"
+  },
+  "result_audit": {
+    "timed_results": 14544,
+    "cross_mode_p2_values": "all numeric (x,a,table_limit) contexts agree across modes, variants, threads, repeats",
+    "distinct_numeric_p2_contexts": 67,
+    "phase_sum_tolerance_ms": 5e-06
+  }
+}
