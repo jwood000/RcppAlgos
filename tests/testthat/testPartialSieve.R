@@ -140,6 +140,59 @@ test_that("partial prime sieves agree across serial and parallel calls", {
     expect_identical(primePhi(1e9, 8, nThreads = 2L), expected$phi)
 })
 
+test_that("semiPrimeCount handles short tails and prime-square boundaries", {
+    ## This independent pi table covers every quotient used below. The large
+    ## cutoff leaves a short tail, including pairs with repeated prime factors.
+    sieve <- rep(TRUE, 100000L)
+    sieve[1L] <- FALSE
+    for (p in 2:floor(sqrt(length(sieve)))) {
+        if (sieve[p]) sieve[seq.int(p * p, length(sieve), by = p)] <- FALSE
+    }
+    primes <- which(sieve)
+    primeCounts <- cumsum(sieve)
+    reference <- function(n, a) {
+        b <- sum(primes <= sqrt(n))
+        if (a >= b) return(0L)
+        indices <- seq.int(a + 1L, b)
+        quotients <- floor(n / primes[indices])
+        stopifnot(max(quotients) <= length(primeCounts))
+        as.integer(sum(primeCounts[quotients] - (indices - 1L)))
+    }
+
+    p <- max(primes[primes <= sqrt(3e9)])
+    a <- sum(primes <= p) - 2048L
+    inputs <- c(as.double(p)^2 + c(-1, 0, 1), 3e9)
+    expected <- vapply(inputs, reference, integer(1), a = a)
+    threads <- unique(c(1L, pmin(2L, as.integer(RcppAlgos:::pkgEnv$maxThreads))))
+    for (nThreads in threads) {
+        actual <- vapply(inputs, semiPrimeCount, integer(1),
+                         a = a, nThreads = nThreads)
+        expect_identical(actual, expected)
+    }
+
+    ## Keep the last two eligible smaller primes, then just the last, then
+    ## none. This checks the same cutoff convention as the longer tail above.
+    b <- sum(primes <= sqrt(3e9))
+    cutoffs <- b + c(-2L, -1L, 0L, 1L)
+    expected <- vapply(cutoffs, function(a) reference(3e9, a), integer(1))
+    actual <- vapply(cutoffs, function(a) semiPrimeCount(3e9, a), integer(1))
+    expect_identical(actual, expected)
+})
+
+test_that("semiPrimeCount preserves large counts across cutoffs and threads", {
+    ## Independent per-prime quotient counts are retained in
+    ## .github/development/p2-hybrid/results-matched-profile/reference-terms.csv.gz.
+    ## They use a separate sieve and primecount, not this package's Phi or P2.
+    cutoffs <- c(0L, 590L)
+    expected <- list(11238880589, 2069687562L)
+    threads <- unique(c(pmin(c(2L, 4L),
+                            as.integer(RcppAlgos:::pkgEnv$maxThreads)), 1L))
+    for (nThreads in threads) {
+        actual <- lapply(cutoffs, function(a) semiPrimeCount(8e10, a, nThreads))
+        expect_identical(actual, expected)
+    }
+})
+
 test_that("partial prime sieves validate scalar numeric inputs before shortcuts", {
     invalid <- list(-1, 1.5, NA_real_, NaN, Inf, -Inf, 2^53,
                     numeric(), c(1, 2), "10", TRUE, NULL, list(1))

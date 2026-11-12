@@ -1,6 +1,6 @@
 context("testing primeCount")
 
-test_that("parallel primeCount handles cache growth and reuse", {
+test_that("parallel Legendre handles cache growth and reuse", {
     skip_if(RcppAlgos:::pkgEnv$maxThreads < 2L,
             "At least two available threads are needed")
 
@@ -12,12 +12,12 @@ test_that("parallel primeCount handles cache growth and reuse", {
 
     for (nThreads in c(2L, 3L, 4L)) {
         actual <- vapply(inputs[order], primeCount, numeric(1),
-                         nThreads = nThreads)
+                         nThreads = nThreads, method = "legendre")
         expect_equal(actual, counts[order])
     }
 })
 
-test_that("parallel primeCount handles the batch boundary and repeated calls", {
+test_that("parallel Legendre handles the batch boundary and repeated calls", {
     maxThreads <- RcppAlgos:::pkgEnv$maxThreads
     skip_if(maxThreads < 2L, "At least two available threads are needed")
 
@@ -27,7 +27,8 @@ test_that("parallel primeCount handles the batch boundary and repeated calls", {
     threadCounts <- threadCounts[threadCounts <= maxThreads]
 
     for (nThreads in threadCounts) {
-        actual <- vapply(inputs, primeCount, numeric(1), nThreads = nThreads)
+        actual <- vapply(inputs, primeCount, numeric(1),
+                         nThreads = nThreads, method = "legendre")
         expect_equal(actual, rep(455052511, length(inputs)))
     }
 })
@@ -76,6 +77,21 @@ test_that("primeCount methods preserve known counts and result types", {
     }
 })
 
+test_that("auto primeCount preserves counts at method boundaries", {
+    inputs <- c(1e10 - 1, 1e10, 1e10 + 1, 1e12 - 1, 1e12, 1e12 + 1)
+    expected <- c(rep(list(455052511L), 3), rep(list(37607912018), 3))
+    threads <- c(1L, 2L, 6L)
+    threads <- threads[threads <= RcppAlgos:::pkgEnv$maxThreads]
+
+    ## The lower neighbors are divisible by 9; the upper neighbors are
+    ## divisible by 101 and 73, respectively. Thus the known counts at the
+    ## powers of ten also apply on either side of each dispatch boundary.
+    for (nThreads in threads) {
+        actual <- lapply(inputs, primeCount, nThreads = nThreads)
+        expect_identical(actual, expected)
+    }
+})
+
 test_that("primeCount appends method without changing positional calls", {
     inputs <- list(1, 10, 99999, 100000, 1e10, 1e11)
     expect_identical(lapply(inputs, primeCount),
@@ -115,6 +131,16 @@ test_that("explicit primeCount methods support parallel calls and reuse", {
             actual <- vapply(inputs, primeCount, numeric(1),
                              nThreads = nThreads, method = method)
             expect_identical(actual, expected)
+        }
+    }
+})
+
+test_that("Meissel and Lehmer preserve larger known counts across threads", {
+    threads <- unique(c(pmin(4L, as.integer(RcppAlgos:::pkgEnv$maxThreads)), 1L))
+    for (method in c("meissel", "lehmer")) {
+        for (nThreads in threads) {
+            expect_identical(primeCount(1e12, nThreads = nThreads, method = method),
+                             37607912018)
         }
     }
 })
