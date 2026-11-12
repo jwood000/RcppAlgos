@@ -1,6 +1,7 @@
 #include "NumbersUtils/PrimeCount.h"
 #include "CppConvert.h"
 #include "cpp11/as.hpp"
+#include <algorithm>
 #include <limits>
 #include <string>
 
@@ -19,8 +20,8 @@ SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads,
     using Counter = std::int64_t (*)(std::int64_t, int, int);
     Counter count = nullptr;
 
-    // Auto initially retains the historical sieve/Legendre policy. Explicit
-    // choices use the named algorithm for every accepted n, including small n.
+    // Auto starts with Legendre; larger-input selection follows thread
+    // validation below. Explicit choices always use the named algorithm.
     if (method == "auto" || method == "legendre") {
         count = PrimeCounting::PiLegendre;
     } else if (method == "meissel") {
@@ -53,6 +54,15 @@ SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads,
     if (n >= 100000 && !Rf_isNull(RNumThreads)) {
         CppConvert::convertPrimitive(RNumThreads, nThreads,
                                        VecType::Integer, "nThreads");
+    }
+
+    // These empirical regions balance first and warmed calls. Selection uses
+    // the usable budget; each driver retains its own worker limits.
+    // Benchmark evidence and tradeoffs: .github/development/prime-count-auto/
+    if (method == "auto" && n >= 10000000000LL) {
+        const int usableThreads = std::min(nThreads, maxThreads);
+        count = n >= 1000000000000LL && usableThreads >= 6 ?
+            PrimeCounting::PiLehmer : PrimeCounting::PiMeissel;
     }
 
     const std::int64_t result = count(n, nThreads, maxThreads);
