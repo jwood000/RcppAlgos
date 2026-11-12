@@ -21,11 +21,11 @@ primePhi(n, a, nThreads = NULL)
     initial primes to exclude, not a prime value or an upper bound on the
     excluded primes. For example, \code{a = 3} excludes multiples of 2, 3,
     and 5. With \code{a = 0}, no primes are excluded.}
-    \item{nThreads}{A positive whole number at most
-    \code{.Machine$integer.max}, or \code{NULL} (the default) for serial
-    execution. Requests are capped by the available hardware and the useful
-    work in the calculation. Small or simple cases may use fewer threads.
-    This argument is validated even when the result is immediate.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads. This argument is validated even when the result
+    is immediate.}
 }
 \details{
 \subsection{Mathematical definition}{

@@ -20,7 +20,10 @@
   \item{...}{vectors, factors or a list containing these. (See \code{?expand.grid}).}
   \item{lower}{The lower bound. Cartesian products are generated lexicographically, thus utilizing this argument will determine which specific product to start generating from (\emph{e.g.} \code{expandGrid(1:5, 3:11, lower = 6)} is equivalent to \code{expandGrid(1:5, 3:11)[6:expandGridCount(1:5, 3:11), ]}). This argument along with \code{upper} is very useful for generating products in chunks allowing for easy parallelization.}
   \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific product (\emph{e.g.} \code{expandGrid(1:5, 3:11, upper = 5)} is equivalent to \code{expandGrid(1:5, 3:11)[1:5, ]})}
-  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+  \item{nThreads}{Requested number of threads. The default is
+  \code{NULL} for serial execution. Requests are capped by the available
+  hardware and the useful work in the calculation. Small or simple cases
+  may use fewer threads.}
   \item{return_df}{Logical flag to force the output to be a \code{data.frame}. The default is \code{FALSE}.}
 }
 \value{

@@ -15,7 +15,10 @@ primeSieve(bound1, bound2 = NULL, nThreads = NULL)
 \arguments{
     \item{bound1}{Positive integer or numeric value.}
     \item{bound2}{Positive integer or numeric value.}
-    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads.}
 }
 \note{
 \itemize{

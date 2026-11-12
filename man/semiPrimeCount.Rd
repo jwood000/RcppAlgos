@@ -21,11 +21,11 @@ semiPrimeCount(n, a = 0, nThreads = NULL)
     initial primes excluded as factors, not a prime value. The default,
     \code{a = 0}, permits every prime. For example, \code{a = 1} excludes
     the prime 2, so only odd semiprimes are counted.}
-    \item{nThreads}{A positive whole number at most
-    \code{.Machine$integer.max}, or \code{NULL} (the default) for serial
-    execution. Requests are capped by the available hardware and the useful
-    work in the calculation. Small or simple cases may use fewer threads.
-    This argument is validated even when the result is immediate.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads. This argument is validated even when the result
+    is immediate.}
 }
 \details{
 \subsection{Mathematical definition}{
@@ -66,7 +66,9 @@ smaller cutoff also requires \code{\link{triPrimeCount}}; see
 \note{
 The calculation prepares prime and prime-count tables with storage
 proportional to \eqn{\sqrt n}. Larger prime-count queries in the sum use
-the shared partial-sieve evaluator; the function does not allocate a dense
+the shared partial-sieve evaluator or a segmented sieve, selected according
+to the input, cutoff, and useful thread budget. The segmented sieve uses
+bounded buffers for each worker; the function does not allocate a dense
 table through \eqn{n / p_{a+1}}{n / p[a + 1]}.
 
 At the largest supported \eqn{n}, the square-root table has limit

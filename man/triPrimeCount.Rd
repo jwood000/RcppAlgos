@@ -26,11 +26,11 @@ triPrimeCount(n, a = 0, nThreads = NULL)
     \code{a = 0}, permits every prime. For example, \code{a = 1} excludes
     the prime 2, so only odd triprimes are counted. Larger cutoffs can
     permit larger \code{n} within the table limit.}
-    \item{nThreads}{A positive whole number at most
-    \code{.Machine$integer.max}, or \code{NULL} (the default) for serial
-    execution. Requests are capped by the available hardware and the useful
-    work in the calculation. Small or simple cases may use fewer threads.
-    This argument is validated even when the result is immediate.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads. This argument is validated even when the result
+    is immediate.}
 }
 \details{
 \subsection{Mathematical definition}{

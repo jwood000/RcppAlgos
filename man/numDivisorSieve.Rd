@@ -13,7 +13,10 @@ numDivisorSieve(bound1, bound2 = NULL, namedVector = FALSE, nThreads = NULL)
     \item{bound1}{Positive integer or numeric value.}
     \item{bound2}{Positive integer or numeric value.}
     \item{namedVector}{Logical flag. If \code{TRUE}, a named vector is returned. The default is \code{FALSE}.}
-    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads.}
 }
 \details{
 Simple and efficient sieve that calculates the number of divisors for every number in a given range. This function is very useful when you need to calculate the number of divisors for many numbers.

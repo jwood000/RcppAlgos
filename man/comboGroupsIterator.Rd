@@ -21,8 +21,23 @@ comboGroupsIter(v, numGroups = NULL, grpSizes = NULL,
   \item{numGroups}{An Integer. The number of groups that the vector will be partitioned into. The default is \code{NULL}. If provided and \code{grpSize} is \code{NULL}, it must divide the length of v (if v is a vector) or v (if v is a scalar).}
   \item{grpSizes}{A vector of whole numbers representing the size of each group. The default is \code{NULL}. If provided, the sum of the elements must total the length of v (if v is a vector) or v (if v is a scalar).}
   \item{retType}{A string, "3Darray" or "matrix", that determines the shape of the output. The default is "matrix". Note, "3Darray" can only be used when the size of each group is uniform. When the size of each group varies, the return output will always be a matrix.}
-  \item{Parallel}{Logical value indicating whether results should be generated in parallel using \eqn{n - 1} threads, where \eqn{n} is the maximum number of threads. The default is \code{FALSE}. If \code{nThreads} is not \code{NULL}, it will be given preference (\emph{e.g.} if user has 8 threads with \code{Parallel = TRUE} and \code{nThreads = 4}, only 4 threads will be spawned). If your system is single-threaded, the arguments \code{Parallel} and \code{nThreads} are ignored.}
-  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}. See \code{Parallel}.}
+  \item{Parallel}{Logical value indicating whether results
+  should be generated in parallel. The default is \code{FALSE}. If
+  \code{TRUE} and \code{nThreads = NULL}, up to \eqn{n - 1} threads
+  are used, where \eqn{n} is the number of threads available on your
+  system (both threads may be used on a two-thread system).
+  If \code{nThreads} is not \code{NULL}, it will be given preference
+  (\emph{e.g.} with 8 available threads, \code{Parallel = TRUE} and
+  \code{nThreads = 4}, up to 4 threads may be used). In either case,
+  the actual number of threads depends on the useful work in the
+  calculation; small or simple cases may use fewer threads.
+  If your system is single-threaded, the arguments \code{Parallel}
+  and \code{nThreads} are ignored.}
+  \item{nThreads}{Requested number of threads. The default is
+  \code{NULL} for serial execution unless \code{Parallel = TRUE}.
+  Requests are capped by the available hardware and the useful work in
+  the calculation. Small or simple cases may use fewer threads.
+  See \code{Parallel}.}
 }
 
 \value{

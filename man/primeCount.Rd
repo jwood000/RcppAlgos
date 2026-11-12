@@ -14,9 +14,10 @@ primeCount(n, nThreads = NULL, method = "auto")
 \arguments{
     \item{n}{A single positive whole number, at most
     \eqn{2^{53} - 1}{2^53 - 1}.}
-    \item{nThreads}{A positive whole number requesting the number of threads,
-    or \code{NULL} (the default) for serial execution. Requests are capped by
-    the available hardware, and a method may use fewer threads. For
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads. For
     \code{n < 100000}, this argument is ignored and execution is serial.}
     \item{method}{One of \code{"auto"}, \code{"legendre"},
     \code{"meissel"}, or \code{"lehmer"}. Matching is case-sensitive and
@@ -25,10 +26,20 @@ primeCount(n, nThreads = NULL, method = "auto")
 }
 \details{
 \subsection{Method selection}{
-The current \code{"auto"} policy uses small lookup values or a sieve for
-\code{n < 100000}, and Legendre's formula otherwise. This preserves the
-previous default behavior. The policy may change after further benchmarking;
-\code{"auto"} does not currently guarantee the fastest method for each input.
+The current \code{"auto"} policy selects a method using \code{n} and the
+usable thread budget, which is the requested number of threads capped by the
+available hardware:
+\itemize{
+\item For \code{n < 100000}, use small lookup values or a sieve.
+\item For \code{100000 <= n < 10^10}, use Legendre's formula.
+\item For \code{n >= 10^10}, use Meissel's formula, except that inputs
+\code{n >= 10^12} with at least six usable threads use Lehmer's formula.
+}
+These choices are based on first-call and warmed-call benchmarks. They do
+not depend on the current cache contents, and they do not guarantee the
+fastest method for every input or machine. The policy may change with further
+benchmarking. In particular, a method that improves repeated calls can have
+a slower first call.
 
 An explicit method uses the named algorithm for every accepted \code{n},
 including small inputs. The \code{method} argument follows \code{nThreads},

@@ -58,7 +58,10 @@ compositionsGeneral(v, m = NULL, ...)
   \item{upper}{The upper bound. Similar to \code{lower}, however this parameter allows the user to \emph{stop} generation at a specific partition (\emph{e.g.} \code{partitionsGeneral(15, 3, upper = 5)} is equivalent to \code{partitionsGeneral(15, 3)[1:5, ]})}
   \item{target}{Number to be partitioned. If \code{NULL}, \code{max(v)} will be used.}
   \item{weak}{(Compositions only) Logical flag indicating whether to allow terms of the sequence to be zero.}
-  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+  \item{nThreads}{Requested number of threads. The default is
+  \code{NULL} for serial execution. Requests are capped by the available
+  hardware and the useful work in the calculation. Small or simple cases
+  may use fewer threads.}
   \item{tolerance}{A numeric value greater than or equal to zero. This parameter is utilized when a constraint is applied on a numeric vector. The default value is 0 when it can be determined that whole values are being utilized, otherwise it is \code{sqrt(.Machine$double.eps)} which is approximately \eqn{1.5e-8}. N.B. If the input vector is of type integer, this parameter will be ignored and strict equality will be enforced.}
 }
 \details{

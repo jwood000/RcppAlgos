@@ -12,7 +12,10 @@ isPrimeRcpp(v, namedVector = FALSE, nThreads = NULL)
 \arguments{
     \item{v}{Vector of integers or numeric values.}
     \item{namedVector}{Logical flag. If \code{TRUE}, a named vector is returned. The default is \code{FALSE}.}
-    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads.}
 }
 \note{
 The maximum value for each element in \eqn{v} is \eqn{2^{53} - 1}{2^53 - 1}.
