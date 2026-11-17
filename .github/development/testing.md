@@ -13,7 +13,9 @@ investigation does not replace the normally installed package.
   `triPrimeCount` to the existing Phi/P2/P3 kernels. It validates the public
   arguments, prepares each kernel's tables, handles cutoffs beyond those
   tables, and converts exact counts to R scalars.
-- `src/PiPrime.cpp` implements the sieve counter used for small inputs.
+- `src/PiPrime.cpp` implements the small-input prefix counter and internal
+  inclusive `PiPrimeRange`, using the shared Small/Medium/Big sieve kernels
+  in `src/Eratosthenes.cpp` without retaining generated primes.
 - `src/PiLegendre.cpp` prepares a local, immutable `PhiTables` object, clamps
   the requested workers, and applies Legendre's formula using `PhiParallel`.
 - `src/PiMeissel.cpp` and `src/PiLehmer.cpp` prepare square-root tables once,
@@ -48,6 +50,20 @@ investigation does not replace the normally installed package.
   Neither kernel changes the R driver or selects a prime-counting method.
 - `inst/include/NumbersUtils/PrimeCount.h` declares the native counters and
   automatic selector without R dependencies. It does not expose cache internals.
+
+The numeric domain limits live in `CppConvert/Constants.h`: `Significand53`
+retains its double type, `Significand53Int` supplies the identical integer
+bound, and `Sqrt53Max` supplies its floor square root with a compile-time
+integer check. Recent counting and sieving code uses these shared values;
+the former `PartialSieveDetail::MAX_X` alias has been removed, and current
+development tools use the shared constants directly. Algorithm-specific
+cache sizes and scheduling thresholds remain local. Consolidation validation
+on November 16, 2026 passed 977 R
+expectations, 18,013 PiPrime and 8,478 nthPrime checks under C++11 ASan/UBSan,
+and the inspector's 119 expectations plus 117 prime-sieve expectations.
+Compiler and sanitizer diagnostics were empty. This unchanged-value cleanup
+did not require new timing measurements; no full R CMD check or TSan rerun
+was performed.
 
 The R method selector exposes Legendre, Meissel and Lehmer. The default `auto`
 policy keeps the historical lookup/sieve below `1e5`, uses Legendre below
@@ -127,6 +143,136 @@ ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 "$nth_check/check"
 
 For ThreadSanitizer, build a separate binary with `-fsanitize=thread` and run
 it with `TSAN_OPTIONS=halt_on_error=1`.
+
+Rollback validation on November 15, 2026: the clean isolated installation and
+all 907 expectations across the five R test files passed without warnings.
+The three-argument registration, public signature/export, Rd/examples, and
+`codoc` checks passed. ASan/UBSan and TSan each passed all 8,478 native checks
+without diagnostics. The restored implementation and header match the original
+baseline exactly. No full package check or new performance study was run for
+this restoration.
+
+The four superseded nthPrime study directories and the pre-rollback source
+and documentation are archived outside the repository at
+`/Users/owacasa/RcppAlgos-archives/nth-prime-studies-2026-11-15.tar.gz`.
+The archive contains 275 study files plus 14 source/documentation files and
+an `ARCHIVE-MANIFEST.json` with per-file hashes. Its verified SHA-256 is
+`e4fc37744974a3bf4fce2d4cf7578ad002d9c0fc9528f2ff47c5e7500a59cb34`.
+Calibration and frozen-variant comparison tooling are no longer dependencies
+of the current implementation or its retained checker.
+
+## Shared PiPrime and prime-generation sieve
+
+`PiPrime(n)` counts primes <= n; `PiPrimeRange(low, high, nThreads,
+maxThreads, maxCores)` counts an inclusive interval. Native bounds must lie
+in [0, 2^53 - 1], and reversed intervals are empty. Requests are capped by
+the supplied maximum and reduced to useful work. These are internal functions;
+the small-input `primeCount` dispatch is unchanged.
+
+The R interface now exposes the range counter through
+`primeSieve(bound1, bound2 = NULL, nThreads = NULL, countOnly = FALSE)`.
+The new fourth argument preserves existing positional calls. The adapter
+shares bound conversion and thread conversion with generation; count mode
+bypasses generation-only empty-vector/singleton shortcuts and calls PiPrimeRange
+before allocating output vectors. Bounds retain the existing ordering and
+rounding rules. Counts are integer through `.Machine$integer.max`, exact numeric
+above it, and scalar zero for empty results. Large prefix counts should use
+`primeCount`; this option always uses the sieve. Default generation is unchanged.
+
+November 16, 2026 integration validation passed 1,073 expectations in the ten
+focused R test files, including 213 primeSieve expectations. Rd validation,
+examples, signatures, and six-argument native registration passed. Registration
+was generated with `cpp11::cpp_register()` in an isolated copy, retaining only
+`src/cpp11.cpp`; existing exports, including `run_testthat_tests`, were preserved.
+The current inspector passed 119 inspector and 213 primeSieve expectations.
+C++11 ASan/UBSan runs passed 18,013 native count checks and the 32-scenario
+worker-failure harness without diagnostics. Four scalar conversion boundaries
+(INT_MAX - 1, INT_MAX, INT_MAX + 1, and 2^53 - 1) were checked separately using
+an unchanged production R adapter/registration with a temporary counter stub;
+these check conversion, not actual large sieve counts. Initial Rd list-format
+diagnostics were corrected; final validation is clean. No full R CMD check,
+new timing study, or TSan rerun was performed for this interface-only change.
+Artifacts are under `/private/tmp/rcppalgos-sieve-count-ft2xmjo_/`.
+
+Small, Medium, and Big retain their wheel marking and worker partitioning.
+Their output parameter is either a prime vector or a 64-bit count. Three
+overloaded operations reserve storage, append one survivor, and consume a
+complete wheel. Counting adds live flags directly and does not compact or
+store prime values. The same launcher and ThreadBatch handle either output.
+Base primes, crossing offsets, sieve flags, and Big's bucket schedule still
+require memory. PiPrimeRange uses adjacent windows of at most 1e9 integers
+to bound that schedule; this is not an nthPrime finishing threshold. nthPrime
+is unchanged and does not yet use this range counter for selection.
+
+The approved arithmetic fix widens hardware-derived products, saturates the
+Medium cutoff above the supported domain, preserves Small <= Medium, bounds
+Big's segment offsets, and widens its bucket construction positions. Normal
+hardware sizing remains unchanged; see the retained deferred record for the
+original overflow evidence and synthetic-budget regression.
+
+The native checker uses an independent ordinary segmented sieve, known prime
+counts, and locally verified primesieve references. It covers table/wheel/
+segment and kernel transitions, singleton and maximum-domain intervals,
+generation ordering and output types, serial/parallel equality, budget
+reduction, and invalid bounds. It includes Eratosthenes.cpp directly to test
+internal boundaries without adding production hooks:
+
+```sh
+pi_check=$(mktemp -d /tmp/rcppalgos-pi-prime.XXXXXX)
+clang++ -std=c++11 -O1 -g -pthread -Wall -Wextra -Wpedantic \
+    -fsanitize=address,undefined -fno-omit-frame-pointer -Iinst/include \
+    .github/development/pi-prime-check.cpp src/PiPrime.cpp \
+    -o "$pi_check/check"
+ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 "$pi_check/check"
+```
+
+Repeat with a separate `-fsanitize=thread` binary and
+`TSAN_OPTIONS=halt_on_error=1`. An optimized build's optional `--wide` mode
+checks an interval crossing the window boundary. The existing
+[worker-failure harness](#prime-sieve-worker-exception-handling) also covers
+count-mode failures, recovery, and synthetic large sizing before allocation.
+The current generation inspector patch is adapted to the shared kernels;
+historical study sources and measurements are retained unchanged.
+
+November 15, 2026 validation on arm64 macOS passed 18,013 native assertions
+under each of ASan/UBSan and TSan. Both failure-harness builds passed 32
+injected scenarios, 28 gated joins, 36 recovery checks, and two synthetic
+Big-sizing checks. The optimized wide-window run passed 18,014 assertions.
+A temporary package installation passed 977 R expectations across prime
+counting, partial sieves, nthPrime, prime generation, factorization, Euler phi,
+divisor counts, primality, and errors. The updated inspector passed 119
+inspector expectations and 117 prime-sieve expectations. There were no
+compiler warnings or sanitizer findings in the final checks. The confirmed
+cutoff-order defect was reproduced under ASan before its fix and retained
+as a regression. No full R CMD check or other-platform build was run.
+
+A focused native comparison used Apple clang 17, C++11, `-O3 -DNDEBUG`,
+three fresh processes per variant, and four calls per process. Variant order
+rotated between processes; no builds or sanitizer runs overlapped timing.
+Both versions used hardware budgets of eight; small workloads still reduced
+the requested workers. All counts agreed. The following warmed medians compare
+the refactored generation path with count-only output; peak RSS is the median
+process high-water mark, measured in separate generation/count processes:
+
+| Inclusive range | Requested threads | Generate ms | Count ms | Generate/count peak MiB |
+| --- | ---: | ---: | ---: | ---: |
+| [1e8, 1e8 + 2e5] | 1 | 0.0399 | 0.0348 | 1.28 / 1.16 |
+| [1e12, 1e12 + 1e7] | 1 | 5.50 | 5.25 | 5.20 / 2.41 |
+| [1e15, 1e15 + 1e8] | 8 | 44.0 | 45.0 | 131 / 97.6 |
+| [1e15, 1e15 + 1e9] | 1 | 741 | 735 | 276 / 89.4 |
+| [1e15, 1e15 + 1e9] | 8 | 193 | 199 | 713 / 506 |
+
+Generation warmed medians stayed within about 2.4% of the pre-refactor source
+across these cases and their serial/eight-thread counterparts. Small prefix
+counts improved as well. Count-only is primarily a storage improvement for
+large ranges, not a guaranteed speedup: Big bucket storage remains substantial,
+and the final row contains 1e9 + 1 integers, so counting initializes a second
+window for its last endpoint. First calls on that row were 199 ms generating
+and 193 ms counting; the warmed ordering is therefore not a universal timing
+claim. Small-case measurements batch repeated calls to reduce timer overhead.
+Raw timings, source snapshots, checker logs, and isolated R libraries are in
+`/private/tmp/rcppalgos-piprime-refactor-ohfp5ctm/`; no new study framework or
+hardware calibration was introduced, and ordinary generation sizing is unchanged.
 
 ## R partial-sieve functions
 
@@ -1448,6 +1594,97 @@ The integrated atomic cache passed both modes with ThreadSanitizer at 1, 2, 3,
 threads. Each default-mode run checked 662 independent prime counts and
 1,394,803 populated phi cells. Each failure-mode run rejected 646 page
 allocations while retaining the correct result. There were no sanitizer reports.
+
+## Prime sieve worker exception handling
+
+The November 12, 2026 change replaces only `PrimeSieveMain`'s raw thread
+launch/join block with `PrimeCounting::ThreadBatch`. The shared helper is
+unchanged. Each worker captures its mutable interval endpoints and result
+index by value. Base primes, wheel data, and caller-owned result vectors
+outlive the batch, including during unwinding after a partial launch failure.
+The last worker still writes to `primeList.back()`; reduced worker budgets
+can leave empty middle vectors exactly as before. Segment sizes, cutoffs,
+partition arithmetic, worker selection, and sieve kernels are unchanged.
+
+Before the change, temporary fault injection reached `std::terminate` for
+parallel worker exceptions and a simulated launch failure after one worker
+had started. The same exceptions were catchable in serial execution or before
+any worker started. The durable checker now verifies normal propagation only
+after every started worker has finished and joined. Production has no fault
+injection hooks: the preparer makes a checked temporary copy of the actual
+launcher and helper, replacing the thread type and adding a worker-entry hook.
+
+```sh
+sieve_thread_check=$(mktemp -d)
+python3 .github/development/prepare-prime-sieve-thread-check.py "$sieve_thread_check"
+clang++ -std=c++11 -O1 -g -pthread -fsanitize=address,undefined \
+    -fno-omit-frame-pointer -Iinst/include -I"$sieve_thread_check" \
+    .github/development/prime-sieve-thread-check.cpp \
+    -o "$sieve_thread_check/check-asan"
+ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 \
+    "$sieve_thread_check/check-asan"
+clang++ -std=c++11 -O1 -g -pthread -fsanitize=thread \
+    -fno-omit-frame-pointer -Iinst/include -I"$sieve_thread_check" \
+    .github/development/prime-sieve-thread-check.cpp \
+    -o "$sieve_thread_check/check-tsan"
+TSAN_OPTIONS=halt_on_error=1:symbolize=0 "$sieve_thread_check/check-tsan"
+Rscript --vanilla .github/development/prime-sieve-thread-check.R \
+    "$sieve_thread_check/r-bridge"
+```
+
+Both C++11 sanitizer builds passed 16 injected-failure scenarios, 14 gated
+join-before-propagation checks, and 19 reference/recovery sieves. Cases cover
+standard/nonstandard exceptions, `std::bad_alloc`, first/later/final launch
+failures, simultaneous worker/launch failures, and deterministic exception
+selection despite reversed failure order. Controls cover all three native
+output types and a three-worker tail in an eight-slot configuration. The
+cpp11 bridge verified 19 translated R errors and 19 successful subsequent
+sieves in the same session. Compiler and sanitizer diagnostics were empty.
+
+A clean isolated package installation passed 1,003 expectations across
+`testPrimeSieve.R`, `testPrimeCount.R`, `testNthPrime.R`, `testPartialSieve.R`,
+the seven other number-theory test files, and `testErrors.R`, without failures,
+errors, warnings, or compiler warnings. The existing Legendre schedule and
+exception fixtures also passed ASan/UBSan: 136 schedule cases with 65,451
+bounded intervals and 28 failure scenarios with 32 successful reference/recovery
+counts. Their copied helper classes now have distinct test names, avoiding
+different definitions of `ThreadBatch` when linked with the real sieve helper.
+
+The current inspector patch was refreshed for the new launcher and generated
+registration context. Its isolated package passed `testCacheInspector.R` and
+`testPrimeSieve.R`; forward/reverse patch checks restored the four patched
+production files exactly. Frozen inspector studies and previous benchmark
+artifacts were not modified. No full `R CMD check` or other-platform run was
+performed for this change.
+
+### Sieve launcher timing check
+
+The [recorded runs](prime-sieve-launch-timings.csv) compare before/after native
+sources compiled with C++11/O3 in distinct namespaces in one binary. Five
+intervals used requested budgets 1, 4, and 8, with fixed `maxThreads = 10` and
+`maxCores = 10`. Actual worker counts, selected kernels, segment spans, and
+result counts matched. One warmup per variant/configuration preceded eleven
+alternating-order rounds; builds and sanitizer runs finished before timing.
+All 360 complete output comparisons passed (330 timed calls and 30 warmups).
+Timing includes preparation, native result allocation, execution and joining,
+but excludes concatenation, equality checking, and R-vector conversion.
+
+Representative medians in milliseconds:
+
+| Interval | Effective threads | Before | After |
+| --- | ---: | ---: | ---: |
+| Near `1e15`, width `1e8` | 4 | 52.585 | 51.540 |
+| Near `1e15`, width `1e8` | 8 | 46.041 | 46.553 |
+| Near `8e15`, width `1e8` | 4 | 89.973 | 88.533 |
+| Near `8e15`, width `1e8` | 8 | 81.082 | 81.034 |
+
+There was no consistent parallel slowdown. The largest relative increase was
+about 4.2% (5 microseconds) in the tiny seven-effective-worker case, below its
+8–15 microsecond interquartile spreads. These bounded measurements do not
+establish a speedup or justify retuning thresholds. Source snapshots, harness,
+hashes, and detailed summaries are in the temporary directory recorded by
+`/tmp/rcppalgos-sieve-launch-perf-path`. No CPU affinity, frequency locking,
+thermal control, or explicit cache flushing was used.
 
 ## Legendre worker exception handling
 
