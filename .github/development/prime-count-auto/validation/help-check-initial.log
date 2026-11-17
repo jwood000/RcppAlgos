@@ -1,2 +1,0 @@
-Error: identical(formals(primeCount), alist(n = , nThreads = NULL, method = "auto")) is not TRUE
-Execution halted

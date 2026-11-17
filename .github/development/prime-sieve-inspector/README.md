@@ -144,3 +144,12 @@ archived bundle remained byte-for-byte identical to its original materials,
 and its reconstruction matched all eight source hashes. Reverse-applying the
 current patch restored all four production files exactly. This refresh did not
 rerun performance benchmarks or a full `R CMD check`.
+
+During the November 17 documentation consolidation, the current patch was
+refreshed for output slots allocated after useful-worker selection. It applied
+cleanly to the then-current working sources, and an isolated installation
+passed 119 inspector and 213 prime-sieve expectations. Production sources and
+the dated study bundle were unchanged. The C++11 native confirmation workflow
+also compiled and passed 36 output comparisons with one repeat. These were
+workflow checks; the recorded performance study, sanitizer checks and full
+`R CMD check` were not rerun.

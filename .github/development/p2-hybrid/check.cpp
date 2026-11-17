@@ -1,6 +1,7 @@
-// Independent checks for the temporary bounded-stream P2 candidates.
-// Link production P2.cpp once with -DP2=P2Reference, then link either the
-// unchanged P2.cpp or P2Hybrid.cpp normally. No production hooks are needed.
+// Independent and differential checks for current P2. The retained runner
+// links fixtures/P2Reference.cpp as P2Reference and the current P2.cpp normally.
+// For private stream checks it substitutes the include below in a temporary
+// copy; no production hooks or historical experiment tree are needed.
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
 #include "NumbersUtils/Phi.h"
@@ -359,11 +360,11 @@ int main() {
 
         for (const int limit : {0, 17, 512}) {
             const PhiTables tables(limit);
-            for (std::int64_t x : {-1LL, 9007199254740992LL,
+            for (std::int64_t x : {std::int64_t(-1), std::int64_t(9007199254740992LL),
                                    std::numeric_limits<std::int64_t>::max()}) {
                 ExpectRange([&] { P2(x, 0, 8, tables); }, "invalid x");
             }
-            for (std::int64_t a : {-1LL, tables.primeCount() + 1}) {
+            for (std::int64_t a : {std::int64_t(-1), tables.primeCount() + 1}) {
                 ExpectRange([&] { P2(0, a, 8, tables); }, "invalid a at zero");
             }
         }

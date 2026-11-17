@@ -1,0 +1,30 @@
+{
+  "historical_studies_commit": "36303eb268288a2449e348ba6d5b911ffb2fac51",
+  "computational_baseline": "0bd47cd07ae0c747b51f4696b3949994553f1e65",
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.3)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin\n",
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "change": "Cache maximum x 65535 -> 131071; 100 rows, 4096-cell pages and uint16 atomic answers unchanged.",
+  "studies": {
+    "main": {
+      "seed": 202611081,
+      "verified_rows": 720,
+      "paired_cases": 90,
+      "methodology": "Fresh process per variant/configuration/pair, randomized paired order; first call separate, warm median per process; complete native drivers include table construction/destruction, exclude process/R startup.",
+      "large_screen": null
+    },
+    "large": {
+      "seed": 202611082,
+      "verified_rows": 120,
+      "paired_cases": 21,
+      "methodology": "Fresh process per variant/configuration/pair, randomized paired order; first call separate, warm median per process; complete native drivers include table construction/destruction, exclude process/R startup.",
+      "large_screen": "1e15: one fresh process per variant, first plus one warm call."
+    }
+  },
+  "raw_files": {
+    "cache-double.csv": "7c02757eef98f99418aaa8440bb0389d56ddf3768528bd04f4b3be4917a84e9d",
+    "cache-double-large.csv": "451f20e678f5bd809d938f3bccdac2e560e967caac00f484dc0793237e57dc6d",
+    "cache-double-summary.csv": "8b494242d8931105734cbe3530da989abfbfa9ef77194e1b6569bf7886963734",
+    "cache-double-large-summary.csv": "671a2980efb042a1309dded4f7f915404eb4bad844d9f020bd0fc7655aa0095a",
+    "cache-double-memory.json": "2e198c64a3332ff01aef4b5602915726a3239d0c404a5187bd20e3f9e1562831"
+  }
+}

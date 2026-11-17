@@ -10,9 +10,10 @@ task. The suite, raw observations, analysis, and this report are new developer
 artifacts; the inspector implementation remains the previously prepared change.
 
 The inspector is now preserved as a [developer-only toolkit](../prime-sieve-inspector/README.md)
-that reconstructs it in a temporary package. Production sources have been
-restored; the measurements below are unchanged, and source links point to the
-corresponding uninstrumented code.
+that reconstructs it in a temporary package. The measurements below describe
+the November 1 sources, not current HEAD. The toolkit preserves their exact
+reconstruction as well as a current-source workflow. Source links name the
+corresponding production functions; their implementations have since changed.
 
 ## What was tested
 
@@ -96,7 +97,8 @@ default. Disabling worker instrumentation preserved the broad conclusion.
 ![Serial size sweep; points show medians and bars show interquartile ranges](results-2026-11-01/serial-sizing.png)
 
 The curves include the existing default in orange. They do not identify cache
-boundaries. The [PDF](results-2026-11-01/serial-sizing.pdf) is also available.
+boundaries. The analyzer can regenerate a PDF and the derived tables from the
+retained raw observations in a disposable results directory.
 
 ### 2. A smaller sieve can create much larger bucket storage
 
@@ -112,9 +114,8 @@ The smallest budget was 28.3% slower here and 22.3% slower at `8e15` over the
 same width. This is not just a flag-array cache experiment: `PrimeSieveMain`
 classifies primes using `2 * prime < segment span`, and `PrimeSieveBig` prepares
 bucket strikes for the requested interval. Reducing the span moves more primes
-into that scheduling path. See the split around
-[Eratosthenes.cpp:808](../../../src/Eratosthenes.cpp#L808) and bucket preparation
-around [line 494](../../../src/Eratosthenes.cpp#L494).
+into that scheduling path. See the split in `SieveMain` and bucket preparation
+in `PrimeSieveBig` in [Eratosthenes.cpp](../../../src/Eratosthenes.cpp).
 
 Larger segments also increase dense marking and can change extraction work.
 Storage fields are vector capacities, not peak RSS or measured resident working
@@ -131,8 +132,8 @@ With the default policy and width `1e8`, requesting four workers activated four:
 
 These are within-stage medians from the R parallel experiment. In contrast,
 fixed 1 MiB allowed only two workers, and fixed 4 MiB fell back to one. The
-eligibility rule divides range width by four full segments
-([Eratosthenes.cpp:843](../../../src/Eratosthenes.cpp#L843)). A “four-thread”
+eligibility rule in `SieveMain` divides range width by four full segments.
+A “four-thread”
 comparison of those budgets would compare different actual worker counts.
 
 Native confirmation reproduced this: at `4e15`, width `1e8`, four requested
@@ -152,8 +153,8 @@ At width `1e3`, default serial calls spent 13.87 of 23.69 ms near `4e15`, and
 Policy/setup added about 3.75/5.72 ms and bucket preparation 5.28/7.93 ms.
 The actual dense marking was about 0.18 ms and extraction about 0.001 ms.
 These are medians of individual phases, so they need not add exactly to the
-median total. The repeated generation is visible at
-[Eratosthenes.cpp:796](../../../src/Eratosthenes.cpp#L796).
+median total. The repeated generation is performed by `sqrtBigPrimes` in
+`SieveMain`.
 
 Even an enormous speedup in extraction would have little effect on these short
 calls. At width `1e8`, dense marking and bucket preparation instead dominate;
@@ -198,7 +199,6 @@ No recommended optimization was implemented as part of this report.
 
 [README.md](README.md) gives commands and explains each script. The recorded
 directory contains [raw R runs](results-2026-11-01/runs.csv),
-[median/quartile summaries](results-2026-11-01/summary.csv),
 [independent checks](results-2026-11-01/correctness.csv),
 [native confirmation](results-2026-11-01/native-confirmation.csv),
 [control measurements](results-2026-11-01/controls.csv), and

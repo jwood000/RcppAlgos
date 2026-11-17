@@ -1,6 +1,0 @@
-{
-  "final_device": "R Quartz bitmap",
-  "final_warnings": [],
-  "initial_attempt": "Cairo failed because X11 dylibs unavailable; no dependency installed; fallback Rplots.pdf moved into artifact as plot-cairo-fallback.pdf.",
-  "visual_check": "PNG inspected; labels/axes/bars visible."
-}

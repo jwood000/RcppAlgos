@@ -577,8 +577,8 @@ diff --git a/src/Eratosthenes.cpp b/src/Eratosthenes.cpp
 +        // Separate instantiations keep that decision out of the hot path.
 +        const auto worker = inspector ? PrimeWorker<Output, true> : PrimeWorker<Output, false>;
          if (Parallel) {
-             // Count-only callers allocate after useful-worker reduction.
-             // Generation retains its caller-owned slots and final back slot.
+             // Allocate output slots after determining the useful worker count.
+             // The final worker writes to primeList.back().
 @@ -896,22 +1057,28 @@
                   lowerBnd = upperBnd, upperBnd += chunkSize, ++idx) {
 
@@ -697,7 +697,7 @@ diff --git a/src/PrimeSieve.cpp b/src/PrimeSieve.cpp
      }
 
      if (!countOnly && myMax <= 1) {
-@@ -91,8 +116,10 @@
+@@ -89,8 +114,10 @@
          std::vector<double> tempPrimes;
 
          PrimeSieve::PrimeSieveMain(primeList, tempPrimes, myMin, myMax,
@@ -708,8 +708,8 @@ diff --git a/src/PrimeSieve.cpp b/src/PrimeSieve.cpp
 +        const auto copyStart = inspector ? CacheInspection::Clock::now() :
 +            CacheInspection::Clock::time_point();
          if (Parallel) {
-             for (int i = 0; i < numSects; ++i) {
-                 numPrimes += primeList[i].size();
+             const std::size_t numSects = primeList.size();
+
 @@ -107,10 +134,16 @@
                            primes + runningCount[i]);
              }
@@ -727,7 +727,7 @@ diff --git a/src/PrimeSieve.cpp b/src/PrimeSieve.cpp
              return primes;
          }
      } else {
-@@ -119,8 +152,10 @@
+@@ -118,8 +151,10 @@
          std::vector<int> tempPrimes;
 
          PrimeSieve::PrimeSieveMain(primeList, tempPrimes, myMin, myMax,
@@ -738,9 +738,9 @@ diff --git a/src/PrimeSieve.cpp b/src/PrimeSieve.cpp
 +        const auto copyStart = inspector ? CacheInspection::Clock::now() :
 +            CacheInspection::Clock::time_point();
          if (Parallel) {
-             for (int i = 0; i < numSects; ++i) {
-                 numPrimes += primeList[i].size();
-@@ -135,11 +170,144 @@
+             const std::size_t numSects = primeList.size();
+
+@@ -136,11 +171,144 @@
                            primes + runningCount[i]);
              }
 

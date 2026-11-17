@@ -1,0 +1,9 @@
+{
+  "rows": 432,
+  "processes": 108,
+  "sha256": "f12b85f75c358f29f86278c6ca5c96a6ff008dbac0e6d5c0422cd3389124ea56",
+  "suite_sha256": "09e24877b45301e6eb2f014b307293a0b4508173c72c3136e28eede9368ed1af",
+  "elapsed_seconds": 67.70639109611511,
+  "original_metadata_sha256": "3f32b6ba6223b8d9268cab31267f4327c786bf5af03a9e162d591085e2a646f0",
+  "note": "Consolidated from original timings-metadata.json. Raw timing rows retain case, block, method, process and repeat identities; omitted per-process command listings remain in Git history."
+}

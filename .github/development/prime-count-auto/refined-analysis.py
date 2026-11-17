@@ -28,7 +28,10 @@ def selection(n, threads):
 
 def audit(path, label):
     suite = json.loads((path / 'suite.json').read_text())
-    metadata = json.loads((path / 'timings-metadata.json').read_text())
+    metadata_path = path / 'timings-metadata.json'
+    if not metadata_path.exists():
+        metadata_path = path / 'evidence.json'
+    metadata = json.loads(metadata_path.read_text())
     references = json.loads((path / 'references.json').read_text())['references']
     assert sha(path / 'timings.csv.gz') == metadata['sha256']
     assert sha(path / 'suite.json') == metadata['suite_sha256']
@@ -85,14 +88,20 @@ def audit(path, label):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('root', type=Path)
+    parser.add_argument('root', type=Path, nargs='?', default=Path(__file__).resolve().parent,
+                        help='Recorded study directory, or a fresh benchmark artifact root')
+    parser.add_argument('--output', type=Path,
+                        help='Write the detailed analysis to a new file; default prints the audit only')
     args = parser.parse_args()
     root = args.root.resolve()
-    output = root / 'refined-analysis.json'
-    if output.exists():
+    output = args.output
+    if output is not None and output.exists():
         raise RuntimeError('refusing existing refined analysis')
-    records = [audit(root / 'method-benchmark', 'initial'),
-               audit(root / 'confirmation/method-benchmark', 'confirmation')]
+    if (root / 'results/suite.json').exists():
+        initial, confirmation = root / 'results', root / 'results-confirmation'
+    else:
+        initial, confirmation = root / 'method-benchmark', root / 'confirmation/method-benchmark'
+    records = [audit(initial, 'initial'), audit(confirmation, 'confirmation')]
     result = dict(policy='Historical lookup/sieve below1e5; Legendre below1e10; Meissel thereafter, '
                   'except Lehmer from1e12 with at least6usable threads.',
                   total_rows=sum(r['rows'] for r in records), total_processes=sum(r['processes'] for r in records),
@@ -100,7 +109,8 @@ if __name__ == '__main__':
                   note='Post-study final-policy evaluation; preserves initial candidate analysis. '
                        'The repeated3e10/four-thread case remains in both studies. '
                        'No claim that all input sizes/thread budgets or cache histories have been measured.')
-    output.write_text(json.dumps(result, indent=2) + '\n')
+    if output is not None:
+        output.write_text(json.dumps(result, indent=2) + '\n')
     print('PASS independent raw-data audit; counts:', result['total_rows'],
           'processes:', result['total_processes'])
     for record in records:
