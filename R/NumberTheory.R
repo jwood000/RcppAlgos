@@ -51,7 +51,7 @@ primeCount <- function(n, nThreads = NULL, method = "auto") {
 
 nthPrime <- function(n, nThreads = NULL) {
     return(.Call(`_RcppAlgos_NthPrimeCpp`, n, nThreads,
-                 pkgEnv$maxThreads))
+                 pkgEnv$maxThreads, pkgEnv$nCores))
 }
 
 primePhi <- function(n, a, nThreads = NULL) {

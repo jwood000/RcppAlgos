@@ -5,7 +5,7 @@
 #include <limits>
 
 [[cpp11::register]]
-SEXP NthPrimeCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
+SEXP NthPrimeCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, SEXP RmaxCores) {
 
     double dblNum;
     CppConvert::convertPrimitive(Rn, dblNum, VecType::Numeric, "n");
@@ -20,8 +20,12 @@ SEXP NthPrimeCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
 
     int nThreads = 1;
     int maxThreads = 1;
+    int maxCores = 1;
+
     CppConvert::convertPrimitive(RmaxThreads, maxThreads,
                                  VecType::Integer, "maxThreads");
+    CppConvert::convertPrimitive(RmaxCores, maxCores,
+                                 VecType::Integer, "maxCores");
 
     if (!Rf_isNull(RNumThreads)) {
         CppConvert::convertPrimitive(RNumThreads, nThreads,
@@ -29,7 +33,8 @@ SEXP NthPrimeCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
     }
 
     nThreads = std::min(nThreads, maxThreads);
-    const std::int64_t result = PrimeCounting::NthPrime(n, nThreads);
+    const std::int64_t result = PrimeCounting::NthPrime(n, nThreads,
+                                                      maxThreads, maxCores);
 
     if (result > std::numeric_limits<int>::max()) {
         return cpp11::as_sexp(static_cast<double>(result));

@@ -31,23 +31,29 @@ For example, \code{nthPrime(25)} returns 97, whereas
 
 Small positions use a lookup table. Otherwise, the calculation starts with
 an approximation to \eqn{p_n}, obtains an exact prime count at that location,
-and finishes with a segmented sieve. Up to two additional prime counts may
-be used to improve the starting location. Approximation errors affect the
-amount of work, not the correctness of the result: the sieve continues
-until it finds the required prime.
+and finishes with a segmented sieve. At most one additional whole-range
+prime count is used. Counts over nearby intervals may then refine the
+search location without recounting all preceding primes. Approximation
+errors affect the amount of work, not the correctness of the result: the
+sieve continues until it finds the required prime.
 
-The exact counts use Legendre, Meissel, or Lehmer, with the same size and
+The whole-range counts use Legendre, Meissel, or Lehmer, with the same size and
 thread thresholds used to choose among those methods in
 \code{\link{primeCount}}. Prepared prime and prime-count tables are reused
-within a call. Requested threads apply to prime counting; the final local
-sieve runs serially.
+for these counts, then released before interval sieving. Simple size bands,
+based on the search location rather than the requested position, determine
+when to switch to sieving. Interval counting and final selection reuse the
+same sieve as \code{\link{primeSieve}}. Requested threads apply to both
+counting and sieving, subject to the useful work available.
 
 The largest supported position is \eqn{\pi(2^{53} - 1)}, so the returned
 prime is at most \eqn{2^{53} - 1}{2^53 - 1} and is represented exactly.
 The table memory grows with the square root of the search location. Near
 the upper limit, the dense prime-count table alone occupies about 362 MiB,
 in addition to the prime vector, shared Phi cache, and worker storage.
-The local sieve uses a 64 KiB buffer.
+Final selection retains generated primes from a window of at most one
+million integer positions at a time. Interval counting retains no generated
+prime values; both sieve stages also require base-prime and worker storage.
 
 Logical inputs \code{TRUE} are converted to 1. Missing values,
 \code{FALSE}, non-finite values, fractional values, and vectors of length
@@ -80,6 +86,6 @@ p <- nthPrime(n)
 primeCount(p)
 primeCount(p - 1)
 
-## Use multiple threads for the counting stages when useful
+## Use multiple threads for counting and sieving when useful
 nthPrime(1000000, nThreads = 2)
 }

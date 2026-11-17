@@ -68,6 +68,23 @@ test_that("nthPrime agrees across serial and parallel requests", {
     expect_identical(nthPrime(1e9, .Machine$integer.max), expected[[2L]])
 })
 
+test_that("nthPrime honors fixed native worker and core budgets", {
+    ## Fix the native budgets so coverage does not depend on the test host.
+    ## The last two cases cap an oversized request before launching workers.
+    nativeNth <- function(n, requested, maximum, cores) {
+        .Call(RcppAlgos:::`_RcppAlgos_NthPrimeCpp`,
+              n, requested, maximum, cores)
+    }
+    budgets <- list(c(1L, 1L, 1L), c(4L, 4L, 2L), c(8L, 2L, 1L),
+                    c(.Machine$integer.max, 4L, 1L))
+    for (budget in budgets) {
+        expect_identical(nativeNth(1e6, budget[1], budget[2], budget[3]),
+                         15485863L)
+        expect_identical(nativeNth(105097566, budget[1], budget[2], budget[3]),
+                         2147483659)
+    }
+})
+
 test_that("nthPrime preserves defaults and shared logical conversion", {
     expect_identical(nthPrime(25L, NULL), 97L)
     expect_identical(nthPrime(25L, 2L), 97L)

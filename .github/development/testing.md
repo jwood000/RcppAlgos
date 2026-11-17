@@ -27,7 +27,8 @@ investigation does not replace the normally installed package.
   these prepared-table overloads. `primeCount` uses the same selector after
   its preserved small-input lookup/sieve path.
 - `src/NthPrime.cpp` implements estimate/count/segmented selection, reusing
-  prepared tables across exact counts and the final serial sieve.
+  prepared tables across whole-prefix counts, then releasing them before
+  interval counting and bounded selection with the native sieve.
   `src/NthPrimeR.cpp` owns the registered scalar R adapter;
   `NumbersUtils/NthPrime.h` declares the native entry point.
 - `src/PhiParallel.cpp` evaluates the outer Phi sum over the requested cutoff
@@ -84,22 +85,42 @@ rank is 252252704148404, independently checked with
 `primecount 9007199254740991 --threads=8`; its prime is 9007199254740881,
 checked with `primecount 252252704148404 --nth-prime`.
 
-The original baseline was restored on November 15, 2026. Ranks through 25
-use a lookup. Larger ranks start from
+Ranks through 25 use a lookup. Larger ranks start from
 `n * (log(n) + log(log(n)) - 1 + (log(log(n)) - 2) / log(n))`.
-An exact count anchors the search; at most two further counts correct it by
-`(n - pi(x)) * log(x)`, clamped to a bracket containing the answer. Selection
-starts when the estimated displacement fits 65536 positions, three counts
-have completed, or the next correction cannot move. These are the restored
-baseline's work limits, not mathematical error bounds or a new tuning policy.
+An exact count anchors the search. At most one further whole-prefix count
+corrects it by `(n - pi(x)) * log(x)`, clamped to a bracket containing the
+answer. The first count is enough when its estimated displacement fits the
+following allowance, selected by search location `x`, not rank `n`:
+
+| Search location | Estimated-distance allowance |
+| --- | ---: |
+| `x < 1e10` | `1e6` |
+| `x < 1e12` | `1e7` |
+| `x < 1e14` | `1e8` |
+| Otherwise | `1e9` |
+
+These are broad work-policy bands, not mathematical error bounds or runtime
+calibration. `PhiTables` is released after whole-prefix counting finishes.
+For a residual estimated distance above `1e6`, up to two interval-count
+corrections use `PiPrimeRange`: moving from `x` to `y > x` adds the count in
+`[x + 1, y]`; moving left subtracts the count in `[y + 1, x]`. Both preserve
+the exact invariant `c = pi(anchor)` without recounting the whole prefix.
 
 With `c = pi(x)`, forward selection takes the `(n-c)`th prime strictly above
 `x`; backward selection takes the `(c-n+1)`th prime at or below it. Equal
-counts still require locating the last prime at or below a possibly composite
-anchor. The serial segmented sieve continues in adjacent 65536-position
-blocks until it finds the exact prime. Prepared tables are reused, with root
-coverage checked before each count and sieve block. Requested threads apply
-to counting. The hidden R registration takes three arguments.
+counts still require finding the last prime at or below a possibly composite
+anchor. `PrimeSieveMain<int64_t>` generates bounded adjacent windows, walking
+worker vectors in order or reverse order without flattening them. A window
+uses twice the residual rank times the local logarithm as a size estimate,
+capped at `1e6` integer positions. If it misses the answer, the next adjacent
+window continues with the exact remaining rank. The cap bounds retained
+prime output, not total sieve scratch memory or the possible target distance.
+
+The full native overload accepts `nThreads`, `maxThreads`, and `maxCores`.
+R forwards the same hardware budgets as `primeSieve`; the older two-argument
+native entry uses its supplied thread budget for all three controls. The
+public R signature is unchanged, while the hidden registration takes four
+arguments. Counts and sieves may use fewer workers than requested.
 
 The retained `testNthPrime.R` covers independent sieving and known primes,
 scalar conversion, integer/double boundaries, both selection directions,
@@ -117,7 +138,7 @@ for (file in c("testPrimeCount.R", "testNthPrime.R", "testPartialSieve.R",
                        reporter = "summary", stop_on_failure = TRUE)
 }
 stopifnot(getDLLRegisteredRoutines("RcppAlgos")$.Call$
-          `_RcppAlgos_NthPrimeCpp`$numParameters == 3L)
+          `_RcppAlgos_NthPrimeCpp`$numParameters == 4L)
 example("nthPrime", package = "RcppAlgos", lib.loc = package_library,
         ask = FALSE, echo = FALSE)
 stopifnot(length(tools::codoc(package = "RcppAlgos",
@@ -127,7 +148,8 @@ RS
 
 The standalone checker exercises exact anchors in both directions, composite
 plateaus, prime-square/block boundaries, repeated blocks, table retention and
-growth, and prepared contexts for all counting methods. It includes
+growth, exact interval updates, size-band boundaries, fixed hardware budgets,
+and prepared contexts for all counting methods. It includes
 `NthPrime.cpp` directly; do not link that source a second time:
 
 ```sh
@@ -144,7 +166,66 @@ ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 "$nth_check/check"
 For ThreadSanitizer, build a separate binary with `-fsanitize=thread` and run
 it with `TSAN_OPTIONS=halt_on_error=1`.
 
-Rollback validation on November 15, 2026: the clean isolated installation and
+### Native sieve integration measurements (November 16, 2026)
+
+A bounded comparison against baseline commit `a3db472` used Apple clang 17,
+C++11, and `-O3` on macOS arm64. Eight ranks, one/eight requested threads,
+and both implementations produced 192 checked calls across 64 fresh
+processes. Each configuration used two processes and three calls per process;
+first calls and the two warmed calls were analyzed separately. Paired variant
+order alternated. No builds or tests overlapped the final timed matrix.
+The native candidate received the installed R package's actual hardware
+budgets (`maxThreads = 10`, `maxCores = 1`), independent of requested workers.
+References came from the independent R test values and local primecount CLI.
+
+All final samples are retained in [nth-prime-native-timings.csv](nth-prime-native-timings.csv).
+The table shows medians, baseline → new, with times in milliseconds. RSS is
+the median process high-water mark in MiB, read outside the timed region;
+it includes allocator retention and is not a measure of live table payload.
+Rank `29844570422669` returns `999999999999989`, just below `1e15`.
+
+| Rank | Requested threads | First ms | Warmed ms | Peak RSS MiB |
+| --- | ---: | ---: | ---: | ---: |
+| `1e6` | 1 | 0.183 → 0.135 | 0.064 → 0.023 | 2.14 → 2.16 |
+| `1e8` | 8 | 1.691 → 1.666 | 0.509 → 0.586 | 9.54 → 10.05 |
+| `1e9` | 1 | 8.390 → 6.250 | 2.663 → 2.862 | 13.85 → 14.54 |
+| `1e9` | 8 | 3.900 → 3.474 | 1.630 → 1.766 | 14.88 → 15.48 |
+| `1e12` | 1 | 1421.400 → 1067.215 | 1238.890 → 840.429 | 40.30 → 49.43 |
+| `1e12` | 8 | 358.165 → 253.904 | 314.382 → 214.479 | 42.73 → 44.88 |
+| `29844570422669` | 1 | 31902.093 → 19715.180 | 29231.637 → 19497.233 | 150.77 → 183.02 |
+| `29844570422669` | 8 | 6836.402 → 4610.024 | 7040.813 → 4713.181 | 152.93 → 188.30 |
+
+Large warmed calls improved by about 32–34%. First calls improved in the
+three smaller configurations whose warmed medians regressed: rank `1e8`
+with eight threads (+0.077 ms), and rank `1e9` serial/eight-thread calls
+(+0.200/+0.136 ms). Rank `1e11` was roughly unchanged serially. These are
+measurements on one machine with two fresh processes per configuration, not
+portable crossover guarantees. The broad selector bands were not tuned to
+remove these small-case regressions.
+
+Near `1e15`, peak RSS increased by about 32 MiB serially and 35 MiB with eight
+requested threads. Releasing the dense tables before native sieving avoids
+simultaneous ownership, but does not guarantee lower process memory. The
+native sieve still needs base-prime, segment, and bucket storage. The final
+one-million-position cap limits retained generated primes only.
+
+Final validation passed 1,081 R expectations across the ten related files,
+including the public signature, four-argument native registration, Rd,
+examples, and `codoc` checks. C++11 ASan/UBSan and TSan each passed 8,549
+native checks without diagnostics; compiler logs were warning-free. These
+include exact interval updates, both selection directions, multiple bounded
+windows, integer-result boundaries, and fixed hardware budgets. No full
+`R CMD check`, other-platform build, or maximum-rank end-to-end calculation
+was run; the largest benchmark result was just below `1e15`.
+
+Source snapshots, commands, hashes, and full logs are retained under
+`/private/tmp/rcppalgos-nth-native-qo4vc59o/`. A preflight run interrupted for
+concurrent source formatting is separate from the final samples. The timed
+candidate was frozen; subsequent formatting and braces on two simple break
+statements were reviewed and the final source was rebuilt and rechecked.
+No calibration files or benchmark runner were added to the package.
+
+Historical baseline validation on November 15, 2026: the clean isolated installation and
 all 907 expectations across the five R test files passed without warnings.
 The three-argument registration, public signature/export, Rd/examples, and
 `codoc` checks passed. ASan/UBSan and TSan each passed all 8,478 native checks
