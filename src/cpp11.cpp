@@ -215,6 +215,13 @@ extern "C" SEXP _RcppAlgos_MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SE
     return cpp11::as_sexp(MotleyContainer(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsEuler), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
   END_CPP11
 }
+// NthPrimeR.cpp
+SEXP NthPrimeCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads);
+extern "C" SEXP _RcppAlgos_NthPrimeCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(NthPrimeCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
+  END_CPP11
+}
 // NumThreads.cpp
 SEXP cpp11GetNumThreads();
 extern "C" SEXP _RcppAlgos_cpp11GetNumThreads() {
@@ -348,6 +355,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_NextGatherGlue",          (DL_FUNC) &_RcppAlgos_NextGatherGlue,           1},
     {"_RcppAlgos_NextIterGlue",            (DL_FUNC) &_RcppAlgos_NextIterGlue,             1},
     {"_RcppAlgos_NextNumIterGlue",         (DL_FUNC) &_RcppAlgos_NextNumIterGlue,          2},
+    {"_RcppAlgos_NthPrimeCpp",             (DL_FUNC) &_RcppAlgos_NthPrimeCpp,              3},
     {"_RcppAlgos_PartitionsCount",         (DL_FUNC) &_RcppAlgos_PartitionsCount,         13},
     {"_RcppAlgos_PartitionsMultisetCount", (DL_FUNC) &_RcppAlgos_PartitionsMultisetCount, 11},
     {"_RcppAlgos_PollardRhoContainer",     (DL_FUNC) &_RcppAlgos_PollardRhoContainer,      6},

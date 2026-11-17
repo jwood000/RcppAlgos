@@ -103,7 +103,7 @@ exact throughout the supported range.
 Joseph Wood
 }
 \seealso{
-\code{\link{primeSieve}}, \code{\link{primePhi}},
+\code{\link{primeSieve}}, \code{\link{nthPrime}}, \code{\link{primePhi}},
 \code{\link{semiPrimeCount}}, \code{\link{triPrimeCount}}
 }
 \examples{

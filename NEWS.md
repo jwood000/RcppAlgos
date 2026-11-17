@@ -2,6 +2,7 @@
 
 ## New Features
 
+* Added `nthPrime(n, nThreads = NULL)` to find the prime at a one-based position. The calculation combines exact prime counting with a final segmented sieve and reuses prepared tables within each call. Results are exact throughout the supported range; requested threads apply to the counting stages.
 * Added `countOnly = TRUE` to `primeSieve()` for counting primes in an inclusive interval without constructing the result vector. The default continues to generate primes, and existing positional calls are unchanged.
 * Added `primePhi()`, `semiPrimeCount()`, and `triPrimeCount()` for exploring the partial sieve functions used in prime counting. The optional cutoff in the product counters excludes an initial set of primes; repeated prime factors are included. Each function documents its mathematical definition, supported inputs, and memory requirements.
 * Added `method = "auto"`, `"legendre"`, `"meissel"`, and `"lehmer"` to `primeCount()`. Explicit choices use the named algorithm for all accepted inputs. The new argument follows `nThreads`, preserving existing positional calls. The `"auto"` policy uses lookup/sieve counting below 100000, Legendre below 1e10, and Meissel for larger inputs, except that inputs of at least 1e12 with at least six usable threads select Lehmer. Usable threads are the requested count capped by the available hardware.

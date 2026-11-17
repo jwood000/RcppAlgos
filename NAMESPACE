@@ -126,6 +126,7 @@ export(
   divisorsRcpp,
   isPrimeRcpp,
   primeCount,
+  nthPrime,
   primePhi,
   semiPrimeCount,
   triPrimeCount,

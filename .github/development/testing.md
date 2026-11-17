@@ -24,6 +24,10 @@ investigation does not replace the normally installed package.
   `src/PiAuto.cpp` applies the shared method selector in `PrimeCount.h` to
   these prepared-table overloads. `primeCount` uses the same selector after
   its preserved small-input lookup/sieve path.
+- `src/NthPrime.cpp` implements estimate/count/segmented selection, reusing
+  prepared tables across exact counts and the final serial sieve.
+  `src/NthPrimeR.cpp` owns the registered scalar R adapter;
+  `NumbersUtils/NthPrime.h` declares the native entry point.
 - `src/PhiParallel.cpp` evaluates the outer Phi sum over the requested cutoff
   `a`, independently of the table extent. It retains the existing Legendre
   interval formulas, batch barriers, and serial/parallel thresholds; their
@@ -54,6 +58,75 @@ The [dispatch benchmark](prime-count-auto/README.md) records the empirical
 policy and its first/warmed-call tradeoffs. The legacy `PhiTinyLookup.h` is
 retained but is no longer included by production code; the shared evaluator
 owns the tiny tables.
+
+## nthPrime
+
+The scalar interface is `nthPrime(n, nThreads = NULL)`. The normal
+`CppConvert` path validates both arguments before lookup shortcuts. Results
+are integer through `INT_MAX` and exact double above it. The largest accepted
+rank is 252252704148404, independently checked with
+`primecount 9007199254740991 --threads=8`; its prime is 9007199254740881,
+checked with `primecount 252252704148404 --nth-prime`.
+
+The original baseline was restored on November 15, 2026. Ranks through 25
+use a lookup. Larger ranks start from
+`n * (log(n) + log(log(n)) - 1 + (log(log(n)) - 2) / log(n))`.
+An exact count anchors the search; at most two further counts correct it by
+`(n - pi(x)) * log(x)`, clamped to a bracket containing the answer. Selection
+starts when the estimated displacement fits 65536 positions, three counts
+have completed, or the next correction cannot move. These are the restored
+baseline's work limits, not mathematical error bounds or a new tuning policy.
+
+With `c = pi(x)`, forward selection takes the `(n-c)`th prime strictly above
+`x`; backward selection takes the `(c-n+1)`th prime at or below it. Equal
+counts still require locating the last prime at or below a possibly composite
+anchor. The serial segmented sieve continues in adjacent 65536-position
+blocks until it finds the exact prime. Prepared tables are reused, with root
+coverage checked before each count and sieve block. Requested threads apply
+to counting. The hidden R registration takes three arguments.
+
+The retained `testNthPrime.R` covers independent sieving and known primes,
+scalar conversion, integer/double boundaries, both selection directions,
+count identities, and serial/parallel requests. After a clean installation
+into a temporary library (see [package installation](#package-installation-and-focused-tests)),
+run the related tests in a fresh R process:
+
+```sh
+Rscript --vanilla - "$package_library" <<'RS'
+package_library <- commandArgs(TRUE)[1]
+library(RcppAlgos, lib.loc = package_library)
+for (file in c("testPrimeCount.R", "testNthPrime.R", "testPartialSieve.R",
+               "testPrimeSieve.R", "testErrors.R")) {
+    testthat::test_file(file.path("tests/testthat", file),
+                       reporter = "summary", stop_on_failure = TRUE)
+}
+stopifnot(getDLLRegisteredRoutines("RcppAlgos")$.Call$
+          `_RcppAlgos_NthPrimeCpp`$numParameters == 3L)
+example("nthPrime", package = "RcppAlgos", lib.loc = package_library,
+        ask = FALSE, echo = FALSE)
+stopifnot(length(tools::codoc(package = "RcppAlgos",
+                            lib.loc = package_library)) == 0L)
+RS
+```
+
+The standalone checker exercises exact anchors in both directions, composite
+plateaus, prime-square/block boundaries, repeated blocks, table retention and
+growth, and prepared contexts for all counting methods. It includes
+`NthPrime.cpp` directly; do not link that source a second time:
+
+```sh
+nth_check=$(mktemp -d)
+clang++ -std=c++11 -O1 -g -pthread -fsanitize=address,undefined \
+    -fno-omit-frame-pointer -Iinst/include \
+    .github/development/nth-prime-check.cpp \
+    src/PiAuto.cpp src/PiLegendre.cpp src/PiMeissel.cpp src/PiLehmer.cpp \
+    src/PiPrime.cpp src/Phi.cpp src/PhiParallel.cpp src/P2.cpp src/P3.cpp \
+    src/Eratosthenes.cpp -o "$nth_check/check"
+ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 "$nth_check/check"
+```
+
+For ThreadSanitizer, build a separate binary with `-fsanitize=thread` and run
+it with `TSAN_OPTIONS=halt_on_error=1`.
 
 ## R partial-sieve functions
 
