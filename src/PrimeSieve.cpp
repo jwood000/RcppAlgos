@@ -86,15 +86,16 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
     bool Parallel = false;
 
     if (myMax > std::numeric_limits<int>::max()) {
-        std::vector<std::vector<double>> primeList(numSects,
-                                                   std::vector<double>());
+        std::vector<std::vector<double>> primeList;
         std::vector<double> tempPrimes;
 
         PrimeSieve::PrimeSieveMain(primeList, tempPrimes, myMin, myMax,
                                    Parallel, nThreads, maxThreads, maxCores);
 
         if (Parallel) {
-            for (int i = 0; i < numSects; ++i) {
+            const std::size_t numSects = primeList.size();
+
+            for (std::size_t i = 0; i < numSects; ++i) {
                 numPrimes += primeList[i].size();
                 runningCount.push_back(numPrimes);
             }
@@ -114,15 +115,16 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
             return primes;
         }
     } else {
-        std::vector<std::vector<int>> primeList(numSects,
-                                                std::vector<int>());
+        std::vector<std::vector<int>> primeList;
         std::vector<int> tempPrimes;
 
         PrimeSieve::PrimeSieveMain(primeList, tempPrimes, myMin, myMax,
                                    Parallel, nThreads, maxThreads, maxCores);
 
         if (Parallel) {
-            for (int i = 0; i < numSects; ++i) {
+            const std::size_t numSects = primeList.size();
+
+            for (std::size_t i = 0; i < numSects; ++i) {
                 numPrimes += primeList[i].size();
                 runningCount.push_back(numPrimes);
             }

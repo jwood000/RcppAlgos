@@ -873,8 +873,8 @@ namespace PrimeSieve {
         }
 
         if (Parallel) {
-            // Count-only callers allocate after useful-worker reduction.
-            // Generation retains its caller-owned slots and final back slot.
+            // Allocate output slots after determining the useful worker count.
+            // The final worker writes to primeList.back().
             if (primeList.size() < static_cast<std::size_t>(nThreads)) {
                 primeList.resize(nThreads);
             }

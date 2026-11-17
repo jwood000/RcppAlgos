@@ -6,16 +6,24 @@ namespace PrimeCounting {
 
     class PhiTables;
 
-    enum class PrimeCountMethod { Legendre, Meissel, Lehmer };
+    enum class PrimeCountMethod {
+        Legendre,
+        Meissel,
+        Lehmer
+    };
 
     // Shared automatic policy. nThreads is the usable budget after the
     // hardware cap; each algorithm can further reduce its worker count.
     // First/warmed-call evidence: .github/development/prime-count-auto/
     inline PrimeCountMethod SelectPrimeCountMethod(std::int64_t n, int nThreads) {
-        if (n < 10000000000LL) return PrimeCountMethod::Legendre;
+        if (n < 10000000000LL) {
+            return PrimeCountMethod::Legendre;
+        }
+
         if (n >= 1000000000000LL && nThreads >= 6) {
             return PrimeCountMethod::Lehmer;
         }
+
         return PrimeCountMethod::Meissel;
     }
 
@@ -36,7 +44,7 @@ namespace PrimeCounting {
     // tables and uses PhiParallel;
     // workers share the general Phi evaluator's bounded, thread-safe cache.
     std::int64_t PiLegendre(std::int64_t n, int nThreads = 1,
-                                    int maxThreads = 1);
+                            int maxThreads = 1);
 
     // Meissel and Lehmer counters for 0 <= n <= 2^53 - 1. Invalid n throws
     // std::out_of_range before table preparation. Each call prepares one

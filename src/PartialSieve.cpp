@@ -66,8 +66,9 @@ SEXP PrimePhiCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
     } else {
         const PhiTables tables(PartialSieveDetail::IntegerSqrt(n));
         const std::int64_t b = tables.primeCount();
-        const std::int64_t survivors = PhiParallel(n, std::min(a, b),
-                                                   nThreads, tables);
+        const std::int64_t survivors = PhiParallel(
+            n, std::min(a, b), nThreads, tables
+        );
 
         // Once every prime through sqrt(n) has been excluded, only 1 and primes
         // remain. Each further excluded prime removes one survivor, until only
@@ -141,6 +142,7 @@ SEXP TriPrimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
 
     std::int64_t result;
     std::int64_t tableLimit;
+
     {
         // The first factor of a nondecreasing triple is at most cbrt(n).
         // This small initial table determines emptiness and p[a + 1] before

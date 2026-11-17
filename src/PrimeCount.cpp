@@ -33,17 +33,16 @@ SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads,
     }
 
     if (method == "auto" && n < 100000) {
-        if (n < 10) {
-            if (n == 1)
-                return cpp11::as_sexp(0);
-            else if (n == 2)
-                return cpp11::as_sexp(1);
-            else if (n < 5)
-                return cpp11::as_sexp(2);
-            else if (n < 7)
-                return cpp11::as_sexp(3);
-            else
-                return cpp11::as_sexp(4);
+        if (n == 1) {
+            return cpp11::as_sexp(0);
+        } else if (n == 2) {
+            return cpp11::as_sexp(1);
+        } else if (n < 5) {
+            return cpp11::as_sexp(2);
+        } else if (n < 7) {
+            return cpp11::as_sexp(3);
+        } else if (n < 10) {
+            return cpp11::as_sexp(4);
         }
 
         return cpp11::as_sexp(static_cast<int>(PrimeCounting::PiPrime(n)));
@@ -59,15 +58,17 @@ SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads,
     // Share the automatic policy with callers that reuse prepared tables.
     if (method == "auto") {
         const int usableThreads = std::min(nThreads, maxThreads);
+
         switch (PrimeCounting::SelectPrimeCountMethod(n, usableThreads)) {
-            case PrimeCounting::PrimeCountMethod::Meissel:
+            case PrimeCounting::PrimeCountMethod::Meissel: {
                 count = PrimeCounting::PiMeissel;
                 break;
-            case PrimeCounting::PrimeCountMethod::Lehmer:
+            } case PrimeCounting::PrimeCountMethod::Lehmer: {
                 count = PrimeCounting::PiLehmer;
                 break;
-            default:
+            } default: {
                 count = PrimeCounting::PiLegendre;
+            }
         }
     }
 

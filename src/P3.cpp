@@ -40,6 +40,7 @@ namespace {
             const std::int64_t quotient = x / primes[i];
             const std::int64_t last =
                 pi[PartialSieveDetail::IntegerSqrt(quotient)];
+
             sum += countP3Row(quotient, i, last, primes, pi);
         }
 
@@ -71,7 +72,6 @@ namespace {
 
         return sum;
     }
-
 } // namespace
 
     std::int64_t P3(std::int64_t x, std::int64_t a, int nThreads,

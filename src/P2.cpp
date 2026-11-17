@@ -136,7 +136,9 @@ namespace {
 
         const bool smallParallel = x < 100000000000LL && phiWorkerBudget > 1;
 
-        if (smallParallel) multiplier = 16;
+        if (smallParallel) {
+            multiplier = 16;
+        }
 
         const std::int64_t largestQuotient = x / primes[first];
 
@@ -165,10 +167,21 @@ namespace {
 
         // A short complete range needs no Phi prefix and at most two standard
         // 32768-odd-number segments. This exception precedes the other guards.
-        if (streamFirst == first && span <= 131072) return streamFirst;
-        if (last - first < 4096) return last;
-        if (streamQueries < 4096) return last;
-        if (smallParallel && streamBudget < phiWorkerBudget) return last;
+        if (streamFirst == first && span <= 131072) {
+            return streamFirst;
+        }
+
+        if (last - first < 4096) {
+            return last;
+        }
+
+        if (streamQueries < 4096) {
+            return last;
+        }
+
+        if (smallParallel && streamBudget < phiWorkerBudget) {
+            return last;
+        }
 
         if (smallParallel) {
             const auto root = IntegerSqrt(x);
@@ -461,7 +474,9 @@ namespace {
             sum += static_cast<std::int64_t>(pi[x / primes[i]]) - (i - 1);
         }
 
-        if (last == first) return sum;
+        if (last == first) {
+            return sum;
+        }
 
         // Base the Phi budget on the full non-table range. Removing cheaper
         // tail queries must not by itself reduce workers on the costly prefix.
