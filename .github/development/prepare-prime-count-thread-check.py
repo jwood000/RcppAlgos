@@ -60,6 +60,9 @@ def main():
                 + match.group(0))
 
     source = construction.sub(tag_batch, source)
+    # Eratosthenes.cpp also uses the production helper. Keep this altered
+    # definition distinct when both translation units are linked together.
+    source = re.sub(r"\bThreadBatch\b", "FaultTestThreadBatch", source)
     args.output_directory.mkdir(parents=True, exist_ok=True)
     output = args.output_directory / "prime-count-thread-core.cpp"
     output.write_text("// Test-only copy; production source SHA-256: " + source_hash + "\n" + source)

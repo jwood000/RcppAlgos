@@ -10,9 +10,10 @@ eulerPhiSieve <- function(bound1, bound2 = NULL,
                  nThreads, pkgEnv$maxThreads))
 }
 
-primeSieve <- function(bound1, bound2 = NULL, nThreads = NULL) {
+primeSieve <- function(bound1, bound2 = NULL, nThreads = NULL,
+                        countOnly = FALSE) {
     return(.Call(`_RcppAlgos_PrimeSieveCpp`, bound1, bound2, nThreads,
-                 pkgEnv$nCores, pkgEnv$maxThreads))
+                 pkgEnv$nCores, pkgEnv$maxThreads, countOnly))
 }
 
 divisorsSieve <- function(bound1, bound2 = NULL,

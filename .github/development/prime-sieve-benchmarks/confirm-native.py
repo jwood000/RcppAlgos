@@ -78,8 +78,9 @@ def main():
 
     original = root / "src/Eratosthenes.cpp"
     source = original.read_text()
-    old = "const auto worker = inspector ? PrimeWorker<T, true> : PrimeWorker<T, false>;"
-    new = "const auto worker = PrimeWorker<T, false>;"
+    output_type = "Output" if "void SieveMain(" in source else "T"
+    old = f"const auto worker = inspector ? PrimeWorker<{output_type}, true> : PrimeWorker<{output_type}, false>;"
+    new = f"const auto worker = PrimeWorker<{output_type}, false>;"
     if source.count(old) != 1:
         parser.error("worker dispatch changed: expected exactly one documented substitution")
     build = pathlib.Path(tempfile.mkdtemp(prefix="rcppalgos-native-confirmation-"))

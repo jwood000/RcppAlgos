@@ -258,10 +258,10 @@ extern "C" SEXP _RcppAlgos_PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThr
   END_CPP11
 }
 // PrimeSieve.cpp
-SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads);
-extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads) {
+SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads, SEXP RCountOnly);
+extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads, SEXP RCountOnly) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PrimeSieveCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
+    return cpp11::as_sexp(PrimeSieveCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RCountOnly)));
   END_CPP11
 }
 // ProductCartesian.cpp
@@ -356,7 +356,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_PrevNumIterGlue",         (DL_FUNC) &_RcppAlgos_PrevNumIterGlue,          2},
     {"_RcppAlgos_PrimeCountCpp",           (DL_FUNC) &_RcppAlgos_PrimeCountCpp,            4},
     {"_RcppAlgos_PrimePhiCpp",             (DL_FUNC) &_RcppAlgos_PrimePhiCpp,              4},
-    {"_RcppAlgos_PrimeSieveCpp",           (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,            5},
+    {"_RcppAlgos_PrimeSieveCpp",           (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,            6},
     {"_RcppAlgos_RandomAccessGlue",        (DL_FUNC) &_RcppAlgos_RandomAccessGlue,         2},
     {"_RcppAlgos_RankCombPerm",            (DL_FUNC) &_RcppAlgos_RankCombPerm,             8},
     {"_RcppAlgos_RankPartitionMain",       (DL_FUNC) &_RcppAlgos_RankPartitionMain,       12},

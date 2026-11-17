@@ -10,6 +10,14 @@ constexpr double dblIntMax = std::numeric_limits<int>::max();
 
 // std::pow(2, 53) - 1 is not constexpr as of C++11
 constexpr double Significand53 = 9007199254740991.0;
+// The same bound for exact integer arithmetic and integer template arguments.
+constexpr std::int64_t Significand53Int = static_cast<std::int64_t>(Significand53);
+
+// floor(sqrt(Significand53)); std::sqrt is not constexpr in C++11.
+constexpr std::int64_t Sqrt53Max = 94906265;
+static_assert(Sqrt53Max <= Significand53Int / Sqrt53Max &&
+              Sqrt53Max + 1 > Significand53Int / (Sqrt53Max + 1),
+              "Sqrt53Max must be the floor square root of Significand53Int");
 
 // Based off the internal limitations of sample, we
 // cannot utilize the full range of 53-bit significand

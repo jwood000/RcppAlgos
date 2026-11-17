@@ -4,8 +4,18 @@
 
 namespace PrimeCounting {
 
-    // Sieve counter used by the R driver for 10 <= n < 100000.
+    // Inclusive sieve counter for 0 <= n <= 2^53 - 1. The R driver uses
+    // this for 10 <= n < 100000; larger full-range counts use its existing
+    // combinatorial dispatch. No vector of the counted primes is retained.
     std::int64_t PiPrime(std::int64_t n);
+
+    // Count primes in the inclusive interval [minNum, maxNum]. Both bounds
+    // must lie in [0, 2^53 - 1]; a reversed interval is empty. Long intervals
+    // use adjacent bounded sieve windows. Budgets <= 0 become 1, requests
+    // are capped by maxThreads, and small work may use fewer workers.
+    std::int64_t PiPrimeRange(std::int64_t minNum, std::int64_t maxNum,
+                              int nThreads = 1, int maxThreads = 1,
+                              int maxCores = 1);
 
     // Legendre counter for 1 <= n <= 2^53 - 1; inputs are validated by
     // the R driver. Each call owns its prepared tables and uses PhiParallel;

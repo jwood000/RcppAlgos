@@ -1,9 +1,13 @@
 #include "NumbersUtils/Eratosthenes.h"
+#include "NumbersUtils/PrimeCount.h"
 #include "CppConvert.h"
+#include "cpp11/as.hpp"
 
 [[cpp11::register]]
 SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
-                   SEXP RmaxCores, SEXP RmaxThreads) {
+                   SEXP RmaxCores, SEXP RmaxThreads, SEXP RCountOnly) {
+
+    const bool countOnly = CppConvert::convertFlag(RCountOnly, "countOnly");
 
     double bound1;
     double bound2;
@@ -37,13 +41,13 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
         myMin = static_cast<std::int_fast64_t>(std::ceil(bound1));
     }
 
-    if (myMax <= 1) {
+    if (!countOnly && myMax <= 1) {
         return Rf_allocVector(INTSXP, 0);
     }
 
     if (myMin <= 2) myMin = 1;
 
-    if (myMin == myMax) {
+    if (!countOnly && myMin == myMax) {
         if (myMax % 2) {
             ++myMax;
         } else {
@@ -58,6 +62,20 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
     if (!Rf_isNull(RNumThreads)) {
         CppConvert::convertPrimitive(RNumThreads, nThreads,
                                        VecType::Integer, "nThreads");
+    }
+
+    if (countOnly) {
+        // PiPrimeRange handles empty and singleton intervals directly. It also
+        // normalizes the budgets before calling the shared sieve launcher.
+        const std::int64_t count = PrimeCounting::PiPrimeRange(
+            myMin, myMax, nThreads, maxThreads, maxCores
+        );
+
+        if (count > std::numeric_limits<int>::max()) {
+            return cpp11::as_sexp(static_cast<double>(count));
+        } else {
+            return cpp11::as_sexp(static_cast<int>(count));
+        }
     }
 
     int numPrimes = 0;

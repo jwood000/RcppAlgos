@@ -46,6 +46,11 @@ before compilation; resolve it deliberately instead of forcing an application.
 Successful patch application alone is not evidence that new algorithm changes
 were instrumented appropriately—review phase boundaries when the sieve changes.
 
+The current patch follows the shared generation/counting kernels. Inspection
+still reports generated prime vectors; count-only calls remain uninspected.
+Compaction-buffer storage describes the per-wheel scratch capacity used by
+generation, including after that extraction code moved into a shared helper.
+
 ## Reconstruct the recorded study
 
 `studies/2026-11-01/` preserves the original patch, helpers, source hashes, and

@@ -70,6 +70,9 @@ def main():
                 sums + ");\n" + match.group(0))
 
     source = construction.sub(tag_batch, source)
+    # The synchronous test thread changes the helper's layout. Avoid sharing
+    # its class name with the real helper now used by Eratosthenes.cpp.
+    source = re.sub(r"\bThreadBatch\b", "ScheduleTestThreadBatch", source)
     args.output_directory.mkdir(parents=True, exist_ok=True)
     output = args.output_directory / "prime-count-schedule-core.cpp"
     output.write_text("// Test-only copy; production source SHA-256: " + source_hash +
