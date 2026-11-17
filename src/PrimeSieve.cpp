@@ -82,7 +82,6 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
     std::vector<int> runningCount;
 
     runningCount.push_back(0);
-    int numSects = nThreads;
     bool Parallel = false;
 
     if (myMax > std::numeric_limits<int>::max()) {
@@ -103,7 +102,7 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
             cpp11::sexp res = Rf_allocVector(REALSXP, numPrimes);
             double* primes = REAL(res);
 
-            for (int i = 0; i < numSects; ++i) {
+            for (std::size_t i = 0; i < numSects; ++i) {
                 std::copy(primeList[i].cbegin(), primeList[i].cend(),
                           primes + runningCount[i]);
             }
@@ -132,7 +131,7 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
             cpp11::sexp res = Rf_allocVector(INTSXP, numPrimes);
             int* primes = INTEGER(res);
 
-            for (int i = 0; i < numSects; ++i) {
+            for (std::size_t i = 0; i < numSects; ++i) {
                 std::copy(primeList[i].cbegin(), primeList[i].cend(),
                           primes + runningCount[i]);
             }
