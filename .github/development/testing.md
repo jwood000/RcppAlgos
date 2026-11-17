@@ -19,6 +19,11 @@ investigation does not replace the normally installed package.
 - `src/PiMeissel.cpp` and `src/PiLehmer.cpp` prepare square-root tables once,
   evaluate Phi at the cube-root or fourth-root cutoff, and subtract their
   P2 or P2/P3 corrections. They reuse the existing helpers and worker policies.
+- All three counters also accept borrowed `PhiTables` for repeated counts.
+  Each cutoff comes from the current input, not the table's maximum extent.
+  `src/PiAuto.cpp` applies the shared method selector in `PrimeCount.h` to
+  these prepared-table overloads. `primeCount` uses the same selector after
+  its preserved small-input lookup/sieve path.
 - `src/PhiParallel.cpp` evaluates the outer Phi sum over the requested cutoff
   `a`, independently of the table extent. It retains the existing Legendre
   interval formulas, batch barriers, and serial/parallel thresholds; their
@@ -37,8 +42,8 @@ investigation does not replace the normally installed package.
   products with direct lookups. `NumbersUtils/PartialSieve.h` declares these
   internal kernels; `PartialSieveUtils.h` shares validation and corrected roots.
   Neither kernel changes the R driver or selects a prime-counting method.
-- `inst/include/NumbersUtils/PrimeCount.h` declares the four native counters
-  without R dependencies. It does not expose cache internals or phi helpers.
+- `inst/include/NumbersUtils/PrimeCount.h` declares the native counters and
+  automatic selector without R dependencies. It does not expose cache internals.
 
 The R method selector exposes Legendre, Meissel and Lehmer. The default `auto`
 policy keeps the historical lookup/sieve below `1e5`, uses Legendre below
@@ -314,13 +319,33 @@ Dense table memory remains `O(sqrt(n))`. The native drivers added no helper,
 dependency, or new scheduling policy. Their later R integration extends the
 existing registered entry point with a method argument.
 
+### Reusing prepared tables
+
+Legendre, Meissel and Lehmer also accept `(n, nThreads, const PhiTables&)`.
+These overloads borrow an immutable table covering at least `floor(sqrt(n))`;
+the caller keeps it alive until the count returns. Each call derives its
+cutoff from `n`, even when the table was prepared for a larger input. Legendre
+uses `tables.pi()[floor(sqrt(n))]`, rather than the table's total prime count.
+All three validate the numeric domain before indexing the table. Zero and
+one return zero without coverage; other inputs reject a short table with
+`std::out_of_range`. The owning Legendre overload now validates the same
+domain and uses the corrected integer square root.
+
+`PiAuto(n, nThreads, tables)` selects one of these overloads using the same
+policy as the R driver. Its caller supplies a hardware-capped thread budget;
+budgets at most one run serially. It always uses a combinatorial counter;
+the R driver's small-input lookup/sieve path stays in `PrimeCount.cpp`.
+Different calls may share a table, including concurrent calls, while each
+retains its own work scheduling and the existing bounded atomic Phi cache.
+
 ### Memory requirements
 
-Legendre, Meissel and Lehmer each prepare one `PhiTables` context per call.
+The owning Legendre, Meissel and Lehmer overloads prepare one `PhiTables`
+context per call; the prepared-table overloads borrow the caller's context.
 For a prepared table limit `L`, the dense `int32_t` pi array contains `L + 1`
 elements, requiring `4 * (L + 1)` bytes of element storage. The
 `int64_t` prime vector, shared Phi cache, and other runtime allocations add
-to this `O(sqrt(n))` storage requirement.
+to this `O(L)` storage requirement. Owning overloads choose `L = floor(sqrt(n))`.
 
 At `n = 2^53 - 1`, `L = 94,906,265`. Calculated sizes for the current
 implementation are:
@@ -340,8 +365,9 @@ dense pi array is allocated, though the allocator may retain freed memory.
 Full-range runtime and peak memory have not yet been measured.
 
 Sequential phases and their workers share the same prepared table, so an
-eight-worker call does not allocate eight copies. Concurrent top-level calls
-each allocate their own table; the bounded Phi cache is shared process-wide.
+eight-worker call does not allocate eight copies. Concurrent calls to owning
+overloads each allocate their own table; prepared-table calls may share one.
+The bounded Phi cache is shared process-wide.
 This storage design is also used by the existing Legendre implementation.
 The supported numeric range does not guarantee that every input is practical
 for the available memory.
@@ -353,7 +379,7 @@ prime_methods_check=$(mktemp -d)
 clang++ -std=c++11 -O1 -g -pthread -Wall -Wextra \
     -fsanitize=address,undefined -fno-omit-frame-pointer -Iinst/include \
     .github/development/prime-count-methods-check.cpp \
-    src/PiMeissel.cpp src/PiLehmer.cpp src/PiLegendre.cpp \
+    src/PiMeissel.cpp src/PiLehmer.cpp src/PiLegendre.cpp src/PiAuto.cpp \
     src/PhiParallel.cpp src/P2.cpp src/P3.cpp src/Phi.cpp src/Eratosthenes.cpp \
     -o "$prime_methods_check/check"
 ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 \
@@ -366,6 +392,9 @@ uses an independent segmented Eratosthenes sieve for exhaustive inputs through
 3,000, deterministic samples, and prime square/cube/fourth-power neighbors.
 It also checks known counts through `1e12`, thread budgets, invalid-input
 recovery, simultaneous different methods, and supplemental Legendre results.
+Prepared-table coverage checks include exact and oversized tables, repeated
+counts in decreasing order, insufficient coverage, concurrent table reuse,
+and selector boundaries without allocating full-size tables.
 
 ```sh
 clang++ -std=c++11 -O3 -pthread -Wall -Wextra -Wpedantic -Iinst/include \

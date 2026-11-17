@@ -1,11 +1,13 @@
-// Independent native checks for the Meissel and Lehmer drivers.
+// Independent native checks for the prime-counting drivers and reusable tables.
 // Compile with -std=c++11 -pthread -Iinst/include and link src/PiMeissel.cpp,
-// src/PiLehmer.cpp, src/PiLegendre.cpp, src/PhiParallel.cpp, src/Phi.cpp,
+// src/PiLehmer.cpp, src/PiLegendre.cpp, src/PiAuto.cpp, src/PhiParallel.cpp, src/Phi.cpp,
 // src/P2.cpp, src/P3.cpp, and src/Eratosthenes.cpp. Build separate executables
 // with -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined and
 // -fsanitize=thread, then run each without arguments.
 #include "NumbersUtils/PrimeCount.h"
+#include "NumbersUtils/Phi.h"
 #include "NumbersUtils/ThreadBatch.h"
+#include "CppConvert/Constants.h"
 #include <algorithm>
 #include <atomic>
 #include <cstdint>
@@ -22,6 +24,11 @@ namespace {
     struct Method {
         const char* name;
         CountFunction count;
+    };
+
+    struct PreparedMethod {
+        const char* name;
+        std::int64_t (*count)(std::int64_t, int, const PrimeCounting::PhiTables&);
     };
 
     // An ordinary segmented Eratosthenes sieve supplies every selected small
@@ -85,6 +92,30 @@ namespace {
                 ": actual=" + std::to_string(actual) +
                 " expected=" + std::to_string(expected));
         }
+    }
+
+    void CheckPrepared(const PreparedMethod& method, std::int64_t n, int threads,
+                       const PrimeCounting::PhiTables& tables,
+                       std::int64_t expected) {
+        const auto actual = method.count(n, threads, tables);
+        if (actual != expected) {
+            throw std::runtime_error(std::string("prepared ") + method.name +
+                " at n=" + std::to_string(n) + " threads=" +
+                std::to_string(threads) + " table_limit=" +
+                std::to_string(tables.limit()) + ": actual=" +
+                std::to_string(actual) + " expected=" + std::to_string(expected));
+        }
+    }
+
+    // Independent of the production floating-point estimate and correction.
+    std::int64_t ReferenceRoot(std::int64_t x) {
+        std::int64_t low = 0, high = x;
+        while (low < high) {
+            const std::int64_t middle = low + (high - low + 1) / 2;
+            if (middle <= x / middle) low = middle;
+            else high = middle - 1;
+        }
+        return low;
     }
 
     struct ReleaseOnExit {
@@ -185,13 +216,19 @@ int main() {
             ++legendreChecks;
         }
 
-        const std::int64_t maxX = 9007199254740991LL;
+        // The ordinary Legendre entry point now validates its native inputs
+        // and accepts the same zero/one cases as the other two drivers.
+        for (int n : {0, 1, 2}) {
+            Check(legendre, n, 1, 1, reference(n), "small native Legendre");
+            ++legendreChecks;
+        }
+
         const std::int64_t invalidInputs[] = {
-            std::numeric_limits<std::int64_t>::min(), -1, maxX + 1,
+            std::numeric_limits<std::int64_t>::min(), -1, Significand53Int + 1,
             std::numeric_limits<std::int64_t>::max()
         };
         std::size_t invalid = 0, recovery = 0;
-        for (const auto& method : methods) for (auto n : invalidInputs) {
+        for (const auto& method : {methods[0], methods[1], legendre}) for (auto n : invalidInputs) {
             bool caught = false;
             try { method.count(n, 4, 4); }
             catch (const std::out_of_range&) { caught = true; }
@@ -202,6 +239,120 @@ int main() {
             ++invalid;
             Check(method, 1000000, 2, 2, 78498, "invalid-input recovery");
             ++recovery;
+        }
+
+        const PreparedMethod preparedMethods[] = {
+            {"Legendre", PrimeCounting::PiLegendre},
+            {"Meissel", PrimeCounting::PiMeissel},
+            {"Lehmer", PrimeCounting::PiLehmer},
+            {"Auto", PrimeCounting::PiAuto}
+        };
+        const PrimeCounting::PhiTables oversized(10000);
+        std::vector<std::int64_t> probes = boundaries;
+        for (int n = 0; n <= 64; ++n) probes.push_back(n);
+        for (std::int64_t n : {100000LL, 100001LL, 999999LL, 1000000LL,
+                               1234567LL, 2000000LL}) probes.push_back(n);
+        // Deliberately move backwards as well as forwards through x while
+        // keeping one oversized table. Each mathematical cutoff must follow x,
+        // not tables.primeCount(), which would be wrong for smaller queries.
+        std::reverse(probes.begin(), probes.end());
+        const int preparedBudgets[] = {-3, 0, 1, 2, 4, 8};
+        std::size_t prepared = 0, coverage = 0, preparedInvalid = 0;
+        for (std::size_t i = 0; i < probes.size(); ++i) {
+            const auto n = probes[i];
+            const PrimeCounting::PhiTables exact(ReferenceRoot(n));
+            const int threads = preparedBudgets[i % 6];
+            for (const auto& method : preparedMethods) {
+                CheckPrepared(method, n, threads, exact, reference(n));
+                CheckPrepared(method, n, threads, oversized, reference(n));
+                prepared += 2;
+            }
+        }
+
+        // Exact coverage succeeds above, including prime/composite roots.
+        // A one-entry-short table must be rejected before any lookup. Zero
+        // and one need no coverage, even if a nonpositive budget is supplied.
+        for (int root : {1, 2, 10, 31, 1000}) {
+            const PrimeCounting::PhiTables shortTables(root - 1);
+            const std::int64_t n = root == 1 ? 2 : std::int64_t(root) * root;
+            for (const auto& method : preparedMethods) {
+                bool caught = false;
+                try { method.count(n, 4, shortTables); }
+                catch (const std::out_of_range&) { caught = true; }
+                if (!caught) throw std::runtime_error(std::string("missing coverage error for ") + method.name);
+                ++coverage;
+                CheckPrepared(method, 0, 0, shortTables, 0);
+                CheckPrepared(method, 1, -1, shortTables, 0);
+                prepared += 2;
+            }
+        }
+        for (const auto& method : preparedMethods) for (auto n : invalidInputs) {
+            bool caught = false;
+            try { method.count(n, 4, oversized); }
+            catch (const std::out_of_range&) { caught = true; }
+            if (!caught) throw std::runtime_error(std::string("missing prepared range error for ") + method.name);
+            ++preparedInvalid;
+            CheckPrepared(method, 1000000, 2, oversized, 78498);
+            ++prepared;
+        }
+
+        // Test policy boundaries without building enormous tables or relying
+        // on equal final counts to reveal which algorithm was selected.
+        using PrimeCounting::PrimeCountMethod;
+        struct Selection { std::int64_t n; int threads; PrimeCountMethod expected; };
+        const Selection selections[] = {
+            {0, 8, PrimeCountMethod::Legendre},
+            {9999999999LL, 6, PrimeCountMethod::Legendre},
+            {10000000000LL, 1, PrimeCountMethod::Meissel},
+            {10000000000LL, 6, PrimeCountMethod::Meissel},
+            {10000000001LL, 8, PrimeCountMethod::Meissel},
+            {999999999999LL, 8, PrimeCountMethod::Meissel},
+            {1000000000000LL, -3, PrimeCountMethod::Meissel},
+            {1000000000000LL, 0, PrimeCountMethod::Meissel},
+            {1000000000000LL, 5, PrimeCountMethod::Meissel},
+            {1000000000000LL, 6, PrimeCountMethod::Lehmer},
+            {1000000000001LL, 5, PrimeCountMethod::Meissel},
+            {1000000000001LL, 6, PrimeCountMethod::Lehmer},
+            {Significand53Int, 1, PrimeCountMethod::Meissel},
+            {Significand53Int, 8, PrimeCountMethod::Lehmer}
+        };
+        std::size_t policy = 0;
+        for (const auto& choice : selections) {
+            if (PrimeCounting::SelectPrimeCountMethod(choice.n, choice.threads) != choice.expected) {
+                throw std::runtime_error("automatic method selection mismatch");
+            }
+            ++policy;
+        }
+
+        // Reuse a single larger context across actual auto-dispatch branches.
+        // The independent sieve covers Legendre above; established pi values
+        // cover the Meissel/Lehmer regions here.
+        const PrimeCounting::PhiTables largeTables(1010000);
+        CheckPrepared(preparedMethods[3], 10000000000LL, 2, largeTables, 455052511);
+        CheckPrepared(preparedMethods[3], 1000000000000LL, 6, largeTables, 37607912018LL);
+        prepared += 2;
+
+        // Multiple callers may share the same read-only prepared table, with
+        // different cutoffs and bounded internal parallel work.
+        const std::int64_t sharedInputs[] = {100000000LL, 1000000000LL,
+                                             10000000000LL, 10000000000LL};
+        const std::int64_t sharedExpected[] = {5761455, 50847534, 455052511, 455052511};
+        std::int64_t sharedResults[4] = {0, 0, 0, 0};
+        std::atomic<bool> sharedStart(false);
+        PrimeCounting::ThreadBatch sharedBatch(4);
+        ReleaseOnExit sharedRelease(sharedStart);
+        for (int i = 0; i < 4; ++i) {
+            sharedBatch.launch([&, i] {
+                while (!sharedStart.load(std::memory_order_acquire)) std::this_thread::yield();
+                sharedResults[i] = preparedMethods[i].count(sharedInputs[i], 2, largeTables);
+            });
+        }
+        sharedStart.store(true, std::memory_order_release);
+        sharedBatch.finish();
+        for (int i = 0; i < 4; ++i) {
+            if (sharedResults[i] != sharedExpected[i]) {
+                throw std::runtime_error("concurrent shared-table mismatch");
+            }
         }
 
         // Each call prepares a different context while sharing only the Phi
@@ -230,7 +381,9 @@ int main() {
                   << " cutoff_boundaries=" << cutoff << " known=" << knownChecks
                   << " thread_budgets=" << budgetChecks << " legendre=" << legendreChecks
                   << " invalid=" << invalid << " recovery=" << recovery
-                  << " concurrent=2\n";
+                  << " concurrent=2 prepared=" << prepared
+                  << " coverage=" << coverage << " prepared_invalid=" << preparedInvalid
+                  << " policy=" << policy << " shared_concurrent=4\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "FAIL " << error.what() << '\n';

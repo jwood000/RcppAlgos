@@ -16,9 +16,22 @@ namespace PrimeCounting {
 
         const std::int64_t root = PartialSieveDetail::IntegerSqrt(n);
         const PhiTables tables(root);
+        return PiLehmer(n, std::min(nThreads, maxThreads), tables);
+    }
+
+    std::int64_t PiLehmer(std::int64_t n, int nThreads,
+                          const PhiTables& tables) {
+        if (n < 0 || n > Significand53Int) {
+            throw std::out_of_range("PiLehmer n must be between 0 and 2^53 - 1");
+        }
+        if (n < 2) return 0;
+
+        const std::int64_t root = PartialSieveDetail::IntegerSqrt(n);
+        if (tables.limit() < root) {
+            throw std::out_of_range("PiLehmer requires tables through floor(sqrt(n))");
+        }
         // floor(sqrt(floor(sqrt(n)))) is exactly floor(n^(1/4)).
         const std::int64_t a = tables.pi()[PartialSieveDetail::IntegerSqrt(root)];
-        nThreads = std::min(nThreads, maxThreads);
 
         // Surviving prime factors exceed n^(1/4), so there are at most three:
         // Phi(n, a) = 1 + (pi(n) - a) + P2(n, a) + P3(n, a).

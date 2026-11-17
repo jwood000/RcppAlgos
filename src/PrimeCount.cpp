@@ -56,13 +56,19 @@ SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads,
                                        VecType::Integer, "nThreads");
     }
 
-    // These empirical regions balance first and warmed calls. Selection uses
-    // the usable budget; each driver retains its own worker limits.
-    // Benchmark evidence and tradeoffs: .github/development/prime-count-auto/
-    if (method == "auto" && n >= 10000000000LL) {
+    // Share the automatic policy with callers that reuse prepared tables.
+    if (method == "auto") {
         const int usableThreads = std::min(nThreads, maxThreads);
-        count = n >= 1000000000000LL && usableThreads >= 6 ?
-            PrimeCounting::PiLehmer : PrimeCounting::PiMeissel;
+        switch (PrimeCounting::SelectPrimeCountMethod(n, usableThreads)) {
+            case PrimeCounting::PrimeCountMethod::Meissel:
+                count = PrimeCounting::PiMeissel;
+                break;
+            case PrimeCounting::PrimeCountMethod::Lehmer:
+                count = PrimeCounting::PiLehmer;
+                break;
+            default:
+                count = PrimeCounting::PiLegendre;
+        }
     }
 
     const std::int64_t result = count(n, nThreads, maxThreads);
