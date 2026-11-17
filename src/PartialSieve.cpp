@@ -2,6 +2,7 @@
 #include "NumbersUtils/PartialSieveUtils.h"
 #include "NumbersUtils/Phi.h"
 #include "CppConvert.h"
+#include "CppConvert/Constants.h"
 #include "cpp11/as.hpp"
 #include <algorithm>
 #include <cstdint>
@@ -164,13 +165,10 @@ SEXP TriPrimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
         // PhiTables supports coverage through floor(sqrt(2^53 - 1)). Unlike
         // Lehmer's cutoff, a small user-supplied a can require more than this.
         // Check the existing table limit before allocating the enlarged table.
-        const std::int64_t maxTableLimit =
-            PartialSieveDetail::IntegerSqrt(PartialSieveDetail::MAX_X);
-
-        if (tableLimit > maxTableLimit) {
+        if (tableLimit > Sqrt53Max) {
             cpp11::stop("triPrimeCount requires a lookup table beyond the supported "
                         "limit of %lld; reduce n or increase a",
-                        static_cast<long long>(maxTableLimit));
+                        static_cast<long long>(Sqrt53Max));
         }
 
         const PhiTables tables(tableLimit);

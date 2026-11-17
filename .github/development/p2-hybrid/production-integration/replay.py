@@ -82,6 +82,18 @@ def prepare(root):
                            'also retain all samples and smaller changes. No samples discarded.',
                  runner_sha256=sha(Path(__file__)), source_sha256=sha(source / 'src/P2.cpp'))
     save(out / 'suite.json', suite)
+    # Migrate only names of unchanged numeric limits in a derived build input.
+    # Keep the frozen original untouched; both copies are hashed below.
+    profile = out / 'selector_profile.cpp'
+    profile_source = (generated / profile.name).read_text()
+    old_limit = 'PrimeCounting::PartialSieveDetail::MAX_X'
+    old_root = 'PrimeCounting::PartialSieveDetail::IntegerSqrt(\n                    ' + old_limit + ')'
+    include = '#include "NumbersUtils/PartialSieve.h"'
+    require(profile_source.count(old_limit) == 2 and
+            profile_source.count(old_root) == 1 and
+            profile_source.count(include) == 1, 'frozen profile constant anchors changed')
+    profile_source = profile_source.replace(old_root, 'Sqrt53Max').replace(old_limit, 'Significand53Int')
+    profile.write_text(profile_source.replace(include, '#include "CppConvert/Constants.h"\n' + include))
     flags = ['clang++', '-std=c++11', '-O3', '-g', '-fno-omit-frame-pointer', '-pthread',
              '-Wall', '-Wextra', '-Wpedantic', '-I' + str(source / 'inst/include'), '-I' + str(generated)]
     common, commands = [], []
@@ -93,13 +105,13 @@ def prepare(root):
         common.append(target)
     paths = {'approved': generated / 'P2HybridInitial.cpp', 'integrated': source / 'src/P2.cpp'}
     for variant, path in paths.items():
-        command = flags + ['-DP2_HYBRID_SELECTOR_CANDIDATE', generated / 'selector_profile.cpp', path]
+        command = flags + ['-DP2_HYBRID_SELECTOR_CANDIDATE', profile, path]
         command += common + ['-o', out / ('profile-' + variant)]
         invoke(command, out / (variant + '-build.log'))
         commands.append(list(map(str, command)))
     inputs = [p for p in source.rglob('*') if p.is_file()]
     inputs += [p for p in generated.iterdir() if p.suffix in ('.h', '.cpp')]
-    inputs += [Path(__file__), out / 'suite.json']
+    inputs += [Path(__file__), out / 'suite.json', profile]
     save(out / 'build.json', dict(commands=commands, inputs={str(p): sha(p) for p in inputs},
          binaries={v: sha(out / ('profile-' + v)) for v in suite['variants']},
          compiler=invoke(['clang++', '--version'])))

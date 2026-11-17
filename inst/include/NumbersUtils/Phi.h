@@ -19,7 +19,7 @@ namespace PrimeCounting {
                                 const PhiTables& tables);
 
     public:
-        // Initial preparation range: 0 <= limit <= 94906265, matching the
+        // Initial preparation range: 0 <= limit <= Sqrt53Max, matching the
         // largest root table needed for the package's 53-bit input range.
         explicit PhiTables(std::int64_t limit);
 

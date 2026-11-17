@@ -206,7 +206,7 @@ namespace {
         // Delegate invalid inputs to Phi so validation and error messages stay
         // identical, including invalid a when x == 0. Do this before indexing
         // primes or entering the scheduler's logarithms and worker arithmetic.
-        if (x < 0 || x > static_cast<std::int64_t>(Significand53) ||
+        if (x < 0 || x > Significand53Int ||
             a < 0 || a > tables.primeCount()) {
             return Phi(x, a, tables);
         }

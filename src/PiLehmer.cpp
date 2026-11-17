@@ -2,13 +2,14 @@
 #include "NumbersUtils/Phi.h"
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
+#include "CppConvert/Constants.h"
 #include <algorithm>
 #include <stdexcept>
 
 namespace PrimeCounting {
 
     std::int64_t PiLehmer(std::int64_t n, int nThreads, int maxThreads) {
-        if (n < 0 || n > PartialSieveDetail::MAX_X) {
+        if (n < 0 || n > Significand53Int) {
             throw std::out_of_range("PiLehmer n must be between 0 and 2^53 - 1");
         }
         if (n < 2) return 0;

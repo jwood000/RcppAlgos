@@ -1,6 +1,7 @@
 // Standalone phase/P2 profiler. Link production P2.cpp, P3.cpp, PhiParallel.cpp,
 // Phi.cpp and Eratosthenes.cpp; use -std=c++11 -pthread -Iinst/include.
 // See README.md for coordinated runs and the optional diagnostic build.
+#include "CppConvert/Constants.h"
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
 #include "NumbersUtils/Phi.h"
@@ -55,7 +56,7 @@ namespace {
                 (method != "meissel" && method != "lehmer") ||
                 (priming != "plain" && priming != "prime-phi") ||
                 (mode == "phases" && argc != 7) ||
-                x < 2 || x > PrimeCounting::PartialSieveDetail::MAX_X ||
+                x < 2 || x > Significand53Int ||
                 requested < 1 || requested > std::numeric_limits<int>::max() ||
                 amount < 1 || amount > std::numeric_limits<int>::max() ||
                 expected < 0 || expected > x) {

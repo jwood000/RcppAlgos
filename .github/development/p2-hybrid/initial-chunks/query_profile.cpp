@@ -1,4 +1,5 @@
 // Native diagnostic driver. Compile with a generated copy of original P2.cpp.
+#include "CppConvert/Constants.h"
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
 #include "query_trace.h"
@@ -61,7 +62,7 @@ int main(int argc,char** argv) {
         const auto x=integer(argv[2]),threads=integer(argv[3]),repeats=integer(argv[4]);
         const auto expected=integer(argv[5]),numerator=integer(argv[6]),denominator=integer(argv[7]);
         if((cutoff!="zero" && cutoff!="meissel" && cutoff!="lehmer") ||
-            x<2 || x>PrimeCounting::PartialSieveDetail::MAX_X || threads<1 || threads>32 ||
+            x<2 || x>Significand53Int || threads<1 || threads>32 ||
             repeats<1 || repeats>32 || expected<0 || expected>x ||
             denominator<1 || numerator<denominator || numerator>std::numeric_limits<int>::max())
             throw std::runtime_error("invalid diagnostic arguments");

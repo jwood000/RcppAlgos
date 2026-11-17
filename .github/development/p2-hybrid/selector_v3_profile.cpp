@@ -1,5 +1,6 @@
 // Standalone selector v3 comparison experiment. All diagnostic decisions and capacity reads
 // occur AFTER the timed kernels. No production file includes this harness.
+#include "CppConvert/Constants.h"
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
 #include "NumbersUtils/Phi.h"
@@ -81,7 +82,7 @@ namespace {
             const bool timed = mode == "phases" || mode == "p2";
             if ((!timed && mode != "reference" && mode != "oracle") ||
                 !P2SelectorV3Cases::Valid(method) ||
-                x < 2 || x > PrimeCounting::PartialSieveDetail::MAX_X ||
+                x < 2 || x > Significand53Int ||
                 requested < std::numeric_limits<int>::min() ||
                 requested > std::numeric_limits<int>::max() ||
                 repeats < 1 || repeats > std::numeric_limits<int>::max() ||
@@ -108,8 +109,7 @@ namespace {
             // Divide after multiplying: truncating the ratio or root first
             // would change floor(root * numerator / denominator).
             limit = root * numerator / denominator;
-            if (limit > PrimeCounting::PartialSieveDetail::IntegerSqrt(
-                    PrimeCounting::PartialSieveDetail::MAX_X)) {
+            if (limit > Sqrt53Max) {
                 throw std::runtime_error("table ratio exceeds the prepared-table limit");
             }
         }

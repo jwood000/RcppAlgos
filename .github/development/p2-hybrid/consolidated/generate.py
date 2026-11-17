@@ -14,7 +14,8 @@ HERE = Path(__file__).resolve().parent
 EXPERIMENT = HERE.parent
 FROZEN = {
     'P2Hybrid.cpp': '8be6319d634edce0032d1afd41496c2c05c3fb2f0dc2ecc86ea97c47495fce82',
-    'selector_v3_profile.cpp': '03d7cc03376facb83924562878a21155b2bb0b35564a107dfd071584acdc8585',
+    # Updated pin for the shared Significand53Int constant migration.
+    'selector_v3_profile.cpp': '5391dda5477b52cf9bdd3d569b8c2ec0ffb5335966bddb0f3d2c9363d598d5da',
     'P2Selector.h': '2841a2e6e303179b386962bd18281bbbc0f78bed628dcbb7ad03784f400426f6',
     'P2SelectorV2.h': 'e953443f1aa2c9943365bc70cd92dc53996a8c0ab51ec3e675f55c380404cbd8',
     'P2SelectorV3.h': 'b8bf308dc79ac508871887fd9aad223a38b610129da8f8d2f9f09ddd7b233931',

@@ -1,5 +1,6 @@
 // Memory/work probe for P2Hybrid.cpp. Compile separately with
 // -DP2_HYBRID_MEMORY -DP2_HYBRID_MULTIPLIER=2,4,8. This is not a timing binary.
+#include "CppConvert/Constants.h"
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
 #include "NumbersUtils/Phi.h"
@@ -32,7 +33,7 @@ int main(int argc, char** argv) {
         const std::int64_t expected = integer(argv[5]);
         using namespace PrimeCounting;
         if ((method != "meissel" && method != "lehmer") ||
-            x < 2 || x > PartialSieveDetail::MAX_X ||
+            x < 2 || x > Significand53Int ||
             requested < 1 || requested > std::numeric_limits<int>::max() ||
             repeats < 1 || repeats > std::numeric_limits<int>::max() ||
             expected < 0 || expected > x) {

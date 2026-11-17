@@ -1,5 +1,6 @@
 // Native timing driver; prepared-table setup is reported separately.
 // Link P2.cpp, P3.cpp, Phi.cpp and Eratosthenes.cpp. See testing.md.
+#include "CppConvert/Constants.h"
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
 #include <chrono>
@@ -48,7 +49,7 @@ int main(int argc, char** argv) {
         const int threads = std::stoi(argv[4]);
         const int repeats = std::stoi(argv[5]);
         const std::int64_t expected = std::stoll(argv[6]);
-        if (x < 8 || x > PrimeCounting::PartialSieveDetail::MAX_X ||
+        if (x < 8 || x > Significand53Int ||
             (power != 3 && power != 4) || threads < 1 || repeats < 1) {
             throw std::runtime_error("invalid benchmark arguments");
         }

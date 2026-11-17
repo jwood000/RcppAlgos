@@ -1,6 +1,7 @@
 // Serial warm-P2 reuse analysis. Link the copies produced by
 // instrument_reuse.py, production Eratosthenes.cpp, and include reuse_metrics.h.
 // This replays logical work, not execution time or a production cache design.
+#include "CppConvert/Constants.h"
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
 #include "NumbersUtils/Phi.h"
@@ -367,7 +368,7 @@ int main(int argc, char** argv) {
         const auto expected = Integer(argv[3]);
         const auto maximum = Integer(argv[4]);
         Require((method == "meissel" || method == "lehmer") && x >= 2 &&
-                x <= PrimeCounting::PartialSieveDetail::MAX_X && expected >= 0 && expected <= x &&
+                x <= Significand53Int && expected >= 0 && expected <= x &&
                 maximum >= 1 && maximum <= MAX_EVENTS, "invalid reuse arguments");
         std::int64_t a = 0, cubeA = 0, result = 0;
         {
@@ -388,7 +389,7 @@ int main(int argc, char** argv) {
         const auto last = static_cast<std::uint32_t>(trace.last);
         const auto commonFirst = static_cast<std::uint32_t>(std::min<std::int64_t>(cubeA + 1, last));
         const auto distribution = AssignKeys(trace.records, first, last, commonFirst);
-        const std::uint64_t unlimitedX = PrimeCounting::PartialSieveDetail::MAX_X;
+        const std::uint64_t unlimitedX = Significand53Int;
         const auto unlimitedA = std::numeric_limits<std::uint32_t>::max();
         const Policy policies[] = {
             {"all_ineligible", unlimitedX, unlimitedA},

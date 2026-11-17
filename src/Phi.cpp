@@ -1,5 +1,6 @@
 #include "NumbersUtils/Phi.h"
 #include "NumbersUtils/Eratosthenes.h"
+#include "CppConvert/Constants.h"
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -10,6 +11,7 @@
 #include <mutex>
 #include <new>
 #include <stdexcept>
+#include <string>
 
 // General partial-sieve evaluator developed from PiLegendre.cpp's
 // recurrence and shortcuts (based on Kim Walisch's primecount implementation).
@@ -18,9 +20,6 @@
 namespace PrimeCounting {
 namespace {
 
-    constexpr std::int64_t MAX_PHI_X = (std::int64_t(1) << 53) - 1;
-    // trunc(sqrt(2^53 - 1)) = 94906265
-    constexpr std::int64_t MAX_TABLE_LIMIT = 94906265;
     constexpr int TINY_A = 6;
     constexpr std::array<int, 7> primeProducts = {
         {1, 2, 6, 30, 210, 2310, 30030}
@@ -285,8 +284,9 @@ namespace {
 }
 
     PhiTables::PhiTables(std::int64_t limit) {
-        if (limit < 0 || limit > MAX_TABLE_LIMIT) {
-            throw std::out_of_range("PhiTables limit must be between 0 and 94906265");
+        if (limit < 0 || limit > Sqrt53Max) {
+            throw std::out_of_range("PhiTables limit must be between 0 and " +
+                                    std::to_string(Sqrt53Max));
         }
 
         PrimeSieve::sqrtBigPrimes(static_cast<int>(limit), true, false, true, primes_);
@@ -312,7 +312,7 @@ namespace {
     }
 
     std::int64_t Phi(std::int64_t x, std::int64_t a, const PhiTables& tables) {
-        if (x < 0 || x > MAX_PHI_X) {
+        if (x < 0 || x > Significand53Int) {
             throw std::out_of_range("Phi x must be between 0 and 2^53 - 1");
         }
 
