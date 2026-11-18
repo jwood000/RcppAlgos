@@ -69,17 +69,23 @@ comboGroups(v, numGroups = NULL, grpSizes = NULL,
 - Parallel:
 
   Logical value indicating whether results should be generated in
-  parallel using \\n - 1\\ threads, where \\n\\ is the maximum number of
-  threads. The default is `FALSE`. If `nThreads` is not `NULL`, it will
-  be given preference (*e.g.* if user has 8 threads with
-  `Parallel = TRUE` and `nThreads = 4`, only 4 threads will be spawned).
-  If your system is single-threaded, the arguments `Parallel` and
-  `nThreads` are ignored.
+  parallel. The default is `FALSE`. If `TRUE` and `nThreads = NULL`, up
+  to \\n - 1\\ threads are used, where \\n\\ is the number of threads
+  available on your system (both threads may be used on a two-thread
+  system). If `nThreads` is not `NULL`, it will be given preference
+  (*e.g.* with 8 available threads, `Parallel = TRUE` and
+  `nThreads = 4`, up to 4 threads may be used). In either case, the
+  actual number of threads depends on the useful work in the
+  calculation; small or simple cases may use fewer threads. If your
+  system is single-threaded, the arguments `Parallel` and `nThreads` are
+  ignored.
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`. See
-  `Parallel`.
+  Requested number of threads. The default is `NULL` for serial
+  execution unless `Parallel = TRUE`. Requests are capped by the
+  available hardware and the useful work in the calculation. Small or
+  simple cases may use fewer threads. See `Parallel`.
 
 ## Details
 

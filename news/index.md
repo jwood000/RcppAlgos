@@ -4,6 +4,34 @@
 
 ### New Features
 
+- Added `nthPrime(n, nThreads = NULL)` to find the prime at a one-based
+  position. The calculation uses at most two whole-range prime counts,
+  then reuses the optimized sieve for interval counting and bounded
+  final selection. Results are exact throughout the supported range;
+  requested threads apply to counting and sieving.
+- Added `countOnly = TRUE` to
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  for counting primes in an inclusive interval without constructing the
+  result vector. The default continues to generate primes, and existing
+  positional calls are unchanged.
+- Added
+  [`primePhi()`](https://jwood000.github.io/RcppAlgos/reference/primePhi.md),
+  [`semiPrimeCount()`](https://jwood000.github.io/RcppAlgos/reference/semiPrimeCount.md),
+  and
+  [`triPrimeCount()`](https://jwood000.github.io/RcppAlgos/reference/triPrimeCount.md)
+  for exploring the partial sieve functions used in prime counting. The
+  optional cutoff in the product counters excludes an initial set of
+  primes; repeated prime factors are included. Each function documents
+  its mathematical definition, supported inputs, and memory
+  requirements.
+- Added `method = "auto"`, `"legendre"`, `"meissel"`, and `"lehmer"` to
+  [`primeCount()`](https://jwood000.github.io/RcppAlgos/reference/primeCount.md).
+  Explicit choices use the named algorithm for all accepted inputs. The
+  new argument follows `nThreads`, preserving existing positional calls.
+  The `"auto"` policy uses lookup/sieve counting below 100000, Legendre
+  below 1e10, and Meissel for larger inputs, except that inputs of at
+  least 1e12 with at least six usable threads select Lehmer. Usable
+  threads are the requested count capped by the available hardware.
 - Added ranking, sampling, and iterator random access for supported
   multiset partitions, including GMP support for large ranks.
 - Added parallel generation of supported multiset partitions. `lower`
@@ -59,6 +87,11 @@
 
 ### Improvements
 
+- Corrected the
+  [`primeCount()`](https://jwood000.github.io/RcppAlgos/reference/primeCount.md)
+  help’s inclusive endpoint, Legendre cutoff, and Phi recurrence, and
+  documented the Meissel and Lehmer formulas, threading behavior, exact
+  result types, and memory requirements.
 - Documented that supported sum/equality permutation calls without
   `lower` generate matching partitions followed by each partition’s
   permutations. Supplying `lower` selects ordinary permutation

@@ -41,6 +41,7 @@
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/expandGridSample.html</loc></url>
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/index.html</loc></url>
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/isPrimeRcpp.html</loc></url>
+<url><loc>https://jwood000.github.io/RcppAlgos/reference/nthPrime.html</loc></url>
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/numDivisorSieve.html</loc></url>
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/partitionsCount.html</loc></url>
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/partitionsGeneral.html</loc></url>
@@ -50,7 +51,10 @@
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/primeCount.html</loc></url>
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/primeFactorize.html</loc></url>
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/primeFactorizeSieve.html</loc></url>
+<url><loc>https://jwood000.github.io/RcppAlgos/reference/primePhi.html</loc></url>
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/primeSieve.html</loc></url>
+<url><loc>https://jwood000.github.io/RcppAlgos/reference/semiPrimeCount.html</loc></url>
 <url><loc>https://jwood000.github.io/RcppAlgos/reference/stdThreadMax.html</loc></url>
+<url><loc>https://jwood000.github.io/RcppAlgos/reference/triPrimeCount.html</loc></url>
 </urlset>
 

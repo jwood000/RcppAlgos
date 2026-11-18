@@ -118,7 +118,10 @@ compositionsGeneral(
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 - tolerance:
 
@@ -974,10 +977,10 @@ partitionsGeneral(sample(1000, 20), 5, TRUE, target = 2500)
 
 system.time(one_thread  <- partitionsGeneral(80, 10, TRUE))
 #>    user  system elapsed 
-#>   0.003   0.009   0.012 
+#>   0.007   0.008   0.015 
 system.time(two_threads <- partitionsGeneral(80, 10, TRUE, nThreads = 2))
 #>    user  system elapsed 
-#>   0.007   0.006   0.007 
+#>   0.008   0.009   0.009 
 identical(one_thread, two_threads)
 #> [1] TRUE
 ```

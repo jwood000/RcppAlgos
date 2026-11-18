@@ -24,7 +24,10 @@ primeFactorize(v, namedList = FALSE, nThreads = NULL)
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 ## Details
 
@@ -99,5 +102,5 @@ pFacsWithNames <- primeFactorize(myVec, namedList = TRUE)
 ## Using nThreads
 system.time(primeFactorize(myVec, nThreads = 2))
 #>    user  system elapsed 
-#>   0.001   0.000   0.001 
+#>   0.000   0.001   0.001 
 ```

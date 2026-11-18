@@ -26,7 +26,10 @@ divisorsSieve(bound1, bound2 = NULL, namedList = FALSE, nThreads = NULL)
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 ## Details
 
@@ -96,12 +99,12 @@ for (s in mySamp) {
 ## a range is efficient as well
 system.time(divisorsSieve(10^12, 10^12 + 10^5))
 #>    user  system elapsed 
-#>   0.055   0.006   0.060 
+#>   0.057   0.006   0.063 
 
 ## Use nThreads for improved efficiency
 system.time(divisorsSieve(10^12, 10^12 + 10^5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.069   0.014   0.053 
+#>   0.075   0.020   0.059 
 
 ## Set 'namedList' to TRUE to return a named list
 divisorsSieve(27, 30, namedList = TRUE)
@@ -121,5 +124,5 @@ divisorsSieve(27, 30, namedList = TRUE)
 ## Using nThreads
 system.time(divisorsSieve(1e5, 2e5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.019   0.000   0.017 
+#>   0.024   0.000   0.020 
 ```

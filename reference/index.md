@@ -67,6 +67,8 @@
   : Sample the Cartesian Product
 - [`isPrimeRcpp()`](https://jwood000.github.io/RcppAlgos/reference/isPrimeRcpp.md)
   : Vectorized Primality Test
+- [`nthPrime()`](https://jwood000.github.io/RcppAlgos/reference/nthPrime.md)
+  : Find the nth Prime Number
 - [`numDivisorSieve()`](https://jwood000.github.io/RcppAlgos/reference/numDivisorSieve.md)
   : Apply Divisor Function to Every Element in a Range
 - [`partitionsCount()`](https://jwood000.github.io/RcppAlgos/reference/partitionsCount.md)
@@ -90,7 +92,13 @@
   : Vectorized Prime Factorization
 - [`primeFactorizeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeFactorizeSieve.md)
   : Generate Prime Factorization for Numbers in a Range
+- [`primePhi()`](https://jwood000.github.io/RcppAlgos/reference/primePhi.md)
+  : Count Integers Remaining After a Partial Prime Sieve
 - [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
-  : Generate Prime Numbers
+  : Generate or Count Prime Numbers
+- [`semiPrimeCount()`](https://jwood000.github.io/RcppAlgos/reference/semiPrimeCount.md)
+  : Count SemiPrimes With an Optional Partial-Sieve Cutoff
 - [`stdThreadMax()`](https://jwood000.github.io/RcppAlgos/reference/stdThreadMax.md)
   : Max Number of Concurrent Threads
+- [`triPrimeCount()`](https://jwood000.github.io/RcppAlgos/reference/triPrimeCount.md)
+  : Count TriPrimes With an Optional Partial-Sieve Cutoff

@@ -28,7 +28,10 @@ eulerPhiSieve(bound1, bound2 = NULL, namedVector = FALSE, nThreads = NULL)
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 ## Details
 
@@ -79,6 +82,12 @@ The maximum allowed value is \\2^{53} - 1\\.
 - [53-bit significand
   precision](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
 
+## See also
+
+[`primePhi`](https://jwood000.github.io/RcppAlgos/reference/primePhi.md)
+for the different partial-sieve function \\\Phi(n, a)\\ used in prime
+counting.
+
 ## Examples
 
 ``` r
@@ -89,7 +98,7 @@ mySamp <- sample(10^6, 5*10^5)
 ## Generate number of coprime elements for many numbers
 system.time(myPhis <- eulerPhiSieve(10^6))
 #>    user  system elapsed 
-#>   0.007   0.001   0.009 
+#>   0.009   0.001   0.010 
 
 ## Now use result in algorithm
 for (s in mySamp) {
@@ -100,13 +109,13 @@ for (s in mySamp) {
 ## See https://projecteuler.net
 system.time(which.max((1:10^6)/eulerPhiSieve(10^6)))
 #>    user  system elapsed 
-#>   0.010   0.003   0.013 
+#>   0.011   0.006   0.017 
 
 ## Generating number of coprime elements
 ## for every number in a range is no problem
 system.time(myPhiRange <- eulerPhiSieve(10^13, 10^13 + 10^6))
 #>    user  system elapsed 
-#>   0.024   0.002   0.027 
+#>   0.031   0.000   0.031 
 
 ## Returning a named vector
 eulerPhiSieve(10, 20, namedVector = TRUE)
@@ -119,5 +128,5 @@ eulerPhiSieve(10, namedVector = TRUE)
 ## Using nThreads
 system.time(eulerPhiSieve(1e5, 2e5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.001   0.000   0.001 
+#>   0.001   0.001   0.001 
 ```

@@ -55,7 +55,10 @@ expandGrid(..., lower = NULL, upper = NULL,
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 - return_df:
 
@@ -106,5 +109,5 @@ lst = Map(function(x, y) x:y, 8:14, 15:21)
 ## Use multiple threads for greater efficiency
 system.time(expandGrid(lst, nThreads = 2))
 #>    user  system elapsed 
-#>   0.011   0.023   0.018 
+#>    0.02    0.02    0.02 
 ```

@@ -28,7 +28,10 @@ numDivisorSieve(bound1, bound2 = NULL, namedVector = FALSE, nThreads = NULL)
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 ## Details
 
@@ -79,7 +82,7 @@ mySamp <- sample(10^6, 5*10^5)
 ## every number less than a million
 system.time(mySigmas <- numDivisorSieve(10^6))
 #>    user  system elapsed 
-#>   0.005   0.000   0.005 
+#>   0.008   0.000   0.008 
 
 ## Now use result in algorithm
 for (s in mySamp) {
@@ -91,7 +94,7 @@ for (s in mySamp) {
 ## number in a range is no problem
 system.time(sigmaRange <- numDivisorSieve(10^13, 10^13 + 10^6))
 #>    user  system elapsed 
-#>   0.019   0.000   0.019 
+#>   0.026   0.000   0.026 
 
 ## Returning a named vector
 numDivisorSieve(10, 20, namedVector = TRUE)
