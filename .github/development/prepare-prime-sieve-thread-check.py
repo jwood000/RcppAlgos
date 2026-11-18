@@ -13,10 +13,10 @@ def main():
     args = parser.parse_args()
     repository = Path(__file__).resolve().parents[2]
     source = (repository / "src/Eratosthenes.cpp").read_text()
-    batch = (repository / "inst/include/NumbersUtils/ThreadBatch.h").read_text()
+    batch = (repository / "inst/include/ThreadBatch.h").read_text()
     hashes = (hashlib.sha256(source.encode()).hexdigest(),
               hashlib.sha256(batch.encode()).hexdigest())
-    include = '#include "NumbersUtils/ThreadBatch.h"\n'
+    include = '#include "ThreadBatch.h"\n'
     if source.count(include) != 1:
         raise RuntimeError("expected one ThreadBatch include in Eratosthenes.cpp")
     source = source.replace(include, "")

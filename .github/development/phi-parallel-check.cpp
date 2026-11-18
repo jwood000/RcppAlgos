@@ -2,8 +2,9 @@
 // Compile with -std=c++11 -pthread -Iinst/include and link src/Phi.cpp,
 // src/PhiParallel.cpp, and src/Eratosthenes.cpp. Use separate ASan/UBSan and
 // TSan executables; this checker neither needs R nor benchmarks performance.
+// --batch-only runs just the generic checks, with at most two workers.
 #include "NumbersUtils/Phi.h"
-#include "NumbersUtils/ThreadBatch.h"
+#include "ThreadBatch.h"
 #include <algorithm>
 #include <array>
 #include <atomic>
@@ -109,10 +110,40 @@ namespace {
         ~ReleaseOnExit() { flag.store(true, std::memory_order_release); }
     };
 
+    struct CallableTransferProbe {
+        int& copies;
+        bool& invoked;
+        bool failMove;
+        std::thread::id caller;
+
+        CallableTransferProbe(int& count, bool& ran, bool fail = false)
+            : copies(count), invoked(ran), failMove(fail),
+              caller(std::this_thread::get_id()) {}
+
+        CallableTransferProbe(const CallableTransferProbe& other)
+            : copies(other.copies), invoked(other.invoked),
+              failMove(other.failMove), caller(other.caller) {
+            if (++copies != 1) throw std::runtime_error("extra callable copy");
+        }
+
+        CallableTransferProbe(CallableTransferProbe&& other)
+            : copies(other.copies), invoked(other.invoked),
+              failMove(other.failMove), caller(other.caller) {
+            // A by-value worker argument would move before its try block.
+            if (std::this_thread::get_id() != caller) {
+                throw std::runtime_error("callable moved on worker");
+            }
+            if (failMove) throw std::runtime_error("callable move failure");
+        }
+
+        void operator()() { invoked = true; }
+    };
+
     void CheckGenericBatch() {
-        using PrimeCounting::ThreadBatch;
+        using RcppAlgos::ThreadBatch;
         {
             ThreadBatch empty(0);
+
             empty.finish();
         }
         {
@@ -123,6 +154,7 @@ namespace {
             batch.launch([&] {
                 for (int i = 0; i < 4; ++i) squares[i] = (i + 1) * (i + 1);
             });
+
             batch.finish();
             Check(text == "ordinary callable" && squares == std::vector<int>({1, 4, 9, 16}),
                   "generic batch result mismatch");
@@ -153,17 +185,58 @@ namespace {
             ThreadBatch batch(2);
             batch.launch([] { throw std::runtime_error("generic worker failure"); });
             batch.launch([&] { result = 42; });
+
             try { batch.finish(); }
             catch (const std::runtime_error& error) {
                 caught = std::string(error.what()) == "generic worker failure";
             }
             Check(caught && result == 42, "generic worker exception/result propagation failed");
         }
+        {
+            int copies = 0;
+            bool invoked = false;
+            CallableTransferProbe work(copies, invoked);
+            ThreadBatch batch(1);
+            batch.launch(work); // The lvalue requires one initial snapshot.
+
+            batch.finish();
+            Check(copies == 1 && invoked, "callable transfer copied or lost its work");
+        }
+        {
+            int copies = 0;
+            bool invoked = false, caught = false;
+            std::atomic<bool> release(false), completed(false);
+            try {
+                // Borrowed storage must survive unwinding of the batch.
+                std::vector<int> borrowed(1, 0);
+                CallableTransferProbe work(copies, invoked, true);
+                ThreadBatch batch(2);
+                ReleaseOnExit releaseOnExit(release);
+                batch.launch([&] {
+                    while (!release.load(std::memory_order_acquire)) std::this_thread::yield();
+                    borrowed[0] = 42;
+                    completed.store(borrowed[0] == 42, std::memory_order_release);
+                });
+                batch.launch(work);
+            } catch (const std::runtime_error& error) {
+                caught = std::string(error.what()) == "callable move failure";
+                Check(completed.load(std::memory_order_acquire),
+                      "callable move failure escaped before the earlier worker joined");
+            }
+            Check(caught && copies == 1 && !invoked,
+                  "callable move failure did not propagate on the caller");
+        }
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     try {
+        if (argc == 2 && std::string(argv[1]) == "--batch-only") {
+            CheckGenericBatch();
+            std::cout << "PASS generic_batch=6\n";
+            return 0;
+        }
+        Check(argc == 1, "usage: phi-parallel-check [--batch-only]");
         using PrimeCounting::Phi;
         using PrimeCounting::PhiParallel;
         using PrimeCounting::PhiTables;
@@ -244,7 +317,7 @@ int main() {
         {
             std::int64_t results[2] = {0, 0};
             std::atomic<bool> start(false);
-            PrimeCounting::ThreadBatch callers(2);
+            RcppAlgos::ThreadBatch callers(2);
             ReleaseOnExit releaseOnExit(start);
             callers.launch([&] {
                 while (!start.load(std::memory_order_acquire)) std::this_thread::yield();
@@ -255,6 +328,7 @@ int main() {
                 results[1] = PhiParallel(10000001, 25, 3, *tables.at(10000));
             });
             start.store(true, std::memory_order_release);
+
             callers.finish();
             Check(results[0] == nearReference.at(8)[1] && results[1] == nearReference.at(25)[2],
                   "concurrent PhiParallel caller mismatch");
@@ -280,7 +354,7 @@ int main() {
                   << sizeof(nearCases) / sizeof(nearCases[0]) << " large_exact="
                   << sizeof(largeCases) / sizeof(largeCases[0])
                   << " differential=" << differential
-                  << " concurrent=2 invalid=" << invalid << " generic_batch=4\n";
+                  << " concurrent=2 invalid=" << invalid << " generic_batch=6\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << "\n";

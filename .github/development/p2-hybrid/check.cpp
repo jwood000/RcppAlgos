@@ -6,7 +6,7 @@
 #include "NumbersUtils/PartialSieveUtils.h"
 #include "NumbersUtils/Phi.h"
 #include "NumbersUtils/PrimeCount.h"
-#include "NumbersUtils/ThreadBatch.h"
+#include "ThreadBatch.h"
 #include <algorithm>
 #include <atomic>
 #include <cstdint>
@@ -344,7 +344,7 @@ int main() {
             const auto expected = P2Reference(x, a, 1, tables);
             std::int64_t sums[2] = {0, 0};
             std::atomic<bool> start(false);
-            PrimeCounting::ThreadBatch callers(2);
+            RcppAlgos::ThreadBatch callers(2);
             ReleaseOnExit release(start);
             for (int slot = 0; slot < 2; ++slot) {
                 callers.launch([&, slot] {
@@ -353,6 +353,7 @@ int main() {
                 });
             }
             start.store(true, std::memory_order_release);
+
             callers.finish();
             Check(sums[0], expected, "concurrent call 0", x, a, 2);
             Check(sums[1], expected, "concurrent call 1", x, a, 2);

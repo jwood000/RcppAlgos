@@ -6,7 +6,7 @@
 // -fsanitize=thread, then run each without arguments.
 #include "NumbersUtils/PrimeCount.h"
 #include "NumbersUtils/Phi.h"
-#include "NumbersUtils/ThreadBatch.h"
+#include "ThreadBatch.h"
 #include "CppConvert/Constants.h"
 #include <algorithm>
 #include <atomic>
@@ -339,7 +339,7 @@ int main() {
         const std::int64_t sharedExpected[] = {5761455, 50847534, 455052511, 455052511};
         std::int64_t sharedResults[4] = {0, 0, 0, 0};
         std::atomic<bool> sharedStart(false);
-        PrimeCounting::ThreadBatch sharedBatch(4);
+        RcppAlgos::ThreadBatch sharedBatch(4);
         ReleaseOnExit sharedRelease(sharedStart);
         for (int i = 0; i < 4; ++i) {
             sharedBatch.launch([&, i] {
@@ -348,6 +348,7 @@ int main() {
             });
         }
         sharedStart.store(true, std::memory_order_release);
+
         sharedBatch.finish();
         for (int i = 0; i < 4; ++i) {
             if (sharedResults[i] != sharedExpected[i]) {
@@ -361,7 +362,7 @@ int main() {
         // an earlier worker waiting while the batch destructor joins it.
         std::atomic<bool> start(false);
         std::int64_t concurrentResults[2] = {0, 0};
-        PrimeCounting::ThreadBatch batch(2);
+        RcppAlgos::ThreadBatch batch(2);
         ReleaseOnExit release(start);
         batch.launch([&] {
             while (!start.load(std::memory_order_acquire)) std::this_thread::yield();
@@ -372,6 +373,7 @@ int main() {
             concurrentResults[1] = PrimeCounting::PiLehmer(10000000000LL, 3, 3);
         });
         start.store(true, std::memory_order_release);
+
         batch.finish();
         if (concurrentResults[0] != 50847534 || concurrentResults[1] != 455052511) {
             throw std::runtime_error("concurrent methods mismatch");

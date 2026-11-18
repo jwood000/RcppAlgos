@@ -37,10 +37,10 @@ namespace ScheduleCheck {
     class Thread {
         bool pending = true;
     public:
-        template <typename Function>
-        explicit Thread(Function&& function) {
+        template <typename Function, typename... Args>
+        explicit Thread(Function&& function, Args&&... args) {
             ++state.started;
-            function();
+            std::forward<Function>(function)(std::forward<Args>(args)...);
         }
         Thread(const Thread&) = delete;
         Thread& operator=(const Thread&) = delete;

@@ -9,6 +9,9 @@ memory estimates, and retained performance decisions are in
 
 ## Package installation and focused tests
 
+Package tests must use at most two threads, including automatic parallel paths.
+Wider concurrency checks belong in the CRAN-excluded development fixtures.
+
 The following exports the **Git index**, including staged changes and excluding
 unstaged edits. To test other contents, prepare that source snapshot explicitly
 and use its path as `package_source`. Neither building the working tree nor
@@ -32,10 +35,13 @@ stopifnot(startsWith(dll, paste0(package_library, "/")))
 files <- c("testPrimeCount.R", "testNthPrime.R", "testPartialSieve.R",
            "testPrimeSieve.R", "testPrimeFactorize.R", "testPrimeFactorizeSieve.R",
            "testEulerPhiSieve.R", "testNumDivisorSieve.R", "testIsPrimeRcpp.R",
-           "testDivisorsRcpp.R", "testDivisorsSieve.R", "testErrors.R")
+           "testDivisorsRcpp.R", "testDivisorsSieve.R", "testErrors.R",
+           "testCombPermSample.R", "testPartitionsSampleRank.R",
+           "testPermuteGeneral.R", "testExpandGrid.R", "testComboGroups.R")
 for (file in files) {
     testthat::test_file(file.path(package_source, "tests/testthat", file),
-                       reporter = "summary", stop_on_failure = TRUE)
+                       reporter = "summary", stop_on_failure = TRUE,
+                       package = "RcppAlgos", load_package = "installed")
 }
 registered <- getDLLRegisteredRoutines("RcppAlgos")$.Call
 stopifnot(registered$`_RcppAlgos_PrimeCountCpp`$numParameters == 4L,
@@ -145,6 +151,9 @@ Use a separate optimized build for that expensive integration check; the normal
 fixture deliberately avoids it. Passing known-value tests does not detect data
 races; use TSan for that purpose.
 
+`phi-parallel --batch-only` checks callable transfers and exception-safe batch
+lifetimes with at most two workers, without running the broader Phi cases.
+
 ## Scheduler bounds and worker failures
 
 The preparers verify expected production structure, then create instrumented
@@ -163,7 +172,7 @@ build_check schedule -I"$phi_checks" \
 build_check phi-failures -I"$phi_checks" \
     .github/development/prime-count-thread-check.cpp src/Phi.cpp src/Eratosthenes.cpp
 ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 "$native_checks/schedule"
-ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 "$native_checks/phi-failures"
+ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 "$native_checks/phi-failures" --threads 2
 Rscript --vanilla .github/development/prime-count-thread-check.R "$phi_checks/r-bridge"
 ```
 
@@ -182,7 +191,7 @@ sieve_checks=$(mktemp -d)
 python3 .github/development/prepare-prime-sieve-thread-check.py "$sieve_checks"
 build_check sieve-failures -I"$sieve_checks" \
     .github/development/prime-sieve-thread-check.cpp
-ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 "$native_checks/sieve-failures"
+ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 "$native_checks/sieve-failures" --threads 2
 Rscript --vanilla .github/development/prime-sieve-thread-check.R "$sieve_checks/r-bridge"
 ```
 
@@ -194,8 +203,24 @@ join-before-propagation, recovery, and synthetic hardware-sizing guards.
 The R bridges compile temporary cpp11 wrappers and check error translation plus
 successful subsequent calls. They require installed cpp11/build dependencies.
 Native exceptions are propagated only after joining; R APIs must still run on
-the calling R thread. Package-wide launcher work remains separately tracked in
-[DEFERRED_ISSUES.md](DEFERRED_ISSUES.md).
+the calling R thread.
+
+### Package-wide launchers
+
+```sh
+package_threads=$(mktemp -d)
+python3 .github/development/prepare-package-thread-check.py "$package_threads"
+build_check package-failures -Wno-unused-parameter -I"$package_threads" \
+    .github/development/package-thread-check.cpp
+ASAN_OPTIONS=halt_on_error=1 UBSAN_OPTIONS=halt_on_error=1 \
+    "$native_checks/package-failures" --threads 2
+```
+
+Repeat with the TSan build configuration above. The fixture retains the actual
+16 launchers and gates real threads to check failure propagation and scratch
+lifetimes; mathematical kernels are stand-ins. The family-specific R tests
+above check real native/GMP results and attributes.
+Recorded outcomes are in [DEFERRED_ISSUES.md](DEFERRED_ISSUES.md).
 
 ## P2 private policy and stream checks
 

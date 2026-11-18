@@ -21,9 +21,9 @@ def main():
         # The production header must not be included a second time, since its
         # thread type is replaced below only in this copied definition.
         root = driver_path.resolve().parents[1]
-        batch = (root / "inst/include/NumbersUtils/ThreadBatch.h").read_text()
+        batch = (root / "inst/include/ThreadBatch.h").read_text()
         parallel = (root / "src/PhiParallel.cpp").read_text()
-        include = '#include "NumbersUtils/ThreadBatch.h"\n'
+        include = '#include "ThreadBatch.h"\n'
         if parallel.count(include) != 1:
             raise RuntimeError("expected one ThreadBatch include in PhiParallel.cpp")
         parallel = parallel.replace(include, "")

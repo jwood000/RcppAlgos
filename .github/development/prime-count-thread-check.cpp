@@ -13,6 +13,7 @@
 #include <string>
 #include <system_error>
 #include <thread>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -194,14 +195,15 @@ namespace ThreadFaults {
         std::thread actual;
 
     public:
-        template <typename Callable>
-        explicit Thread(Callable call) : ticket(BeforeLaunch()) {
+        template <typename Callable, typename... Args>
+        explicit Thread(Callable&& call, Args&&... args) : ticket(BeforeLaunch()) {
             const Ticket captured = ticket;
-            actual = std::thread([call, captured]() mutable {
+            actual = std::thread([captured](typename std::decay<Callable>::type&& work,
+                                           typename std::decay<Args>::type&&... values) {
                 WorkerStarted(captured);
-                call();
+                work(std::move(values)...);
                 AfterBody(captured);
-            });
+            }, std::forward<Callable>(call), std::forward<Args>(args)...);
         }
         Thread(Thread&&) = default;
         Thread& operator=(Thread&&) = default;
@@ -272,6 +274,8 @@ namespace ThreadFaults {
 #include "prime-count-thread-core.cpp"
 
 namespace {
+    int workerThreads = 4;
+
     void Check(bool condition, const std::string& message) {
         if (!condition) throw std::runtime_error(message);
     }
@@ -286,7 +290,7 @@ namespace {
 
     void Recover(std::int64_t n, std::int64_t expected) {
         ThreadFaults::Observe();
-        Check(PrimeCounting::PiLegendre(n, 4, 4) == expected,
+        Check(PrimeCounting::PiLegendre(n, workerThreads, workerThreads) == expected,
               "correct prime count did not recover after an injected failure");
         CheckAllJoined(ThreadFaults::Inspect());
     }
@@ -301,7 +305,7 @@ namespace {
         std::string unexpected;
         std::thread coordinator([&] {
             try {
-                PrimeCounting::PiLegendre(n, 4, 4);
+                PrimeCounting::PiLegendre(n, workerThreads, workerThreads);
                 result = Result::Success;
             } catch (const LaunchError&) {
                 result = Result::Launch;
@@ -363,9 +367,15 @@ namespace {
     }
 }
 
-int main() {
+int main(int argc, char** argv) {
     try {
         using namespace ThreadFaults;
+        if (argc == 3 && std::string(argv[1]) == "--threads" &&
+            (std::string(argv[2]) == "2" || std::string(argv[2]) == "4")) {
+            workerThreads = std::stoi(argv[2]);
+        } else if (argc != 1) {
+            throw std::runtime_error("usage: checker [--threads 2|4]");
+        }
         const std::int64_t largeN = 10000000001LL, smallN = 10000000000LL;
         const std::int64_t finalN = 999999999999LL, finalExpected = 37607912018LL;
         constexpr std::int64_t expected = 455052511;
@@ -383,8 +393,10 @@ int main() {
         Recover(smallN, expected);
         const auto small = Inspect();
         sizes[static_cast<int>(Region::Small)] = small.batches.front().started;
-        Check(sizes[0] == 4 && sizes[1] == 4 && sizes[2] == 2 && sizes[3] == 4,
-              "fixtures no longer cover all regions and a partial final batch: " +
+        Check(sizes[0] == workerThreads && sizes[1] == workerThreads &&
+              sizes[2] >= 1 && sizes[2] <= workerThreads &&
+              (workerThreads != 4 || sizes[2] == 2) && sizes[3] == workerThreads,
+              "fixtures no longer cover the expected regions and worker counts: " +
               std::to_string(sizes[0]) + "," + std::to_string(sizes[1]) + "," +
               std::to_string(sizes[2]) + "," + std::to_string(sizes[3]));
 
@@ -397,11 +409,13 @@ int main() {
             std::vector<Scenario> cases = {
                 Scenario(region, WorkerFault::Standard),
                 Scenario(region, WorkerFault::NonStandard, -1, true, false, size - 1),
-                Scenario(region, WorkerFault::Ordered),
-                Scenario(region, WorkerFault::None, 0),
-                Scenario(region, WorkerFault::None, 1),
-                Scenario(region, WorkerFault::Standard, 1, true, true)
+                Scenario(region, WorkerFault::None, 0)
             };
+            if (size > 1) {
+                cases.emplace_back(region, WorkerFault::Ordered);
+                cases.emplace_back(region, WorkerFault::None, 1);
+                cases.emplace_back(region, WorkerFault::Standard, 1, true, true);
+            }
             if (size > 2) cases.emplace_back(region, WorkerFault::None, 2);
             if (region == Region::First) cases.emplace_back(region, WorkerFault::BadAlloc);
             for (const auto& scenario : cases) {
@@ -413,7 +427,7 @@ int main() {
         Observe();
         Check(PrimeCounting::PiLegendre(100000000, 1, 1) == 5761455,
               "serial count did not recover after fault checks");
-        std::cout << "PASS regions=4 scenarios=" << scenarios
+        std::cout << "PASS regions=4 threads=" << workerThreads << " scenarios=" << scenarios
                   << " blocked_joins=" << blockedJoins
                   << " partial_final_workers=" << sizes[2]
                   << " recovery_counts=" << scenarios + 4 << "\n";

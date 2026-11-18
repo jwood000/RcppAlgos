@@ -1,6 +1,6 @@
 // Test-only inclusion exposes private production helpers without adding hooks
 // or exported interfaces to the package. The runner supplies a frozen copy.
-#include "NumbersUtils/ThreadBatch.h"
+#include "ThreadBatch.h"
 #include <iostream>
 #include <limits>
 #include <thread>
@@ -12,7 +12,7 @@ std::size_t launches = 0;
 void reset() { capacities.clear(); launches = 0; }
 }
 
-namespace PrimeCounting {
+namespace RcppAlgos {
 // Keep the real worker launcher and its exception/join behavior. Only record
 // caller-thread construction/launches; worker bodies do not touch these logs.
 class ObservedThreadBatch {

@@ -17,7 +17,7 @@ current-checkout or cross-platform certification.
 | Inclusive interval counting | `PiPrime.cpp` |
 | Shared Small/Medium/Big sieve | `Eratosthenes.cpp` |
 | Exact one-based prime selection | `NthPrime.cpp` |
-| Thread ownership and failure propagation | `NumbersUtils/ThreadBatch.h` |
+| Thread ownership and failure propagation | `ThreadBatch.h` |
 
 Source filenames are under `src/`; headers are under `inst/include/`.
 `CppConvert/Constants.h` owns `Significand53`, its integer counterpart
@@ -90,16 +90,18 @@ all evaluations must have ended before destruction. Atomic pointers alone do
 not solve reclamation. Atomics were lock-free on the measured arm64 host, but
 correctness does not depend on that property or on a particular atomic size.
 
-`ThreadBatch` owns threads and exception slots, not borrowed tables or result
-buffers. Referenced storage must outlive the batch. Worker failures and later
+`RcppAlgos::ThreadBatch` owns threads and exception slots, not borrowed tables
+or result buffers. Referenced storage must outlive the batch. Worker failures and later
 launch failures are propagated only after all started workers join. Declare
 worker-referenced storage before the batch so stack unwinding preserves that
 ordering. Workers do native C++ work; they must not call R error APIs or use
 `cpp11::stop` as a worker error boundary.
 
 The current Phi scheduler retains create/join batches; P2 uses a dynamic work
-queue for its own Phi prefix. The package-wide raw-thread migration is separate
-deferred work, recorded in [DEFERRED_ISSUES.md](DEFERRED_ISSUES.md).
+queue for its own Phi prefix. The same helper now protects package-wide
+launchers, including caller-side preparation of the next worker's starting
+state. That migration and its review status are recorded in
+[DEFERRED_ISSUES.md](DEFERRED_ISSUES.md).
 
 ## Memory
 
