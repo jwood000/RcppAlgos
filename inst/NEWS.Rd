@@ -52,6 +52,7 @@
 
     \subsection{Other}{
         \itemize{
+          \item Retired the unused large-product chunking fallback and its constants from native primality testing. Direct C++ calls to \code{IsPrime()} now reject values above \code{INT_MAX}; R-facing primality and factorization functions retain their existing GMP routing for large inputs.
           \item Added \code{testthat} to \code{LinkingTo}, making it a dependency when building the package from source.
           \item Installed C++ partition/composition ranking and unranking signatures now include a \code{Reps} argument. Direct C++ callers must update their calls and function-pointer types and rebuild. The R function signatures are unchanged.
           \item Added a developer-only prime sieve inspector and reproducible benchmark materials under \file{.github/development/}, excluded from package distributions.

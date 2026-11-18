@@ -36,12 +36,6 @@ constexpr double SampleLimit = 4500000000000000.0;
 // Which is also 2^(-26)
 constexpr double DefaultTolerance = std::numeric_limits<float>::epsilon() / 8.0;
 
-// 2^63 -->> 922337203685477580
-constexpr double my63Max = 922337203685477580.0;
-
-// std::sqrt(std::pow(2, 63)) -->> 3037000499.97605
-constexpr std::int64_t Sqrt63Max = static_cast<std::int64_t>(3037000499.97);
-
 constexpr int maxVecSize = std::numeric_limits<int>::max() / 2;
 constexpr std::size_t intSize = sizeof(int);
 constexpr std::size_t numb = 8 * intSize;

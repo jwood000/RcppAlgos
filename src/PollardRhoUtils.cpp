@@ -1,6 +1,6 @@
 #include "NumbersUtils/PollardRhoUtils.h"
-#include "CppConvert/Constants.h"
 #include <iterator>
+#include <limits>
 #include <stdexcept>
 
 template <typename T>
@@ -47,35 +47,10 @@ std::int64_t myGCD(std::int64_t u, std::int64_t v) {
 }
 
 std::int64_t ProdBigMod(std::int64_t x1_i64, std::int64_t x2_i64, std::int64_t p_i64) {
-
-    double prodX = static_cast<double>(x1_i64) * static_cast<double>(x2_i64);
-    std::int64_t result = 0;
-
-    if (prodX < static_cast<double>(p_i64)) {
-        result = prodX;
-    } else if (p_i64 < Sqrt63Max || prodX < my63Max) {
-        result = (x1_i64 * x2_i64) % p_i64;
-    } else {
-        std::int64_t nChunks = 1;
-        std::int64_t chunk;
-        double part1 = my63Max;
-
-        while (part1 >= my63Max) {
-            std::int64_t cSize = static_cast<std::int64_t>(my63Max / x1_i64);
-            chunk = (x1_i64 * cSize) % p_i64;
-            nChunks = x2_i64 / cSize;
-            std::int64_t part2 = ((x2_i64 - cSize * nChunks) * x1_i64) % p_i64;
-            part1 = static_cast<double>(nChunks) * static_cast<double>(chunk);
-            x1_i64 = chunk;
-            x2_i64 = nChunks;
-            result = (result + part2) % p_i64;
-        }
-
-        std::int64_t part1_i64 = (nChunks * chunk) % p_i64;
-        result = (part1_i64 + result) % p_i64;
-    }
-
-    return result;
+    // IsPrime bounds p by INT_MAX; both operands are nonnegative residues.
+    // Their product is below 2^62 and fits exactly in int64_t.
+    const std::int64_t product = x1_i64 * x2_i64;
+    return product < p_i64 ? product : product % p_i64;
 }
 
 std::int64_t ExpBySquaring(std::int64_t x, std::int64_t n, std::int64_t p) {
@@ -120,6 +95,10 @@ int IsPrime(std::int64_t n) {
 
     if (n < 2)
         return 0;
+
+    if (n > std::numeric_limits<int>::max()) {
+        throw std::out_of_range("IsPrime requires n <= INT_MAX");
+    }
 
     /* We have already casted out small primes. */
     if (n < FirstOmittedPrime * FirstOmittedPrime)

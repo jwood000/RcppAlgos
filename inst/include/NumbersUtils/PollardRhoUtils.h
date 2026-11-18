@@ -11,6 +11,8 @@ void GetPrimeFactors(std::int64_t &t, std::vector<typeReturn> &factors);
 /* Number of Miller-Rabin tests to run when not proving primality. */
 constexpr int MR_REPS = 25;
 
+// Native primality test after trial division has excluded small prime factors.
+// Returns 0 for n < 2; throws std::out_of_range for n > INT_MAX.
 int IsPrime(std::int64_t n);
 void PollardRhoMpzT(mpz_class &n, unsigned long int a,
                     std::vector<double> &factors);

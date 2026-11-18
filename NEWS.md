@@ -41,6 +41,7 @@
 
 ## Other
 
+* Retired the unused large-product chunking fallback and its constants from native primality testing. Direct C++ calls to `IsPrime()` now reject values above `INT_MAX`; R-facing primality and factorization functions retain their existing GMP routing for large inputs.
 * Added `testthat` to `LinkingTo`, making it a dependency when building the package from source.
 * Installed C++ partition/composition ranking and unranking signatures now include a `Reps` argument. Direct C++ callers must update their calls and function-pointer types and rebuild. The R function signatures are unchanged.
 * Added a developer-only prime sieve inspector and reproducible benchmark materials under `.github/development/`, excluded from package distributions.
