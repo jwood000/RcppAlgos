@@ -58,7 +58,10 @@
 </ul></div>
 <div class="section level3">
 <h3 id="bug-fixes-2-10-3">Bug Fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-2-10-3"></a></h3>
-<ul><li>Fixed generic constrained searches with explicit <code>lower = 1</code> to use candidate-range semantics consistently. Constrained <code><a href="../reference/combinatoricsGeneral.html">permuteGeneral()</a></code> calls with <code>lower</code> supplied filter ordinary permutation ranks; <code>upper</code> alone continues to cap matching results.</li>
+<ul><li>Fixed a division by zero when preparing repeated zero-only partitions and compositions. The single all-zero result now retains the requested width across generation, counting, sampling, ranking, and iteration.</li>
+<li>Fixed unsafe floating-point-to-integer checks in combinatorial input preparation and constraints. Non-finite numeric scalars now reach the existing input validation, while large numeric vector elements and scaled mean targets are checked without integer casts (<a href="https://github.com/jwood000/RcppAlgos/issues/89" class="external-link">Issue </a><a href="https://github.com/jwood000/RcppAlgos/issues/89" class="external-link">#89</a>).</li>
+<li>Fixed rounded spacing and guarded integer overflow in partition mapping. Preparation retains the native search and exact integer spacing; cases outside a conservative native arithmetic bound, overflowing mapping calculations, and unsupported mapped targets now produce explicit range errors.</li>
+<li>Fixed generic constrained searches with explicit <code>lower = 1</code> to use candidate-range semantics consistently. Constrained <code><a href="../reference/combinatoricsGeneral.html">permuteGeneral()</a></code> calls with <code>lower</code> supplied filter ordinary permutation ranks; <code>upper</code> alone continues to cap matching results.</li>
 <li>Fixed partial multiset permutations being treated as full permutations when the requested width equals the number of distinct values rather than the total multiplicity.</li>
 <li>Fixed out-of-bounds writes when <code>upper</code> stops constrained distinct-permutation generation within a partition’s permutation block.</li>
 <li>Unsupported composition generation and iteration now raise an error instead of falling back to algorithms that do not preserve composition semantics.</li>
@@ -85,7 +88,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="other-2-10-3">Other<a class="anchor" aria-label="anchor" href="#other-2-10-3"></a></h3>
-<ul><li>Added <code>testthat</code> to <code>LinkingTo</code>, making it a dependency when building the package from source.</li>
+<ul><li>Retired the unused large-product chunking fallback and its constants from native primality testing. Direct C++ calls to <code>IsPrime()</code> now reject values above <code>INT_MAX</code>; R-facing primality and factorization functions retain their existing GMP routing for large inputs.</li>
+<li>Added <code>testthat</code> to <code>LinkingTo</code>, making it a dependency when building the package from source.</li>
 <li>Installed C++ partition/composition ranking and unranking signatures now include a <code>Reps</code> argument. Direct C++ callers must update their calls and function-pointer types and rebuild. The R function signatures are unchanged.</li>
 <li>Added a developer-only prime sieve inspector and reproducible benchmark materials under <code>.github/development/</code>, excluded from package distributions.</li>
 </ul></div>

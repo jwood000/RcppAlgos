@@ -102,5 +102,5 @@ pFacsWithNames <- primeFactorize(myVec, namedList = TRUE)
 ## Using nThreads
 system.time(primeFactorize(myVec, nThreads = 2))
 #>    user  system elapsed 
-#>   0.001   0.000   0.000 
+#>   0.000   0.000   0.001 
 ```

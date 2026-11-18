@@ -44,6 +44,20 @@
 
 ### Bug Fixes
 
+- Fixed a division by zero when preparing repeated zero-only partitions
+  and compositions. The single all-zero result now retains the requested
+  width across generation, counting, sampling, ranking, and iteration.
+- Fixed unsafe floating-point-to-integer checks in combinatorial input
+  preparation and constraints. Non-finite numeric scalars now reach the
+  existing input validation, while large numeric vector elements and
+  scaled mean targets are checked without integer casts
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/89)
+  [\#89](https://github.com/jwood000/RcppAlgos/issues/89)).
+- Fixed rounded spacing and guarded integer overflow in partition
+  mapping. Preparation retains the native search and exact integer
+  spacing; cases outside a conservative native arithmetic bound,
+  overflowing mapping calculations, and unsupported mapped targets now
+  produce explicit range errors.
 - Fixed generic constrained searches with explicit `lower = 1` to use
   candidate-range semantics consistently. Constrained
   [`permuteGeneral()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md)
@@ -121,6 +135,10 @@
 
 ### Other
 
+- Retired the unused large-product chunking fallback and its constants
+  from native primality testing. Direct C++ calls to `IsPrime()` now
+  reject values above `INT_MAX`; R-facing primality and factorization
+  functions retain their existing GMP routing for large inputs.
 - Added `testthat` to `LinkingTo`, making it a dependency when building
   the package from source.
 - Installed C++ partition/composition ranking and unranking signatures
