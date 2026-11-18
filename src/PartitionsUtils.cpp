@@ -1024,6 +1024,11 @@ void SetPartitionDesign(
     const bool standard_tar  = v.back() == part.target;
     const bool requestedWeak = part.isWeak;
 
+    // Map repeated zeros to positive parts so the zero target cannot reduce
+    // the width to zero in StandardDesign. The only result keeps its width.
+    const bool zero_only_rep = part.isRep && lenV == 1 &&
+        v.front() == 0 && part.target == 0;
+
     bool retry = true;
 
     for (int i = 0; i < 2 && retry; ++i) {
@@ -1035,7 +1040,8 @@ void SetPartitionDesign(
         // General multiset cases intentionally continue through the mapping
         // path. The standard multiset branch is reserved for the all-one case,
         // which can be handled by the optimized distinct-partition machinery.
-        if (zero_or_one && standard_dist && standard_tar && standard_freq) {
+        if (zero_or_one && standard_dist && standard_tar &&
+            standard_freq && !zero_only_rep) {
             // Remember, lenV is the length of the vector v, so we could have a
             // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This
             // would cause a problem if we were to allow this. We have already
@@ -1063,8 +1069,8 @@ void SetPartitionDesign(
             part.isWeak = part.isWeak && vHasZero;
 
             const bool weakAllowed     = part.isComp && part.isWeak;
-            const bool mappedZeroBased = part.allOne ||
-                (part.isComp && vHasZero && !weakAllowed);
+            const bool mappedZeroBased = !zero_only_rep && (part.allOne ||
+                (part.isComp && vHasZero && !weakAllowed));
 
             part.includeZero = mappedZeroBased;
             part.mapIncZero  = part.includeZero;
