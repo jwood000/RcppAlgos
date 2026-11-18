@@ -110,7 +110,7 @@ regressions in the existing family-specific R tests. Commands are in
 launchers with stand-in mathematical kernels; R tests exercise real native/GMP
 results. This is not cross-platform validation or proof of kernel race freedom.
 One-off guard/bridge diagnostics and detailed logs are kept outside the repo.
-No GitHub issue was opened or closed.
+Tracked in [GitHub issue #87](https://github.com/jwood000/RcppAlgos/issues/87).
 
 ## Prime sieve hardware-sizing arithmetic on high-core-count hosts
 

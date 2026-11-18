@@ -26,6 +26,7 @@
           \item Fixed an out-of-bounds read in \code{primeSieve()} when the upper bound equals the final precomputed prime, 31627 (\href{https://github.com/jwood000/RcppAlgos/issues/82}{Issue #82}).
           \item Fixed out-of-bounds bucket scheduling in \code{primeSieve()} near segment boundaries for large intervals (\href{https://github.com/jwood000/RcppAlgos/issues/83}{Issue #83}).
           \item Fixed insufficient base-prime preparation for extended sieve bounds, which could cause \code{primeSieve()} to hang or access memory out of bounds for intervals such as \code{primeSieve(1.5e9, 1.5e9 + 1e5)} (\href{https://github.com/jwood000/RcppAlgos/issues/84}{Issue #84}).
+          \item Fixed potential R session termination when parallel workers encounter errors or threads cannot be started. Failures are now safely reported as R errors after active workers finish (\href{https://github.com/jwood000/RcppAlgos/issues/87}{Issue #87}).
         }
     }
 
