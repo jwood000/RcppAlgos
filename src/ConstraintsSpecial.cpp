@@ -2,7 +2,7 @@
 #include "Constraints/ConstraintsUtils.h"
 #include "ClassUtils/NextCombinatorics.h"
 #include "NthResult.h"
-#include <thread>
+#include "ThreadBatch.h"
 
 template <typename T>
 void CnstrntLowerWorker(
@@ -143,23 +143,22 @@ void ConstraintsSpecial(
     // among threads. TODO: Investigate parallel generation for special
     // constraints under matching-result semantics.
     if (useRangeSemantics && nThreads > 1) {
-        std::vector<std::thread> threads;
-
         const int stepSize = maxRows / nThreads;
         const nthResultPtr nthResFun = GetNthResultFunc(IsComb, IsMult,
                                                         IsRep, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
         std::vector<std::vector<T>> resThrd(nThreads);
         std::vector<std::vector<T>> cnstrThrd(nThreads);
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int j = 0; j < (nThreads - 1); ++j) {
 
-            threads.emplace_back(
-                CnstrntLowerWorker<T>, std::cref(v), std::cref(targetVals),
-                std::cref(freqs), std::cref(compVec), std::ref(cnstrThrd[j]),
-                std::ref(resThrd[j]), std::ref(zs[j]), nextIter, fun, compOne,
-                m, n1, m1, stepSize, xtraCol
-            );
+            batch.launch([&, j] {
+                CnstrntLowerWorker(v, targetVals, freqs, compVec,
+                                  cnstrThrd[j], resThrd[j], zs[j],
+                                  nextIter, fun, compOne, m, n1, m1,
+                                  stepSize, xtraCol);
+            });
 
             SetNextIter(myRep, zs[j + 1], nthResFun, lower, lowerMpz,
                         stepSize, n, m, IsGmp, IsComb, IsRep, IsMult);
@@ -168,16 +167,14 @@ void ConstraintsSpecial(
 
         const int leftOver = maxRows - ((nThreads - 1) * stepSize);
 
-        threads.emplace_back(
-            CnstrntLowerWorker<T>, std::cref(v), std::cref(targetVals),
-            std::cref(freqs), std::cref(compVec), std::ref(cnstrThrd.back()),
-            std::ref(resThrd.back()), std::ref(zs.back()), nextIter, fun,
-            compOne, m, n1, m1, leftOver, xtraCol
-        );
+        batch.launch([&, leftOver] {
+            CnstrntLowerWorker(v, targetVals, freqs, compVec,
+                              cnstrThrd.back(), resThrd.back(), zs.back(),
+                              nextIter, fun, compOne, m, n1, m1,
+                              leftOver, xtraCol);
+        });
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
 
         for (int i = 0; i < nThreads; ++i) {
             cnstrntVec.insert(cnstrntVec.end(), cnstrThrd[i].begin(),

@@ -4,13 +4,14 @@
 #include <exception>
 #include <stdexcept>
 #include <thread>
+#include <utility>
 #include <vector>
 
-namespace PrimeCounting {
+namespace RcppAlgos {
 
     // One batch owns its workers and their exception slots. Only the calling
-    // thread may launch or finish the batch. Each copyable callable supplies
-    // its own work; the batch knows nothing about Phi, tables, or result types.
+    // thread may launch or finish the batch. Each callable supplies
+    // its own work; the batch knows nothing about kernels or result types.
     // Any objects captured by reference must outlive the batch, including
     // when a later thread fails to start. Declare result storage before it.
     class ThreadBatch {
@@ -44,7 +45,9 @@ namespace PrimeCounting {
                 throw std::length_error("ThreadBatch capacity exceeded");
             }
 
-            threads.emplace_back([this, work, slot]() mutable {
+            // Move into thread storage on the caller. Binding by reference
+            // avoids a throwing callable move before the worker's try block.
+            threads.emplace_back([this, slot](Function&& work) {
                 try {
                     work();
                 } catch (...) {
@@ -52,7 +55,7 @@ namespace PrimeCounting {
                     // not use the R API; propagate C++ exceptions instead.
                     errors[slot] = std::current_exception();
                 }
-            });
+            }, std::move(work));
         }
 
         void finish() {

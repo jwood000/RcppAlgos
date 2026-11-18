@@ -1,5 +1,5 @@
 #include "NumbersUtils/Phi.h"
-#include "NumbersUtils/ThreadBatch.h"
+#include "ThreadBatch.h"
 #include "CppConvert/Constants.h"
 #include <algorithm>
 #include <array>
@@ -13,6 +13,7 @@
 // only been tuned for Legendre's cutoff. Reassess them for other workloads.
 
 namespace PrimeCounting {
+using RcppAlgos::ThreadBatch;
 namespace {
 
     void phiForeman(std::int64_t &mySum, std::int64_t lowerBound,

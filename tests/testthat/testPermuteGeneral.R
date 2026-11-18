@@ -614,26 +614,33 @@ test_that("Permutation candidate bounds preserve exact GMP ranks", {
 })
 
 test_that("Permutation candidate ranges agree across one and two threads", {
-    # The special-constraint worker threshold is 20,000 candidates.
-    args <- list(v = 1:10, m = 5, freqs = rep(1:5, 2))
-    lower <- 17L
-    upper <- lower + 20000L
-    candidates <- do.call(permuteGeneral, c(args, list(
-        lower = lower, upper = upper
-    )))
-    sums <- rowSums(candidates)
-    target <- sums[10001L]
-    rows <- sums == target
-    expected <- unname(cbind(candidates[rows, , drop = FALSE], sums[rows]))
-    for (threads in 1:2) {
-        expect_equal(
-            do.call(permuteGeneral, c(args, list(
-                constraintFun = "sum", comparisonFun = "==",
-                limitConstraints = target, lower = lower, upper = upper,
-                keepResults = TRUE, nThreads = threads
-            ))),
-            expected
-        )
+    # Exceed the 20,000-candidate worker threshold with an uneven split.
+    cases <- list(
+        list(args = list(v = 1:10, m = 5, freqs = rep(1:5, 2)), lower = 17L),
+        list(args = list(v = 1:30, m = 12),
+             lower = gmp::as.bigz("9007199254741009"))
+    )
+    for (case in cases) {
+        args <- case$args
+        lower <- case$lower
+        upper <- lower + 20000L
+        candidates <- do.call(permuteGeneral, c(args, list(
+            lower = lower, upper = upper
+        )))
+        sums <- rowSums(candidates)
+        target <- sums[10001L]
+        rows <- sums == target
+        expected <- unname(cbind(candidates[rows, , drop = FALSE], sums[rows]))
+        for (threads in 1:2) {
+            expect_equal(
+                do.call(permuteGeneral, c(args, list(
+                    constraintFun = "sum", comparisonFun = "==",
+                    limitConstraints = target, lower = lower, upper = upper,
+                    keepResults = TRUE, nThreads = threads
+                ))),
+                expected
+            )
+        }
     }
 })
 

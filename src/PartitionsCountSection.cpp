@@ -1,4 +1,7 @@
-#include "Constraints/ConstraintsUtils.h"
+#include "Partitions/PartitionsCountSection.h"
+#include "CppConvert/Constants.h"
+#include <cmath>
+#include <stdexcept>
 
 // Consider finding partitions of 50 of length 5 with no zeros.
 // The first few results are:
@@ -60,9 +63,11 @@ int GetMaxWidth(double target) {
     return max_width;
 }
 
+// Sampling and ranking workers also call these guards; errors must stay native
+// until the calling thread reaches the cpp11 boundary.
 void CheckMultIsInt(double x, double y) {
     if ((x * y) > dblIntMax) {
-        cpp11::stop("Sorry, this case is too large!");
+        throw std::length_error("Sorry, this case is too large!");
     }
 }
 
@@ -77,12 +82,12 @@ void CheckAllowedInvariant(const std::vector<int>& allowed) {
         if (x == 0) continue;
 
         if (x < 0) {
-            cpp11::stop("Internal error: `allowed` must be non-negative");
+            throw std::logic_error("Internal error: `allowed` must be non-negative");
         }
 
         // strictly increasing positives only
         if (prev_pos >= 0 && x <= prev_pos) {
-            cpp11::stop(
+            throw std::logic_error(
                 "Internal error: positive values in `allowed` must be strictly increasing"
             );
         }

@@ -7,9 +7,9 @@ test_that("comboGeneral produces correct results with Parallel enabled and no co
     expect_equal(comboGeneral(18, 9, nThreads = 2, upper = 5000),
                  comboGeneral(18, 9, upper = 5000))
 
-    ## For both of the usages below, only 2 threads will be spawned
-    expect_equal(comboGeneral(18, 9, nThreads = 3, upper = 25000),
-                 comboGeneral(18, 9, Parallel = TRUE, upper = 25000))
+    ## Compare serial and explicitly bounded parallel execution
+    expect_equal(comboGeneral(18, 9, nThreads = 1, upper = 25000),
+                 comboGeneral(18, 9, Parallel = TRUE, nThreads = 2, upper = 25000))
 
     ######********************** All Results *******************#########
     #### NO Repetition

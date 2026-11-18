@@ -85,111 +85,32 @@ has been opened or closed for this finding.
 The known sieve issues listed below concern separate endpoint and coverage
 defects, not exception propagation.
 
-## Remaining package thread launchers and worker-side R errors
+## Package thread launchers and worker-side R errors
 
-Status: Audit complete; migration and native error handling need agreement
-Priority: High (process termination on exceptional paths)
-Discovered during: Package-wide ThreadBatch review, November 12, 2026
+Status: Fix implemented and validated; pending maintainer review
 
-### Inventory and confirmed exception-handling gaps
+Sixteen raw launch regions could terminate R on worker or partial-launch
+failures. They now use `RcppAlgos::ThreadBatch`, declared after borrowed storage
+so unwinding joins workers before that storage is destroyed. Starting states
+are captured by value, then moved into workers. Worker-reachable R errors throw
+native exceptions with the original messages; cpp11 translates them on the calling thread.
 
-Source inspection found 16 remaining raw launch/join regions in 15 files:
+Validation, November 17, 2026 (macOS arm64):
 
-| Area | Launchers in `src/` |
-| --- | --- |
-| Number theory | `MotleyPrimes.cpp:32`, `DivNumSieve.cpp:143`, `PollardRhoContainer.cpp:24` |
-| Combination/permutation generation | `ThreadSafeComb.cpp:15`, `ThreadSafePerm.cpp:17`, `ComboResMain.cpp:15`, `PermuteResMain.cpp:16` |
-| Special constraints | `ConstraintsSpecial.cpp:146` |
-| Partition/composition generation | `ThreadSafeParts.cpp:14` and `:74` |
-| Sampling | `SampCombPermStd.cpp:105`, `SamplePartitions.cpp:96` |
-| Ranking | `RankCombPermMain.cpp:45`, `RankPartitionMain.cpp:50` |
-| Cartesian products and group partitions | `GetProduct.cpp:198`, `GetComboGroups.cpp:254` |
+- 43,519 R expectations passed; a temporary runtime guard verified that no
+  test batch exceeded two workers.
+- ASan/UBSan and TSan passed 282 launcher failure scenarios (18 preparation)
+  at two workers, plus callable-transfer, Phi and sieve failure checks.
+- Earlier `R CMD check` reported no errors and two warnings for deliberately
+  unbuilt vignettes. Tests ran separately; manual/vignette rebuilds were omitted.
 
-Each stores raw threads in a vector and joins only after all launches. None
-provides a worker exception boundary or an unwind guard for started threads.
-An uncaught worker exception calls `std::terminate`. A later thread-creation,
-thread-container allocation, or argument-copy failure can unwind through
-earlier joinable threads and terminate the process. A completed thread remains
-joinable until joined. These are confirmed control-flow defects by inspection,
-not claims that ordinary successful calls currently crash.
-
-Worker kernels can allocate: examples include `PrimeFactorizeSieve.cpp:20`,
-`PollardRhoDepends.cpp:10`, `CombinationResults.cpp:36`,
-`PartitionsMultiset.cpp:45`, `RankPermutation.cpp:19`, and
-`CartesianUtils.cpp:117`. Several launchers also prepare the next starting
-state after launching the previous worker, through `SetNextIter`,
-`nthPartFun`, `GetStartProd`, or `GetStartGrp`. Exceptions from this work on
-the calling thread need the same join-before-unwind protection.
-
-### Migration requirements
-
-All 16 regions fit the existing callable-based `ThreadBatch`; no new scheduler
-or thread pool is needed. Preserve chunk boundaries, result order, native/GMP
-choices, and serial paths. Capture changing bounds and indices by value and
-call `finish()` before consuming results or applying R attributes/names.
-
-Declaration order needs attention. The four combination/permutation generation
-launchers and both `ThreadSafeParts` launchers declare their thread container
-before `zs`. Both ranking launchers declare it before `idx_section`.
-`ConstraintsSpecial` declares it before `zs`, `resThrd`, and `cnstrThrd`.
-Those referenced vectors would be destroyed before a batch declared in the
-same location could join during unwinding. Declare the batch after all
-worker-referenced local storage. The current raw-thread implementations have
-this lifetime hazard on exceptional exits as well as eventual termination.
-
-The helper itself has no prime-counting dependency. Proposed shared location:
-`inst/include/ThreadBatch.h`, with a neutral namespace such as `RcppAlgos`.
-Its current `NumbersUtils` path and `PrimeCounting` namespace would otherwise
-couple unrelated callers to number theory. Update active diagnostic harnesses
-when moving it; preserve recorded benchmark evidence.
-
-### Worker-side R error branches need separate treatment
-
-The following native worker call graphs contain `cpp11::stop` branches:
-
-- `PollardRhoUtils.cpp:171`: `IsPrime`'s Lucas-test failure, reachable through
-  the parallel primality/factorization/divisor workers.
-- `PartitionsManager.cpp:254` and `:334`: unsupported-type defaults in the
-  standard and general parallel partition dispatchers.
-- `PartitionsCountSection.cpp:63` and `:73`: `CheckMultIsInt` and
-  `CheckAllowedInvariant`, called by counting kernels used in parallel
-  partition/composition sampling and ranking.
-
-The installed cpp11 implementation of `stop` calls `Rf_errorcall` through its
-unwind wrapper (`cpp11/protect.hpp:263-265`). This still invokes R from the
-worker; catching an exception afterward does not make that safe. Validate on
-the calling thread where possible, or use native C++ exceptions in these
-worker-reachable guards and propagate them through `ThreadBatch` to cpp11's
-exported boundary. This requires review of shared serial callers too.
-
-The worker call paths are established, but no valid public input triggering
-these error branches was demonstrated. Several enforce invariants or dispatch
-assumptions. Caller-side preparation performs some size checks, but this audit
-did not establish that it precludes every worker-side size-check failure.
-Do not describe these as reproduced normal-input crashes.
-
-### Evidence, limits, and proposed validation
-
-Shared input vectors and group descriptors appear read-only during the
-inspected worker operations; outputs use separate rows, sections, or inner
-vectors. Numeric `RMatrix` accesses raw buffers. Character/R-object handling,
-random sample preparation, and result attributes remain on the calling thread
-in the inspected paths. No additional ordinary-path data race was confirmed.
-`NumThreads.cpp` only queries `hardware_concurrency` and does not need a batch.
-The existing Phi/P2/P3/sieve batches already provide guarded launch/join.
-
-This was a source and call-graph audit. No new failure-injection, R regression,
-or sanitizer tests were run, and no production source was changed. Before
-claiming a migration is safe, test worker exceptions, later launch failures,
-and calling-thread preparation failures between launches, with gated workers
-to verify scratch lifetimes. Add serial/parallel comparisons and R recovery
-checks across the affected families, native/GMP paths, and uneven workloads;
-run ASan/UBSan and TSan on focused native harnesses.
-
-Existing deferred records and GitHub issue searches for `thread` and
-`exception` were checked on November 12, 2026; no matching exception-handling
-issue was found. No issue was opened, and the existing sieve finding above
-retains its separate review status. Implementation awaits discussion.
+Retained checks: `package-thread-check.cpp` plus its preparer, and focused
+regressions in the existing family-specific R tests. Commands are in
+[testing.md](testing.md#package-wide-launchers). The native fixture uses real
+launchers with stand-in mathematical kernels; R tests exercise real native/GMP
+results. This is not cross-platform validation or proof of kernel race freedom.
+One-off guard/bridge diagnostics and detailed logs are kept outside the repo.
+Tracked in [GitHub issue #87](https://github.com/jwood000/RcppAlgos/issues/87).
 
 ## Prime sieve hardware-sizing arithmetic on high-core-count hosts
 

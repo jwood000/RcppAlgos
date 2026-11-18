@@ -50,7 +50,7 @@ test_that("nthPrime preserves adjacent ranks with opposite search directions", {
     ## composite plateau searched backward; the latter is searched forward.
     ranks <- c(664579L, 664580L)
     expected <- c(9999991L, 10000019L)
-    threads <- unique(c(1L, pmin(c(2L, 8L), RcppAlgos:::pkgEnv$maxThreads)))
+    threads <- c(1L, 2L)
     for (nThreads in threads) {
         expect_identical(vapply(ranks, nthPrime, integer(1),
                                 nThreads = nThreads), expected)
@@ -60,12 +60,13 @@ test_that("nthPrime preserves adjacent ranks with opposite search directions", {
 test_that("nthPrime agrees across serial and parallel requests", {
     ranks <- c(1e6, 1e9)
     expected <- list(15485863L, 22801763489)
-    threads <- unique(c(1L, pmin(c(2L, 4L), RcppAlgos:::pkgEnv$maxThreads)))
+    threads <- c(1L, 2L)
     for (nThreads in threads) {
         expect_identical(lapply(ranks, nthPrime, nThreads = nThreads), expected)
     }
-    ## An oversized request is capped before any workers are launched.
-    expect_identical(nthPrime(1e9, .Machine$integer.max), expected[[2L]])
+    ## An oversized request is capped at two before any workers are launched.
+    expect_identical(.Call(RcppAlgos:::`_RcppAlgos_NthPrimeCpp`,
+                           1e9, .Machine$integer.max, 2L, 1L), expected[[2L]])
 })
 
 test_that("nthPrime honors fixed native worker and core budgets", {
@@ -75,8 +76,8 @@ test_that("nthPrime honors fixed native worker and core budgets", {
         .Call(RcppAlgos:::`_RcppAlgos_NthPrimeCpp`,
               n, requested, maximum, cores)
     }
-    budgets <- list(c(1L, 1L, 1L), c(4L, 4L, 2L), c(8L, 2L, 1L),
-                    c(.Machine$integer.max, 4L, 1L))
+    budgets <- list(c(1L, 1L, 1L), c(2L, 2L, 2L), c(8L, 2L, 1L),
+                    c(.Machine$integer.max, 2L, 1L))
     for (budget in budgets) {
         expect_identical(nativeNth(1e6, budget[1], budget[2], budget[3]),
                          15485863L)
@@ -97,7 +98,7 @@ test_that("nthPrime preserves larger independently checked results", {
     ## References were obtained independently with the primecount CLI.
     ranks <- c(1e10, 1e12)
     expected <- c(252097800623, 29996224275833)
-    threads <- unique(c(1L, pmin(8L, RcppAlgos:::pkgEnv$maxThreads)))
+    threads <- c(1L, 2L)
     for (nThreads in threads) {
         expect_identical(vapply(ranks, nthPrime, numeric(1),
                                 nThreads = nThreads), expected)

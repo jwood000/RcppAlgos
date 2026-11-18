@@ -19,9 +19,9 @@ def main():
     extracted = "std::vector<std::thread> threads;" not in source
     if extracted:
         root = driver_path.resolve().parents[1]
-        batch = (root / "inst/include/NumbersUtils/ThreadBatch.h").read_text()
+        batch = (root / "inst/include/ThreadBatch.h").read_text()
         parallel = (root / "src/PhiParallel.cpp").read_text()
-        include = '#include "NumbersUtils/ThreadBatch.h"\n'
+        include = '#include "ThreadBatch.h"\n'
         if parallel.count(include) != 1:
             raise RuntimeError("expected one ThreadBatch include in PhiParallel.cpp")
         parallel = parallel.replace(include, "")

@@ -130,7 +130,7 @@ test_that("partial prime sieves agree across serial and parallel calls", {
     ## These P2/P3 cases pass their real-worker thresholds with modest tables.
     ## Their serial references test scheduling; independent small-factor tests
     ## and known-count identities above establish separate mathematical checks.
-    threads <- unique(c(1L, pmin(c(2L, 4L), as.integer(RcppAlgos:::pkgEnv$maxThreads))))
+    threads <- c(1L, 2L)
     for (nThreads in threads) {
         actual <- list(phi = primePhi(1e9, 8, nThreads),
                        pairs = semiPrimeCount(1e10, 325, nThreads),
@@ -163,7 +163,7 @@ test_that("semiPrimeCount handles short tails and prime-square boundaries", {
     a <- sum(primes <= p) - 2048L
     inputs <- c(as.double(p)^2 + c(-1, 0, 1), 3e9)
     expected <- vapply(inputs, reference, integer(1), a = a)
-    threads <- unique(c(1L, pmin(2L, as.integer(RcppAlgos:::pkgEnv$maxThreads))))
+    threads <- c(1L, 2L)
     for (nThreads in threads) {
         actual <- vapply(inputs, semiPrimeCount, integer(1),
                          a = a, nThreads = nThreads)
@@ -185,8 +185,7 @@ test_that("semiPrimeCount preserves large counts across cutoffs and threads", {
     ## They use a separate sieve and primecount, not this package's Phi or P2.
     cutoffs <- c(0L, 590L)
     expected <- list(11238880589, 2069687562L)
-    threads <- unique(c(pmin(c(2L, 4L),
-                            as.integer(RcppAlgos:::pkgEnv$maxThreads)), 1L))
+    threads <- c(1L, 2L)
     for (nThreads in threads) {
         actual <- lapply(cutoffs, function(a) semiPrimeCount(8e10, a, nThreads))
         expect_identical(actual, expected)

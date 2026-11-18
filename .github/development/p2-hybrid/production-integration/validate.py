@@ -38,6 +38,11 @@ def main():
         shutil.copy2(REPO / 'src' / name, source / 'src' / name)
     shutil.copy2(source / 'src/P2.cpp', out / 'ProductionP2.cpp')
     shutil.copytree(STUDY / 'fixtures', out / 'fixtures')
+    # The frozen P2 reference used the former header path/namespace. Adapt
+    # its temporary build environment without rewriting the historical source.
+    (source / 'inst/include/NumbersUtils/ThreadBatch.h').write_text(
+        '#pragma once\n#include "../ThreadBatch.h"\n'
+        'namespace PrimeCounting { using RcppAlgos::ThreadBatch; }\n')
     shutil.copy2(HERE / 'helpers.cpp', out / 'helpers.cpp')
     shutil.copy2(STUDY / 'check.cpp', out / 'check.cpp')
     shutil.copy2(Path(__file__), out / 'validate.py')

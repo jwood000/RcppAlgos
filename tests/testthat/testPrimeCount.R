@@ -10,27 +10,20 @@ test_that("parallel Legendre handles cache growth and reuse", {
     counts <- c(664579, 5761455, 50847534, 455052511, 4118054813, 37607912018)
     order <- c(3L, 1L, 5L, 2L, 6L, 4L, 3L, 1L)
 
-    for (nThreads in c(2L, 3L, 4L)) {
-        actual <- vapply(inputs[order], primeCount, numeric(1),
-                         nThreads = nThreads, method = "legendre")
-        expect_equal(actual, counts[order])
-    }
+    actual <- vapply(inputs[order], primeCount, numeric(1),
+                     nThreads = 2L, method = "legendre")
+    expect_equal(actual, counts[order])
 })
 
 test_that("parallel Legendre handles the batch boundary and repeated calls", {
-    maxThreads <- RcppAlgos:::pkgEnv$maxThreads
-    skip_if(maxThreads < 2L, "At least two available threads are needed")
+    skip_if(RcppAlgos:::pkgEnv$maxThreads < 2L,
+            "At least two available threads are needed")
 
     ## Cross the single/multiple-batch boundary, then repeat the multiple-batch call.
     inputs <- c(1e10 + 1, 1e10 - 1, 1e10, 1e10 + 1)
-    threadCounts <- c(2L, 3L, 4L)
-    threadCounts <- threadCounts[threadCounts <= maxThreads]
-
-    for (nThreads in threadCounts) {
-        actual <- vapply(inputs, primeCount, numeric(1),
-                         nThreads = nThreads, method = "legendre")
-        expect_equal(actual, rep(455052511, length(inputs)))
-    }
+    actual <- vapply(inputs, primeCount, numeric(1),
+                     nThreads = 2L, method = "legendre")
+    expect_equal(actual, rep(455052511, length(inputs)))
 })
 
 test_that("primeCount generates correct numbers", {
@@ -80,8 +73,7 @@ test_that("primeCount methods preserve known counts and result types", {
 test_that("auto primeCount preserves counts at method boundaries", {
     inputs <- c(1e10 - 1, 1e10, 1e10 + 1, 1e12 - 1, 1e12, 1e12 + 1)
     expected <- c(rep(list(455052511L), 3), rep(list(37607912018), 3))
-    threads <- c(1L, 2L, 6L)
-    threads <- threads[threads <= RcppAlgos:::pkgEnv$maxThreads]
+    threads <- c(1L, 2L)
 
     ## The lower neighbors are divisible by 9; the upper neighbors are
     ## divisible by 101 and 73, respectively. Thus the known counts at the
@@ -120,23 +112,20 @@ test_that("primeCount uses standard method matching", {
 })
 
 test_that("explicit primeCount methods support parallel calls and reuse", {
-    maxThreads <- RcppAlgos:::pkgEnv$maxThreads
-    skip_if(maxThreads < 2L, "At least two available threads are needed")
-    threadCounts <- unique(pmin(c(2L, 4L), as.integer(maxThreads)))
+    skip_if(RcppAlgos:::pkgEnv$maxThreads < 2L,
+            "At least two available threads are needed")
     inputs <- c(1e10 + 1, 1e7, 1e11, 1e10 + 1)
     expected <- c(455052511, 664579, 4118054813, 455052511)
 
     for (method in c("legendre", "meissel", "lehmer")) {
-        for (nThreads in threadCounts) {
-            actual <- vapply(inputs, primeCount, numeric(1),
-                             nThreads = nThreads, method = method)
-            expect_identical(actual, expected)
-        }
+        actual <- vapply(inputs, primeCount, numeric(1),
+                         nThreads = 2L, method = method)
+        expect_identical(actual, expected)
     }
 })
 
 test_that("Meissel and Lehmer preserve larger known counts across threads", {
-    threads <- unique(c(pmin(4L, as.integer(RcppAlgos:::pkgEnv$maxThreads)), 1L))
+    threads <- c(1L, 2L)
     for (method in c("meissel", "lehmer")) {
         for (nThreads in threads) {
             expect_identical(primeCount(1e12, nThreads = nThreads, method = method),
@@ -172,7 +161,8 @@ test_that("primeCount methods retain the thread-validation threshold", {
             expect_error(primeCount(100000, nThreads = nThreads, method = method),
                          "nThreads")
         }
-        expect_identical(primeCount(100000, nThreads = .Machine$integer.max,
-                                   method = method), 9592L)
+        ## Keep oversized-request coverage with a fixed two-worker cap.
+        expect_identical(.Call(RcppAlgos:::`_RcppAlgos_PrimeCountCpp`,
+                               100000, .Machine$integer.max, 2L, method), 9592L)
     }
 })

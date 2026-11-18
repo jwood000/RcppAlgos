@@ -1,9 +1,8 @@
-#include "cpp11/protect.hpp"
-
 #include <algorithm> // std::set_difference; std::count; std::min; std::sort;
                      // std::accumulate; std::lower_bound; std::partial_sum
 #include <iterator>  // std::inserter; std::distance
 #include <numeric>   // std::iota
+#include <stdexcept>
 #include <cstdint>
 #include <vector>
 
@@ -366,9 +365,10 @@ int GetMax(const std::vector<int> &z, const std::vector<int> &complement) {
 int NextDistinctBlock2(const std::vector<int> &v, std::vector<int> &idx,
                        int target, int maxLast) {
 
-    // This shouldn't happen, but here for future users
+    // This shouldn't happen, but here for future users. This helper is also
+    // called by native generation workers, so do not report the error via R.
     if (idx.size() != 2) {
-        cpp11::stop("idx must have size == 2 in NextDistinctBlock2");
+        throw std::logic_error("idx must have size == 2 in NextDistinctBlock2");
     }
 
     const int n = v.size();

@@ -1,5 +1,7 @@
 #include "NumbersUtils/PollardRhoUtils.h"
-#include "CppConvert.h"
+#include "CppConvert/Constants.h"
+#include <iterator>
+#include <stdexcept>
 
 template <typename T>
 void FactorTrialDivision(std::int64_t &t, std::vector<T> &factors) {
@@ -168,7 +170,8 @@ int IsPrime(std::int64_t n) {
         }
     }
 
-    cpp11::stop("Lucas prime test failure. This should not happen");
+    // Parallel factorization/primality workers cannot report errors through R.
+    throw std::runtime_error("Lucas prime test failure. This should not happen");
     ret1:
         factors.resize(0);
 

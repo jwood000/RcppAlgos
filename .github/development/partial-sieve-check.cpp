@@ -4,7 +4,7 @@
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
 #include "NumbersUtils/Phi.h"
-#include "NumbersUtils/ThreadBatch.h"
+#include "ThreadBatch.h"
 #include <algorithm>
 #include <atomic>
 #include <cstdint>
@@ -331,7 +331,7 @@ int main() {
             const auto& tripleTables = table(tripleLimit);
             std::int64_t results[2] = {0, 0};
             std::atomic<bool> start(false);
-            PrimeCounting::ThreadBatch callers(2);
+            RcppAlgos::ThreadBatch callers(2);
             ReleaseOnExit releaseOnExit(start);
             callers.launch([&] {
                 while (!start.load(std::memory_order_acquire)) std::this_thread::yield();
@@ -342,6 +342,7 @@ int main() {
                 results[1] = P3(tripleX, tripleA, 3, tripleTables);
             });
             start.store(true, std::memory_order_release);
+
             callers.finish();
             Check(results[0], pairExpected, "concurrent P2", pairX, pairA, 2);
             Check(results[1], tripleExpected, "concurrent P3", tripleX, tripleA, 3);

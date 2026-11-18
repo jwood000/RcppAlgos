@@ -1,4 +1,6 @@
 #include "Cartesian/GetProduct.h"
+#include "ThreadBatch.h"
+#include <utility>
 
 void SampleResults(
     cpp11::writable::strings_matrix<> &mat, const cpp11::strings &charVec,
@@ -169,7 +171,7 @@ void ParallelGlue(
     RcppParallel::RMatrix<T> &ProdMat, const std::vector<int> &idx,
     const std::vector<int> &lenGrps, const std::vector<T> &v,
     const std::vector<int> &lenNxtPr, const std::vector<double> &mySamp,
-    const std::vector<mpz_class> &myBigSamp, const std::vector<int> &z,
+    const std::vector<mpz_class> &myBigSamp, std::vector<int> z,
     int nCols, int strt, int nRows, bool IsSample, bool IsGmp
 ) {
 
@@ -178,7 +180,7 @@ void ParallelGlue(
                       myBigSamp, nCols, strt, nRows, IsGmp);
     } else {
         ParallelProduct(
-            ProdMat, idx, lenGrps, v, z, nCols, strt, nRows
+            ProdMat, idx, lenGrps, v, std::move(z), nCols, strt, nRows
         );
     }
 }
@@ -195,33 +197,31 @@ void PureOutputMain(
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, nCols);
-        std::vector<std::thread> threads;
 
         int step = 0;
         int stepSize = nRows / nThreads;
         int nextStep = stepSize;
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize,
              nextStep += stepSize) {
 
-            threads.emplace_back(ParallelGlue<T>, std::ref(parMat),
-                std::cref(idx), std::cref(lenGrps), std::cref(v),
-                std::cref(lenNxtPr), std::cref(mySamp), std::cref(myBigSamp),
-                z, nCols, step, nextStep, IsSample, IsGmp
-            );
+            batch.launch([&, z, step, nextStep]() mutable {
+                ParallelGlue(parMat, idx, lenGrps, v, lenNxtPr, mySamp,
+                             myBigSamp, std::move(z), nCols, step, nextStep,
+                             IsSample, IsGmp);
+            });
 
             GetStartProd(lenNxtPr, z, lowerMpz, lower, stepSize, IsGmp);
         }
 
-        threads.emplace_back(ParallelGlue<T>, std::ref(parMat),
-            std::cref(idx), std::cref(lenGrps), std::cref(v),
-            std::cref(lenNxtPr), std::cref(mySamp), std::cref(myBigSamp),
-            z, nCols, step, nRows, IsSample, IsGmp
-        );
+        batch.launch([&, z, step]() mutable {
+            ParallelGlue(parMat, idx, lenGrps, v, lenNxtPr, mySamp,
+                         myBigSamp, std::move(z), nCols, step, nRows,
+                         IsSample, IsGmp);
+        });
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
     } else {
         SerialGlue(mat, idx, lenGrps, v, lenNxtPr, mySamp,
                    myBigSamp, z, nCols, nRows, IsSample, IsGmp);

@@ -1,6 +1,6 @@
 #include "Partitions/PartitionsManager.h"
 #include "Partitions/NthPartition.h"
-#include <thread>
+#include "ThreadBatch.h"
 
 void StandardPartitions(
     int* mat, std::vector<int> &z, PartitionType ptype, double lower,
@@ -11,7 +11,6 @@ void StandardPartitions(
 
     if (nThreads > 1 && (IsComb || IsComp)) {
         RcppParallel::RMatrix<int> parMat(mat, nRows, nCols);
-        std::vector<std::thread> threads;
 
         const int stepSize = nRows / nThreads;
         int nextStep = stepSize;
@@ -20,14 +19,15 @@ void StandardPartitions(
         const nthPartsPtr nthPartFun = GetNthPartsFuncOrStop(ptype, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
         const std::vector<int> Reps;
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(
-                PartsStdParallel, std::ref(parMat), std::ref(zs[j]),
-                step, width, lastElem, lastCol, nextStep, ptype, zeroBudget
-            );
+            batch.launch([&, j, step, nextStep] {
+                PartsStdParallel(parMat, zs[j], step, width, lastElem,
+                                 lastCol, nextStep, ptype, zeroBudget);
+            });
 
             if (IsGmp) {
                 lowerMpz += stepSize;
@@ -46,14 +46,12 @@ void StandardPartitions(
             }
         }
 
-        threads.emplace_back(
-            PartsStdParallel, std::ref(parMat), std::ref(zs.back()),
-            step, width, lastElem, lastCol, nRows, ptype, zeroBudget
-        );
+        batch.launch([&, step] {
+            PartsStdParallel(parMat, zs.back(), step, width, lastElem,
+                             lastCol, nRows, ptype, zeroBudget);
+        });
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
     } else {
         PartsStdManager(
             mat, z, width, lastElem, lastCol, nRows, ptype, zeroBudget
@@ -71,7 +69,6 @@ void GeneralPartitions(
 
     if (nThreads > 1 && (IsComb || part.isComp)) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, nCols);
-        std::vector<std::thread> threads;
 
         const int stepSize = nRows / nThreads;
         int nextStep = stepSize;
@@ -80,15 +77,16 @@ void GeneralPartitions(
         const nthPartsPtr nthPartFun =
             GetNthPartsFuncOrStop(part.ptype, part.isGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(
-                PartsGenParallel<T>, std::ref(parMat), std::cref(v),
-                std::cref(Reps), std::ref(zs[j]), step, part.width,
-                lastElem, lastCol, nextStep, part.ptype, part.maxZeros
-            );
+            batch.launch([&, j, step, nextStep] {
+                PartsGenParallel(parMat, v, Reps, zs[j], step, part.width,
+                                 lastElem, lastCol, nextStep,
+                                 part.ptype, part.maxZeros);
+            });
 
             if (part.isGmp) {
                 lowerMpz += stepSize;
@@ -101,15 +99,13 @@ void GeneralPartitions(
             );
         }
 
-        threads.emplace_back(
-            PartsGenParallel<T>, std::ref(parMat), std::cref(v),
-            std::cref(Reps), std::ref(zs.back()), step, part.width,
-            lastElem, lastCol, nRows, part.ptype, part.maxZeros
-        );
+        batch.launch([&, step] {
+            PartsGenParallel(parMat, v, Reps, zs.back(), step, part.width,
+                             lastElem, lastCol, nRows,
+                             part.ptype, part.maxZeros);
+        });
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
     } else {
         PartsGenManager(mat, v, Reps, z, part.width, lastElem,
                         lastCol, nRows, part.ptype, part.maxZeros);

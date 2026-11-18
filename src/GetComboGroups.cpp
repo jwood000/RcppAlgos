@@ -1,4 +1,6 @@
 #include "ComboGroups/GetComboGroups.h"
+#include "ThreadBatch.h"
+#include <utility>
 
 CmbGrpClsFuncs GetClassFuncs(
     std::unique_ptr<ComboGroupsTemplate> const &CmbGrp
@@ -251,32 +253,32 @@ void GroupsMain(T* GroupsMat, SEXP res, nextGrpFunc nextCmbGrp,
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(GroupsMat, nRows, n);
-        std::vector<std::thread> threads;
 
         int step = 0;
         int stepSize = nRows / nThreads;
         int nextStep = stepSize;
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int j = 0; j < (nThreads - 1); ++j, step += stepSize,
              nextStep += stepSize) {
 
-            threads.emplace_back(ParallelGlue<T>, std::ref(parMat), std::cref(v),
-                nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, std::cref(mySample),
-                std::cref(myBigSamp), z, n, step, nextStep, IsSample, IsGmp
-            );
+            batch.launch([&, z, step, nextStep]() mutable {
+                ParallelGlue(parMat, v, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp,
+                             mySample, myBigSamp, std::move(z), n, step, nextStep,
+                             IsSample, IsGmp);
+            });
 
             GetStartGrp(nthCmbGrp, nthCmbGrpGmp, z,
                         lowerMpz, lower, stepSize, IsGmp);
         }
 
-        threads.emplace_back(ParallelGlue<T>, std::ref(parMat), std::cref(v),
-            nextCmbGrp, nthCmbGrp, nthCmbGrpGmp, std::cref(mySample),
-            std::cref(myBigSamp), z, n, step, nRows, IsSample, IsGmp
-        );
+        batch.launch([&, z, step]() mutable {
+            ParallelGlue(parMat, v, nextCmbGrp, nthCmbGrp, nthCmbGrpGmp,
+                         mySample, myBigSamp, std::move(z), n, step, nRows,
+                         IsSample, IsGmp);
+        });
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
 
         FinalTouch(res, IsArray, nRows, IsNamed,
                    mySample, myBigSamp, IsSample);

@@ -468,3 +468,24 @@ test_that("expandGrid and expandGridSample generates correct
         ))
     )
 })
+
+test_that("expandGrid preserves GMP starts and sample names with two threads", {
+    myList <- setNames(rep(list((1:10) + 0.25), 17), paste0("x", 1:17))
+    lower <- gmp::as.bigz("9007199254741009")
+    serial <- expandGrid(myList, lower = lower, upper = lower + 20000,
+                         nThreads = 1)
+    expect_identical(
+        expandGrid(myList, lower = lower, upper = lower + 20000, nThreads = 2),
+        serial
+    )
+
+    idx <- c(20001, 1, 10001, 20001, 2)
+    ranks <- lower + idx - 1
+    expected <- serial[idx, , drop = FALSE]
+    rownames(expected) <- as.character(ranks)
+    expect_identical(
+        expandGridSample(myList, sampleVec = ranks, namedSample = TRUE,
+                         nThreads = 2),
+        expected
+    )
+})

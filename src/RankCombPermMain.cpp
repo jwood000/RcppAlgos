@@ -1,7 +1,7 @@
 #include "ComputedCount.h"
 #include "RankResult.h"
 #include "RankUtils.h"
-#include <thread>
+#include "ThreadBatch.h"
 
 template <typename T>
 void RankCPResultsGeneric(
@@ -42,26 +42,23 @@ void RankCPParallel(
     int nThreads, int stepSize, int last_sec
 ) {
 
-    std::vector<std::thread> threads;
-
     std::vector<std::vector<int>> idx_section(nThreads);
     Create2D(idx, idx_section, stepSize, m, nThreads);
+    RcppAlgos::ThreadBatch batch(nThreads);
 
     for (int j = 0; j < (nThreads - 1); ++j) {
-        threads.emplace_back(RankCPResultsGeneric<T>, std::ref(res_sec[j]),
-            std::ref(idx_section[j]), std::cref(myReps),
-            rankFun, m, lenV, stepSize
-        );
+        batch.launch([&, j] {
+            RankCPResultsGeneric<T>(res_sec[j], idx_section[j], myReps,
+                                   rankFun, m, lenV, stepSize);
+        });
     }
 
-    threads.emplace_back(RankCPResultsGeneric<T>, std::ref(last_res),
-        std::ref(idx_section.back()), std::cref(myReps),
-        rankFun, m, lenV, last_sec
-    );
+    batch.launch([&] {
+        RankCPResultsGeneric<T>(last_res, idx_section.back(), myReps,
+                               rankFun, m, lenV, last_sec);
+    });
 
-    for (auto& thr: threads) {
-        thr.join();
-    }
+    batch.finish();
 }
 
 template <typename T>

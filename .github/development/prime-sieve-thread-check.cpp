@@ -2,6 +2,7 @@
 // Compile this file alone with inst/include and the prepared directory on -I.
 // The source copy substitutes only the thread wrapper and worker-entry hook;
 // production code has no fault-injection hooks.
+#include <algorithm>
 #include <array>
 #include <chrono>
 #include <condition_variable>
@@ -15,6 +16,8 @@
 #include <string>
 #include <system_error>
 #include <thread>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 namespace SieveThreadFaults {
@@ -126,14 +129,15 @@ namespace SieveThreadFaults {
         int slot;
         std::thread actual;
     public:
-        template <typename Function>
-        explicit Thread(Function work) : slot(BeforeLaunch()) {
+        template <typename Function, typename... Args>
+        explicit Thread(Function&& work, Args&&... args) : slot(BeforeLaunch()) {
             const int captured = slot;
-            actual = std::thread([work, captured]() mutable {
+            actual = std::thread([captured](typename std::decay<Function>::type&& call,
+                                           typename std::decay<Args>::type&&... values) {
                 Started(captured);
-                work();
+                call(std::move(values)...);
                 AfterBody(captured);
-            });
+            }, std::forward<Function>(work), std::forward<Args>(args)...);
         }
         Thread(Thread&&) = default;
         Thread& operator=(Thread&&) = default;
@@ -283,29 +287,37 @@ namespace SieveThreadChecks {
     }
 }
 
-int main() {
+int main(int argc, char** argv) {
     try {
         using namespace SieveThreadFaults;
         using namespace SieveThreadChecks;
+        int maxThreads = 8;
+        if (argc == 3 && std::string(argv[1]) == "--threads" &&
+            (std::string(argv[2]) == "2" || std::string(argv[2]) == "4" ||
+             std::string(argv[2]) == "8")) {
+            maxThreads = std::stoi(argv[2]);
+        } else if (argc != 1) {
+            throw std::runtime_error("usage: checker [--threads 2|4|8]");
+        }
         int scenarios = 0, blocked = 0;
         for (int fixture = 0; fixture < 4; ++fixture) {
             const bool countOnly = fixture >= 2;
             const bool reduced = fixture % 2;
             const int maximum = reduced ? 450000 : 1000000;
-            const int threads = reduced ? 8 : 4;
-            const int workers = reduced ? 3 : 4;
+            const int threads = std::min(reduced ? 8 : 4, maxThreads);
+            const int workers = std::min(reduced ? 3 : 4, maxThreads);
             Recover(maximum, threads, countOnly);
             Check(Inspect().started == workers, "fixture no longer exercises intended budget");
-            const std::vector<Scenario> cases = {
+            std::vector<Scenario> cases = {
                 Scenario(Fault::Standard, -1, 0, true),
                 Scenario(Fault::NonStandard, -1, workers - 1, true),
                 Scenario(Fault::BadAlloc, -1, 0, true),
                 Scenario(Fault::Ordered, -1, 0, true),
                 Scenario(Fault::None, 0, 0, true),
                 Scenario(Fault::None, 1, 0, true),
-                Scenario(Fault::None, workers - 1, 0, true),
                 Scenario(Fault::Standard, 1, 0, true, true)
             };
+            if (workers > 2) cases.emplace_back(Fault::None, workers - 1, 0, true);
             for (const auto& scenario : cases) {
                 RunScenario(scenario, maximum, threads, workers, countOnly);
                 ++scenarios;
@@ -318,13 +330,13 @@ int main() {
         Check(Inspect().started == 0, "serial count unexpectedly launched workers");
         const auto reference = Reference(450000);
         Configure();
-        const auto integers = Invoke<int>(450000, 8);
+        const auto integers = Invoke<int>(450000, maxThreads);
         Check(integers.size() == reference.size() &&
               std::equal(integers.begin(), integers.end(), reference.begin()),
               "integer parallel output disagrees with reference");
         CheckJoined(Inspect());
         Configure();
-        const auto doubles = Invoke<double>(450000, 8);
+        const auto doubles = Invoke<double>(450000, maxThreads);
         Check(doubles.size() == reference.size() &&
               std::equal(doubles.begin(), doubles.end(), reference.begin()),
               "double parallel output disagrees with reference");
@@ -344,9 +356,10 @@ int main() {
             CheckJoined(Inspect());
             Check(Inspect().started == 0, "synthetic Big sizing launched a worker");
         }
-        std::cout << "PASS scenarios=" << scenarios << " blocked_joins=" << blocked
+        std::cout << "PASS max_threads=" << maxThreads << " scenarios=" << scenarios << " blocked_joins=" << blocked
                   << " recovery_checks=" << scenarios + 4
-                  << " output_types=3 count_only=1 reduced_budget=3/8 sizing_checks=2\n";
+                  << " output_types=3 count_only=1 reduced_budget="
+                  << std::min(3, maxThreads) << '/' << maxThreads << " sizing_checks=2\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << error.what() << '\n';
