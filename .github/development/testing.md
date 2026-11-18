@@ -74,6 +74,70 @@ documentation consistency, not performance or race freedom.
 
 ## Native correctness and sanitizer checks
 
+### Package floating-conversion and mapping checks
+
+The numeric regressions in `tests/testthat/testNumericConstraints.R` should also
+run against a package built with UBSan, including `float-cast-overflow`. Ordinary
+R output does not expose an unsafe cast or signed overflow reliably. Use the
+isolated source snapshot and library described above; preserve any existing user
+Makevars settings in the temporary file before appending these flags:
+
+```make
+PKG_CXXFLAGS += -fsanitize=undefined,float-cast-overflow -fno-sanitize-recover=all
+PKG_LIBS += -fsanitize=undefined,float-cast-overflow -fno-sanitize-recover=all
+```
+
+```sh
+R_MAKEVARS_USER="$validation_root/Makevars.ubsan" MAKEFLAGS=-j4 \
+    R CMD INSTALL --preclean --no-multiarch \
+    --library="$package_library" "$package_source"
+UBSAN_OPTIONS=halt_on_error=1 Rscript --vanilla - \
+    "$package_library" "$package_source" <<'RS'
+args <- commandArgs(TRUE)
+library(RcppAlgos, lib.loc = args[1])
+stopifnot(startsWith(normalizePath(getLoadedDLLs()[["RcppAlgos"]][["path"]]),
+                    paste0(normalizePath(args[1]), "/")))
+files <- c("test-cpp.R", "testNumericConstraints.R", "testZeroPartitions.R",
+           "testIsPrimeRcpp.R", "testPrimeFactorize.R", "testDivisorsRcpp.R",
+           "testPartitionsDesign.R", "testPartitionTypeRefactor.R")
+for (file in files) {
+    testthat::test_file(file.path(args[2], "tests/testthat", file),
+                       reporter = "summary", stop_on_failure = TRUE,
+                       package = "RcppAlgos", load_package = "installed")
+}
+RS
+```
+
+This configuration was verified with Apple Clang 17 and R 4.6.1 on macOS arm64.
+The sanitizer runtime linked and loaded without preloading. Do not substitute
+an ordinary installed package for the instrumented library. Changes to shared
+input preparation also warrant the full package test suite.
+
+The numeric regressions cover native mapping and its range errors, including
+widths 1024/1025 with source values below `2^53`, `INT64_MIN` source values,
+and positive/negative mapping-product overflow. The original native search
+runs only when a conservative bound guarantees safe arithmetic; it has no
+GMP fallback. Existing GMP counting, ranking, and sampling remain separate.
+When changing the search arithmetic, also run `testPartitions*.R`,
+`testConstraintsClass.R`, `testCombPermResults.R`, and `testCombPermRank.R`
+against the same instrumented library to cover counting, generation,
+sampling/ranking, iterators, and parallel dispatch.
+
+The zero-only regressions cover repeated partitions and compositions (including
+weak compositions), retaining the requested width and integer/numeric result
+type across generation, counting, sampling, ranking, and iterator exhaustion
+and random access. They also check the constrained combination/permutation
+routes and nearby frequency-based and positive-target cases.
+
+The primality and factorization regressions cover the native/GMP dispatch
+boundaries in serial and with two requested workers. Native tests in
+`src/test-primality.cpp` also exercise the `IsPrime()` upper-bound guard directly;
+R-facing calls route large inputs to GMP before reaching that guard. Native
+modular products rely on nonnegative residues below a modulus at most `INT_MAX`,
+so their product is below `2^62` and needs no floating-point chunking fallback.
+
+### Standalone native fixtures
+
 The standalone fixtures need a C++11 compiler and thread support, but no R
 runtime. Compile in a temporary directory. ASan/UBSan and TSan require separate
 binaries; do not combine their flags. The following shell helper keeps flags

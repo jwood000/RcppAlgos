@@ -8,6 +8,10 @@
 constexpr int L1_CACHE_SIZE = 32768;
 constexpr double dblIntMax = std::numeric_limits<int>::max();
 
+// 2^63 is exact as a double; INT64_MAX rounds up to this value.
+// Use an exclusive upper bound before converting a double to int64_t.
+constexpr double Int64UpperExclusive = 9223372036854775808.0;
+
 // std::pow(2, 53) - 1 is not constexpr as of C++11
 constexpr double Significand53 = 9007199254740991.0;
 // The same bound for exact integer arithmetic and integer template arguments.
@@ -31,12 +35,6 @@ constexpr double SampleLimit = 4500000000000000.0;
 // [1] 0.00000001490116119384766
 // Which is also 2^(-26)
 constexpr double DefaultTolerance = std::numeric_limits<float>::epsilon() / 8.0;
-
-// 2^63 -->> 922337203685477580
-constexpr double my63Max = 922337203685477580.0;
-
-// std::sqrt(std::pow(2, 63)) -->> 3037000499.97605
-constexpr std::int64_t Sqrt63Max = static_cast<std::int64_t>(3037000499.97);
 
 constexpr int maxVecSize = std::numeric_limits<int>::max() / 2;
 constexpr std::size_t intSize = sizeof(int);

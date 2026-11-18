@@ -27,3 +27,13 @@ test_that("isPrimeRcpp generates correct numbers", {
     ## This hardware query launches no workers; do not use it as a test budget.
     expect_true(stdThreadMax() > 0)
 })
+
+test_that("primality agrees across the native and GMP dispatch boundary", {
+    ## 31607 is prime, so its square reaches the native primality test after
+    ## trial division. The primes straddle the 1e9 dispatch boundary.
+    values <- c(31607^2, 999999937, 1e9 - 1, 1e9, 1e9 + 1, 1000000007)
+    expected <- c(FALSE, TRUE, FALSE, FALSE, FALSE, TRUE)
+
+    expect_identical(isPrimeRcpp(values, nThreads = 1), expected)
+    expect_identical(isPrimeRcpp(values, nThreads = 2), expected)
+})

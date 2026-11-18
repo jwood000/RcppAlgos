@@ -31,3 +31,19 @@ test_that("primeFactorize generates correct numbers", {
     samp <- sample(1e12, 100)
     expect_equal(primeFactorize(samp), primeFactorize(samp, nThreads = 2))
 })
+
+test_that("factorization agrees across the native and GMP dispatch boundary", {
+    limit <- as.double(.Machine$integer.max)
+    ## These prime squares reach Pollard rho on opposite sides of INT_MAX.
+    values <- c(46337^2, limit - 1, limit, limit + 1, 46349^2)
+    expected <- list(
+        c(46337, 46337),
+        c(2, 3, 3, 7, 11, 31, 151, 331),
+        limit,
+        rep(2, 31),
+        c(46349, 46349)
+    )
+
+    expect_equal(primeFactorize(values, nThreads = 1), expected)
+    expect_equal(primeFactorize(values, nThreads = 2), expected)
+})

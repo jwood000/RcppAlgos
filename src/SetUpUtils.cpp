@@ -68,13 +68,8 @@ void SetFactorClass(SEXP res, SEXP Rv) {
 bool IsDecimal(SEXP Rv) {
 
     if (TYPEOF(Rv) == REALSXP && Rf_length(Rv) == 1) {
-        double res = Rf_asReal(Rv);
-
-        if (static_cast<std::int64_t>(res) == res) {
-            return false;
-        } else {
-            return true;
-        }
+        const double res = Rf_asReal(Rv);
+        return std::isfinite(res) && std::trunc(res) != res;
     } else {
         return false;
     }

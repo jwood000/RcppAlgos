@@ -16,6 +16,9 @@
 
     \subsection{Bug Fixes}{
         \itemize{
+          \item Fixed a division by zero when preparing repeated zero-only partitions and compositions. The single all-zero result now retains the requested width across generation, counting, sampling, ranking, and iteration.
+          \item Fixed unsafe floating-point-to-integer checks in combinatorial input preparation and constraints. Non-finite numeric scalars now reach the existing input validation, while large numeric vector elements and scaled mean targets are checked without integer casts (\href{https://github.com/jwood000/RcppAlgos/issues/89}{Issue #89}).
+          \item Fixed rounded spacing and guarded integer overflow in partition mapping. Preparation retains the native search and exact integer spacing; cases outside a conservative native arithmetic bound, overflowing mapping calculations, and unsupported mapped targets now produce explicit range errors.
           \item Fixed generic constrained searches with explicit \code{lower = 1} to use candidate-range semantics consistently. Constrained \code{permuteGeneral()} calls with \code{lower} supplied filter ordinary permutation ranks; \code{upper} alone continues to cap matching results.
           \item Fixed partial multiset permutations being treated as full permutations when the requested width equals the number of distinct values rather than the total multiplicity.
           \item Fixed out-of-bounds writes when \code{upper} stops constrained distinct-permutation generation within a partition's permutation block.
@@ -49,6 +52,7 @@
 
     \subsection{Other}{
         \itemize{
+          \item Retired the unused large-product chunking fallback and its constants from native primality testing. Direct C++ calls to \code{IsPrime()} now reject values above \code{INT_MAX}; R-facing primality and factorization functions retain their existing GMP routing for large inputs.
           \item Added \code{testthat} to \code{LinkingTo}, making it a dependency when building the package from source.
           \item Installed C++ partition/composition ranking and unranking signatures now include a \code{Reps} argument. Direct C++ callers must update their calls and function-pointer types and rebuild. The R function signatures are unchanged.
           \item Added a developer-only prime sieve inspector and reproducible benchmark materials under \file{.github/development/}, excluded from package distributions.

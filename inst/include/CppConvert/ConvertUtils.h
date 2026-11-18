@@ -13,6 +13,15 @@
 
 namespace CppConvert {
 
+    inline bool IsWholeNumber(double value) {
+        return std::isfinite(value) && std::trunc(value) == value;
+    }
+
+    inline bool IsInt64(double value) {
+        return value >= -Int64UpperExclusive && value < Int64UpperExclusive &&
+            IsWholeNumber(value);
+    }
+
     template <typename T>
     void SetNames(SEXP res, T myMin, T myMax);
 

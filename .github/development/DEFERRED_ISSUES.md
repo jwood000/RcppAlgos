@@ -2,26 +2,141 @@
 
 ## Unsafe floating-point to integer conversions
 
-Status: Needs investigation
+Status: Fix implemented and validated; pending maintainer review
 Priority: High
 Discovered during: PartitionType refactoring
 
 ### Observation
 
-SetTolerance(), CheckIsInteger(), and CheckPartition()
-may cast out-of-range, NaN, or infinite double values
-to std::int64_t, resulting in undefined behavior.
+`SetTolerance()` and `CheckPartition()` cast unbounded numeric source values
+to `std::int64_t` while testing integrality. `IsDecimal()` does the same for
+scalar numeric input before normal validation. `CheckIsInteger()` uses the
+same pattern, although its current callers bound the values before that cast.
 
-### Proposed investigation
+### Confirmed failures, November 18, 2026
 
-- Reproduce the issue with targeted tests.
-- Review all affected conversion paths.
-- Evaluate std::isfinite() and std::round() approaches.
-- Agree on the fix before implementation.
+An isolated build of `3da5ad74` with
+`-fsanitize=undefined,float-cast-overflow -fno-sanitize-recover=all` confirmed
+nine invalid-conversion probes and one signed-overflow probe among 14 small
+public-call checks. These included infinite/large source-vector elements,
+non-finite scalar inputs, and a mean target scaled beyond `int64_t` at width
+1025 (the neighboring width 1024 passed).
+
+The investigation also confirmed two related partition-mapping failures:
+
+- Individually representable values can have an unrepresentable spacing or
+  overflowing intermediate sums. For example, repeated pairs from
+  `c(2^62, 2^62 + 1024)` overflowed while preparing a search with target 1.
+- The exact spacing of `c(-(2^53 - 1), 2)` is `2^53 + 1`. Computing it in
+  double rounded it and caused a valid width-two partition with target
+  `-(2^53 - 3)` to fail with "Strange mapping!!!".
+
+### Implemented fix
+
+The maintainer approved addressing both conversion and mapping arithmetic.
+Whole-number tests now use finite/trunc checks; actual conversions require
+the half-open range `[-2^63, 2^63)`. Non-finite numeric scalars reach existing
+validation, while large numeric vectors retain general constraint handling.
+
+`CheckPartition()` computes integer spacing exactly. Partition mapping keeps
+its original `int64_t` search. An upfront check requires
+`m * max(abs(v)) + abs(target) <= INT64_MAX`, evaluated by division without
+signed absolute-value overflow. The initial width bounds later searches if
+the width decreases. Cases outside this conservative bound produce a clear
+range error; some mathematically valid cases are deliberately outside the
+supported native arithmetic range.
+
+Mapped-target storage remains limited to `int`. The shift calculation checks
+its native multiplication and subtraction before evaluating them. No GMP
+source vector, templated search, or wide-intermediate fallback is added.
+Existing GMP counting/ranking functionality is unchanged. The target's
+existing `abs(target) < 2^53` validation also remains unchanged; this is a
+native arithmetic limit, not a new source-vector magnitude restriction.
+
+The maintainer also approved retiring the obsolete large-product chunking
+fallback in `PollardRhoUtils.cpp` and its `my63Max`/`Sqrt63Max` constants.
+Native primality multiplication now uses exact integer arithmetic: residues
+below a modulus at most `INT_MAX` have products below `2^62`. `IsPrime()`
+enforces that upper bound with a native exception, and its installed header
+documents the existing small-factor trial-division precondition. R-facing
+native/GMP dispatch remains unchanged.
+
+Validation uses macOS arm64, Apple Clang 17 / R 4.6.1. Earlier revisions
+passed the full UBSan package suite (43,591 expectations) and independent
+mapping/primality comparisons; those results apply to the recorded earlier
+snapshots, not the final guard-only mapping revision.
+
+Final guard-only validation:
+
+- A fresh UBSan build passed 2,064 R expectations across 16 relevant files,
+  including all 88 numeric regressions, and all 20 native assertions. There
+  were no failures, warnings, or sanitizer diagnostics; the existing
+  unsupported-multiset-composition test was skipped. Existing GMP counting,
+  ranking, sampling, iterator, and two-thread cases remain covered.
+- C++11 ASan/UBSan checks passed 4,862 guard-boundary cases against exact GMP
+  reference calculations, including 870 diagnostic reconstructions. GMP is
+  used as a test oracle here, not in partition preparation.
+- The two native search helpers and all of `PartitionsDesign.cpp` match
+  baseline `3da5ad74` exactly. Source/test hashes for that guard-only revision
+  matched its tested package snapshot; later zero-only validation is recorded
+  below.
+
+Permanent public regressions are in `tests/testthat/testNumericConstraints.R`.
+The package sanitizer recipe is in
+[testing.md](testing.md#package-floating-conversion-and-mapping-checks).
+Baseline failures and earlier validation logs are retained under
+`/tmp/rcppalgos-float-probe-w90bjvot`,
+`/tmp/rcppalgos-float-fixed-_ss_s7et`, and
+`/tmp/rcppalgos-mapping-dispatch-1rp58mtj`.
+The bounded-input overflow example from the domain review is recorded under
+`/tmp/rcppalgos-supported-range-oupxzbda`.
+Final build/test logs, source hashes, and an index of native guard checks are
+under `/tmp/rcppalgos-native-mapping-y6co4ddt`. Primality-retirement checks are
+retained separately under `/tmp/rcppalgos-native-primality-l49ftkjg`.
+No cross-platform check or performance benchmark was run for this change.
 
 ### Decision
 
-Defer to a dedicated investigation and PR.
+Implementation and evidence are ready for maintainer review. This record has
+not been marked resolved, and no GitHub issue was opened or updated here.
+
+## Zero-only repeated partitions can divide by zero during setup
+
+Status: Fix implemented and validated; pending maintainer review
+Discovered during: Review of partition-mapping arithmetic, November 18, 2026
+
+`partitionsGeneral(0, 2, repetition = TRUE)` reaches integer division by zero.
+`StandardDesign()` in `src/PartitionsUtils.cpp` reduces the requested width
+to the zero target before calculating the mapping shift. The original shift
+expression and the guarded `MappingShift()` both require a positive divisor.
+
+Isolated UBSan processes reproduced this on baseline `3da5ad74` and the prior
+floating-conversion fix, with verified loaded-library paths. Both stopped on
+division by zero; this predates the upfront native/GMP dispatch change.
+Reproduction scripts and logs are under
+`/tmp/rcppalgos-zero-width-probe-yzvvc534`.
+
+The maintainer approved a focused fix. Repeated zero-only inputs with target
+zero now use the existing positive mapping path instead of `StandardDesign()`.
+Mapping each zero to one makes the mapped target equal to the positive width:
+there is exactly one mapped result, consisting entirely of ones. Mapping back
+gives one all-zero result at the requested width, consistent with the existing
+finite-frequency zero-only cases. No search or enumeration algorithm changes.
+Other domains retain their existing routing.
+
+A fresh UBSan build passed 1,417 R expectations across seven related files and
+all 20 native assertions, with no failures, warnings, skips, or sanitizer
+diagnostics. The 59 new expectations in `tests/testthat/testZeroPartitions.R`
+cover partitions, compositions with both weak settings, counting, sampling,
+ranking, iterator exhaustion/random access, integer/numeric results, and
+constrained combinations/permutations. The original target-omitted reproducer
+also returned one row of two zeros under UBSan. Build/test logs and snapshot
+hashes are under `/tmp/rcppalgos-zero-fix-1b0mpvpj`.
+
+Validation used macOS arm64, Apple Clang 17 / R 4.6.1. Full `R CMD check` and
+cross-platform checks were not rerun for this routing-only change. The local
+deferred records were checked for a duplicate; GitHub was not consulted and no
+issue was published. This record remains pending maintainer review.
 
 ## Prime sieve worker and thread-launch exception handling
 

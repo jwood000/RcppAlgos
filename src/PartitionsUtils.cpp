@@ -1,5 +1,63 @@
 #include "cpp11/protect.hpp"
 #include "Partitions/PartitionsUtils.h"
+#include "CppConvert/ConvertUtils.h"
+
+namespace {
+    bool MappingFitsInt64(const std::vector<std::int64_t> &v,
+                         std::int64_t target, int m) {
+        if (target == std::numeric_limits<std::int64_t>::min()) {
+            return false;
+        }
+
+        // Every sum contains at most m source terms; distances also subtract the
+        // target. Check m * max(abs(v)) + abs(target) <= INT64_MAX by division.
+        const std::int64_t limit =
+            (std::numeric_limits<std::int64_t>::max() - std::abs(target)) / m;
+
+        return std::all_of(v.cbegin(), v.cend(), [limit](std::int64_t value) {
+            return value >= -limit && value <= limit;
+        });
+    }
+
+    bool DifferenceFitsInt64(std::int64_t a, std::int64_t b) {
+        const auto lo = std::numeric_limits<std::int64_t>::min();
+        const auto hi = std::numeric_limits<std::int64_t>::max();
+
+        return !((b > 0 && a < lo + b) || (b < 0 && a > hi + b));
+    }
+
+    int MappingTarget(std::int64_t value) {
+        if (value < 0 || value > std::numeric_limits<int>::max()) {
+            cpp11::stop("The mapped partition target exceeds the supported integer range.");
+        }
+
+        return static_cast<int>(value);
+    }
+
+    std::int64_t MappingShift(const PartDesign &part) {
+        const auto lo = std::numeric_limits<std::int64_t>::min();
+        const auto hi = std::numeric_limits<std::int64_t>::max();
+
+        if (part.mapTar != 0 &&
+            (part.slope < lo / part.mapTar || part.slope > hi / part.mapTar)) {
+            cpp11::stop("The partition mapping arithmetic exceeds the supported integer range.");
+        }
+
+        const std::int64_t product = part.slope * part.mapTar;
+
+        if (!DifferenceFitsInt64(product, part.target)) {
+            cpp11::stop("The partition mapping arithmetic exceeds the supported integer range.");
+        }
+
+        const std::int64_t numerator = product - part.target;
+
+        if (numerator % part.width) {
+            cpp11::stop("Strange mapping!!!");
+        }
+
+        return numerator / part.width;
+    }
+} // namespace
 
 std::string GetPTypeName(PartitionType ptype) {
     using U = std::underlying_type_t<PartitionType>;
@@ -174,9 +232,15 @@ void GetTarget(const std::vector<double> &v,
                const std::vector<int> &Reps,
                PartDesign &part, int &m, int lenV) {
 
+    std::vector<std::int64_t> v64(v.cbegin(), v.cend());
+
+    // The initial width bounds all later searches if mIsNull reduces m.
+    if (!MappingFitsInt64(v64, part.target, m)) {
+        cpp11::stop("The partition mapping search exceeds the supported integer range.");
+    }
+
     std::vector<int> z(m, 0);
     std::vector<int> zExpanded;
-    std::vector<std::int64_t> v64(v.cbegin(), v.cend());
 
     for (std::size_t i = 0; i < Reps.size(); ++i) {
         for (int j = 0; j < Reps[i]; ++j) {
@@ -187,7 +251,7 @@ void GetTarget(const std::vector<double> &v,
     int res = 0;
 
     while (res != 1) {
-        res =  GetFirstPartition(
+        res = GetFirstPartition(
             v64, zExpanded, z, Reps, part.target,
             m, lenV, part.isRep, part.isMult
         );
@@ -205,15 +269,14 @@ void GetTarget(const std::vector<double> &v,
     if (res == 1) {
         part.startZ    = z;
         part.solnExist = true;
-        part.mapTar    = std::accumulate(z.cbegin(), z.cend(), 0) +
-                            static_cast<int>(!part.includeZero) * part.width;
 
-        // If the equation yields a non-zero remainder, something isn't right
-        if ((part.mapTar * part.slope - part.target) % (part.width)) {
-            cpp11::stop("Strange mapping!!!");
-        }
+        // sum(z) + width <= width * lenV <= INT_MAX^2 fits in int64.
+        const std::int64_t mapped = std::accumulate(
+            z.cbegin(), z.cend(), std::int64_t(0)
+        ) + static_cast<std::int64_t>(!part.includeZero) * part.width;
 
-        part.shift = (part.mapTar * part.slope - part.target) / part.width;
+        part.mapTar = MappingTarget(mapped);
+        part.shift = MappingShift(part);
     } else {
         part.startZ.assign(part.width, 0);
         part.solnExist = false;
@@ -704,7 +767,9 @@ void StandardDesign(const std::vector<int> &Reps,
             if (part.mIsNull) width = part.target;
             part.ptype      = part.isPerm ? PartitionType::PrmRepPart :
                 PartitionType::CompRepWeak;
-            part.mapTar    += width;
+            part.mapTar = MappingTarget(
+                static_cast<std::int64_t>(part.mapTar) + width
+            );
             part.mapIncZero = false;
         } else if (part.mIsNull && part.includeZero) {
             // partitionsCount(0:20, repetition = TRUE)
@@ -726,7 +791,9 @@ void StandardDesign(const std::vector<int> &Reps,
             // partitionsCount(0:20, 5, TRUE)
             part.ptype = part.isPerm ? PartitionType::PrmRepPart :
                 PartitionType::RepShort;
-            part.mapTar += width;
+            part.mapTar = MappingTarget(
+                static_cast<std::int64_t>(part.mapTar) + width
+            );
             part.mapIncZero = false;
         }else if (part.includeZero) {
             // partitionsCount(0:20, 20, TRUE)
@@ -767,7 +834,9 @@ void StandardDesign(const std::vector<int> &Reps,
 
             // We need to add m in target in order to
             // correctly count the number of partitions
-            part.mapTar += width;
+            part.mapTar = MappingTarget(
+                static_cast<std::int64_t>(part.mapTar) + width
+            );
             part.mapIncZero = false;
         } else if (part.includeZero && part.isComp) {
             // compositionsCount(0:20, 3)
@@ -781,7 +850,9 @@ void StandardDesign(const std::vector<int> &Reps,
 
             // We need to add m in target in order to
             // correctly count the number of partitions
-            part.mapTar += width;
+            part.mapTar = MappingTarget(
+                static_cast<std::int64_t>(part.mapTar) + width
+            );
             part.mapIncZero = false;
         } else {
             // partitionsCount(20, 3)
@@ -794,11 +865,8 @@ void StandardDesign(const std::vector<int> &Reps,
 
     part.width = width;
 
-    // Since this is only called in the standard case, this calculation is
-    // unnecessary. That is, part.mapTar = part.target and part.slope = 1
-    // in this case, which means the numerator is equivalent to zero ==>>
-    // part.shift = 0. We leave it here for completeness
-    part.shift = (part.mapTar * part.slope - part.target) / part.width;
+    // Standard designs may add the width when mapping a zero-based domain.
+    part.shift = MappingShift(part);
 }
 
 /**
@@ -836,36 +904,53 @@ void CheckPartition(const std::vector<std::string> &compFunVec,
     bool IsPartition = false;
 
     if (compFunVec.front() == "==" && mainFun == "sum") {
-        if (static_cast<std::int64_t>(v[0]) == v[0]) {
+        if (CppConvert::IsInt64(v[0])) {
 
             IsPartition = true;
-            const double tarDiff = (lenV > 1) ? v[1] - v[0] : 1;
+            std::int64_t previous = static_cast<std::int64_t>(v[0]);
+            std::int64_t slope = 1;
 
             for (int i = 1; i < lenV; ++i) {
-                const double testDiff = v[i] - v[i - 1];
-
-                // We must multiply by m (the length of our partitions) as
-                // we will eventually be adding these values m times.
-                const bool outsideTol =
-                    m * std::abs(testDiff - tarDiff) > tolerance;
-
-                const bool notWhole = static_cast<std::int64_t>(v[i]) != v[i];
-
-                if (outsideTol || notWhole) {
+                if (!CppConvert::IsInt64(v[i])) {
                     IsPartition = false;
                     break;
                 }
+
+                const auto current = static_cast<std::int64_t>(v[i]);
+
+                if (!DifferenceFitsInt64(current, previous)) {
+                    IsPartition = false;
+                    break;
+                }
+
+                // Subtraction in double can round an exact spacing of 2^53 + 1.
+                const std::int64_t difference = current - previous;
+
+                if (i == 1) {
+                    slope = difference;
+                }
+
+                if (!DifferenceFitsInt64(difference, slope) ||
+                    m * std::abs(static_cast<double>(difference - slope)) > tolerance) {
+                    IsPartition = false;
+                    break;
+                }
+
+                previous = current;
+            }
+
+            if (IsPartition) {
+                part.slope = slope;
             }
         }
 
         const bool IsTarUnique =
             target.size() == 1 || target.front() == target.back();
 
-        const bool IsTarWhole =
-            static_cast<std::int64_t>(target.front()) == target.front();
+        const bool IsTarWhole = CppConvert::IsInt64(target.front());
 
         if (IsPartition && IsTarUnique && IsTarWhole) {
-            part.target = target.front();
+            part.target = static_cast<std::int64_t>(target.front());
         } else {
             IsPartition = false;
         }
@@ -916,7 +1001,7 @@ void SetPartitionDesign(
     // the difference between every value isn't the same, then we don't meet
     // the partition scenario.
 
-    part.slope = (lenV > 1) ? v[1] - v[0] : 1;
+    // CheckPartition already established the exact integer slope.
 
     // When allOne = true with isMult = true, we can apply optimized
     // algorithms for counting distinct partitions of varying lengths.
@@ -939,6 +1024,11 @@ void SetPartitionDesign(
     const bool standard_tar  = v.back() == part.target;
     const bool requestedWeak = part.isWeak;
 
+    // Map repeated zeros to positive parts so the zero target cannot reduce
+    // the width to zero in StandardDesign. The only result keeps its width.
+    const bool zero_only_rep = part.isRep && lenV == 1 &&
+        v.front() == 0 && part.target == 0;
+
     bool retry = true;
 
     for (int i = 0; i < 2 && retry; ++i) {
@@ -950,7 +1040,8 @@ void SetPartitionDesign(
         // General multiset cases intentionally continue through the mapping
         // path. The standard multiset branch is reserved for the all-one case,
         // which can be handled by the optimized distinct-partition machinery.
-        if (zero_or_one && standard_dist && standard_tar && standard_freq) {
+        if (zero_or_one && standard_dist && standard_tar &&
+            standard_freq && !zero_only_rep) {
             // Remember, lenV is the length of the vector v, so we could have a
             // situation where v = c(0, 2, 3, 4, 5) -->> length(v) = 5. This
             // would cause a problem if we were to allow this. We have already
@@ -962,7 +1053,7 @@ void SetPartitionDesign(
             part.includeZero = (v.front() == 0);
             part.mapIncZero  = part.includeZero;
             part.isWeak      = part.isWeak && part.includeZero;
-            part.mapTar      = part.target;
+            part.mapTar      = MappingTarget(part.target);
             part.cap         = v.back();
 
             ctype = ConstraintType::PartStandard;
@@ -978,8 +1069,8 @@ void SetPartitionDesign(
             part.isWeak = part.isWeak && vHasZero;
 
             const bool weakAllowed     = part.isComp && part.isWeak;
-            const bool mappedZeroBased = part.allOne ||
-                (part.isComp && vHasZero && !weakAllowed);
+            const bool mappedZeroBased = !zero_only_rep && (part.allOne ||
+                (part.isComp && vHasZero && !weakAllowed));
 
             part.includeZero = mappedZeroBased;
             part.mapIncZero  = part.includeZero;
