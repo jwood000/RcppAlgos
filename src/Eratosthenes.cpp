@@ -1,6 +1,6 @@
 #include "NumbersUtils/PrimesSegSieve.h"
 #include "NumbersUtils/Wheel.h"
-#include "NumbersUtils/ThreadBatch.h"
+#include "ThreadBatch.h"
 #include "CppConvert/Constants.h"
 #include <algorithm>
 #include <vector>
@@ -882,7 +882,7 @@ namespace PrimeSieve {
             // Shared sieve inputs and caller-owned output vectors outlive the
             // batch. It joins every launched worker before propagating either
             // a worker exception or a later thread-creation failure.
-            PrimeCounting::ThreadBatch batch(nThreads);
+            RcppAlgos::ThreadBatch batch(nThreads);
             std::int_fast64_t upperBnd;
             std::int_fast64_t lowerBnd = minNum;
 

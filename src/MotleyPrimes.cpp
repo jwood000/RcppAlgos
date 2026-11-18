@@ -4,7 +4,7 @@
 #include "NumbersUtils/EulerPhiSieve.h"
 #include "NumbersUtils/Eratosthenes.h"
 #include <type_traits>
-#include <thread>
+#include "ThreadBatch.h"
 
 template <typename T, typename U>
 void MotleyMain(T myMin, U myMax, bool IsEuler,
@@ -29,37 +29,39 @@ void MotleyMain(T myMin, U myMax, bool IsEuler,
     PrimeSieve::sqrtBigPrimes(sqrtBound, false, true, true, primes);
 
     if (Parallel) {
-        std::vector<std::thread> threads;
         T lower = myMin;
         T chunkSize = myRange / nThreads;
         U upper = lower + chunkSize - 1;
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int ind = 0; ind < (nThreads - 1); offsetStrt += chunkSize,
              lower = (upper + 1), upper += chunkSize, ++ind) {
             if (IsEuler) {
-                threads.emplace_back(MotleyPrimes::EulerPhiSieve<T, U>,
-                                     lower, upper, offsetStrt, std::ref(primes),
-                                     std::ref(numSeq), EulerPhis);
+                batch.launch([&, lower, upper, offsetStrt] {
+                    MotleyPrimes::EulerPhiSieve<T, U>(
+                        lower, upper, offsetStrt, primes, numSeq, EulerPhis);
+                });
             } else {
-                threads.emplace_back(MotleyPrimes::PrimeFactorizationSieve<T>,
-                                     lower, static_cast<T>(upper), offsetStrt,
-                                     std::cref(primes), std::ref(primeList));
+                batch.launch([&, lower, upper, offsetStrt] {
+                    MotleyPrimes::PrimeFactorizationSieve<T>(
+                        lower, static_cast<T>(upper), offsetStrt, primes, primeList);
+                });
             }
         }
 
         if (IsEuler) {
-            threads.emplace_back(MotleyPrimes::EulerPhiSieve<T, U>,
-                                 lower, myMax, offsetStrt, std::ref(primes),
-                                 std::ref(numSeq), EulerPhis);
+            batch.launch([&, lower, offsetStrt] {
+                MotleyPrimes::EulerPhiSieve<T, U>(
+                    lower, myMax, offsetStrt, primes, numSeq, EulerPhis);
+            });
         } else {
-            threads.emplace_back(MotleyPrimes::PrimeFactorizationSieve<T>,
-                                 lower, static_cast<T>(myMax), offsetStrt,
-                                 std::cref(primes), std::ref(primeList));
+            batch.launch([&, lower, offsetStrt] {
+                MotleyPrimes::PrimeFactorizationSieve<T>(
+                    lower, static_cast<T>(myMax), offsetStrt, primes, primeList);
+            });
         }
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
     } else {
         if (IsEuler) {
             MotleyPrimes::EulerPhiSieve(myMin, myMax, offsetStrt,

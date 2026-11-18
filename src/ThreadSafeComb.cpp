@@ -1,7 +1,7 @@
 #include "Combinations/ComboManager.h"
 #include "NthResult.h"
+#include "ThreadBatch.h"
 #include <gmpxx.h>
-#include <thread>
 
 template <typename T>
 void ThreadSafeCombinations(T* mat, const std::vector<T> &v, int n, int m,
@@ -12,7 +12,6 @@ void ThreadSafeCombinations(T* mat, const std::vector<T> &v, int n, int m,
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, m);
-        std::vector<std::thread> threads;
 
         const int stepSize = nRows / nThreads;
         int nextStep = stepSize;
@@ -21,26 +20,26 @@ void ThreadSafeCombinations(T* mat, const std::vector<T> &v, int n, int m,
         const nthResultPtr nthResFun = GetNthResultFunc(true, IsMult,
                                                         IsRep, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(ComboParallel<T>,
-                                 std::ref(parMat), std::cref(v),
-                                 std::ref(zs[j]), n, m, step, nextStep,
-                                 std::cref(freqs), IsMult, IsRep);
+            batch.launch([&, j, step, nextStep] {
+                ComboParallel(parMat, v, zs[j], n, m, step, nextStep,
+                              freqs, IsMult, IsRep);
+            });
 
             SetNextIter(myReps, zs[j + 1], nthResFun, lower, lowerMpz,
                         stepSize, n, m, IsGmp, true, IsRep, IsMult);
         }
 
-        threads.emplace_back(ComboParallel<T>, std::ref(parMat),
-                             std::cref(v), std::ref(zs.back()), n, m, step,
-                             nRows, std::cref(freqs), IsMult, IsRep);
+        batch.launch([&, step] {
+            ComboParallel(parMat, v, zs.back(), n, m, step, nRows,
+                          freqs, IsMult, IsRep);
+        });
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
     } else {
         ComboManager(mat, v, z, n, m, nRows, freqs, IsMult, IsRep);
     }

@@ -176,6 +176,28 @@ test_that("comboGroups produces correct results when groups are uniform", {
     )
 })
 
+test_that("comboGroups preserves GMP arrays and sample names with two threads", {
+    v <- (1:32) + 0.25
+    lower <- gmp::as.bigz("9007199254741009")
+    serial <- comboGroups(v, 16, retType = "3Darray", lower = lower,
+                          upper = lower + 20000, nThreads = 1)
+    expect_identical(
+        comboGroups(v, 16, retType = "3Darray", lower = lower,
+                    upper = lower + 20000, nThreads = 2),
+        serial
+    )
+
+    idx <- c(20001, 1, 10001, 20001, 2)
+    ranks <- lower + idx - 1
+    expected <- serial[idx, , , drop = FALSE]
+    rownames(expected) <- as.character(ranks)
+    expect_identical(
+        comboGroupsSample(v, 16, retType = "3Darray", sampleVec = ranks,
+                          namedSample = TRUE, nThreads = 2),
+        expected
+    )
+})
+
 test_that("comboGroups produces correct results when groups vary", {
 
     retIdxMat <- function(x, g) {

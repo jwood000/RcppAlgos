@@ -1,6 +1,6 @@
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
-#include "NumbersUtils/ThreadBatch.h"
+#include "ThreadBatch.h"
 #include <algorithm>
 #include <atomic>
 #include <cstddef>
@@ -10,6 +10,7 @@
 #include <vector>
 
 namespace PrimeCounting {
+using RcppAlgos::ThreadBatch;
 namespace {
     using PartialSieveDetail::IntegerSqrt;
 

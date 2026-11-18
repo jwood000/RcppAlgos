@@ -24,6 +24,6 @@ test_that("isPrimeRcpp generates correct numbers", {
     samp <- sample(1e12, 10000)
     expect_equal(isPrimeRcpp(samp), isPrimeRcpp(samp, nThreads = 2))
 
-    ## Ensure stdThreadMax returns positive number
+    ## This hardware query launches no workers; do not use it as a test budget.
     expect_true(stdThreadMax() > 0)
 })

@@ -22,9 +22,8 @@ test_that("primeFactorizeSieve generates correct numbers", {
     expect_equal(primeFactorizeSieve(117, 5e4),
                     primeFactorizeSieve(117, 5e4, nThreads = 2))
 
-    ## two threads will only be used
     expect_equal(primeFactorizeSieve(1e7, 1e7 + 25000),
-                 primeFactorizeSieve(1e7, 1e7 + 25000, nThreads = 3))
+                 primeFactorizeSieve(1e7, 1e7 + 25000, nThreads = 2))
 
     expect_equal(primeFactorizeSieve(1e12, 1e12 + 2e4),
                     primeFactorizeSieve(1e12, 1e12 + 2e4, nThreads = 2))

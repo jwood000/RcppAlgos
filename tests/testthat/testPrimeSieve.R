@@ -93,20 +93,20 @@ test_that("primeSieve counts agree across kernels and thread requests", {
     # The same public conversion is used with fixed native hardware budgets.
     nativeCount <- function(lower, upper, threads, cores = 1L) {
         .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
-              lower, upper, threads, cores, 8L, TRUE)
+              lower, upper, threads, cores, 2L, TRUE)
     }
     expected <- length(primeSieveTrialPrimes(32357, 60000))
-    expect_identical(nativeCount(32357, 60000, 8L), expected)
+    expect_identical(nativeCount(32357, 60000, 2L), expected)
 
     # Independent inclusive references from primesieve 12.17, also used in
     # pi-prime-check.cpp. Fixed core budgets keep the cases in Medium and Big,
-    # respectively, while the eight-thread request supplies useful workers.
+    # respectively, while the two-thread request supplies useful workers.
     cases <- list(c(1e12, 1e12 + 10000031, 361727, 8),
                   c(1e15, 1e15 + 32000031, 926210, 1))
     for (case in cases) {
         expected <- as.integer(case[3])
         expect_identical(nativeCount(case[1], case[2], 1L, case[4]), expected)
-        expect_identical(nativeCount(case[1], case[2], 8L, case[4]), expected)
+        expect_identical(nativeCount(case[1], case[2], 2L, case[4]), expected)
         expect_identical(primeSieve(case[1], case[2], nThreads = 2L,
                                     countOnly = TRUE), expected)
     }
@@ -115,7 +115,7 @@ test_that("primeSieve counts agree across kernels and thread requests", {
     lower <- 32340 + 17
     upper <- lower + 17 * 32340 + 101
     expected <- length(primeSieve(lower, upper))
-    for (threads in c(1L, 2L, 3L, 8L)) {
+    for (threads in c(1L, 2L)) {
         expect_identical(primeSieve(lower, upper, nThreads = threads,
                                     countOnly = TRUE), expected)
     }
@@ -391,16 +391,14 @@ test_that("primeSieve handles uneven parallel workloads", {
     maxThreads <- get("pkgEnv", asNamespace("RcppAlgos"))$maxThreads
     skip_if(maxThreads < 2L, "At least two supported threads are required")
 
-    # Seventeen segments supply enough work for both two and three workers
-    # under PrimeSieveMain's four-segments-per-worker rule. Neither worker
-    # count divides the segment count; the bounds also leave partial segments.
+    # Seventeen segments supply enough work for two workers under
+    # PrimeSieveMain's four-segments-per-worker rule. The worker count does not
+    # divide the segment count; the bounds also leave partial segments.
     segmentSize <- 32340
     lower <- segmentSize + 17
     upper <- lower + 17 * segmentSize + 101
     expected <- primeSieve(lower, upper, nThreads = 1)
-    for (threads in c(2L, 3L)[c(2L, 3L) <= maxThreads]) {
-        expect_identical(primeSieve(lower, upper, nThreads = threads), expected)
-    }
+    expect_identical(primeSieve(lower, upper, nThreads = 2L), expected)
 })
 
 test_that("primeSieve generates correct numbers", {

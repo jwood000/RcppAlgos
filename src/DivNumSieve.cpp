@@ -1,7 +1,7 @@
 #include "CppConvert.h"
 
 #include "NumbersUtils/libdivide.h"
-#include <thread>
+#include "ThreadBatch.h"
 #include <cmath>
 
 template <typename T>
@@ -140,36 +140,37 @@ void DivisorMain(T myMin, U myMax, bool bDivSieve,
     }
 
     if (Parallel) {
-        std::vector<std::thread> threads;
         T lowerBnd = myMin;
         const T chunkSize = myRange / nThreads;
         T upperBnd = lowerBnd + chunkSize - 1;
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int ind = 0; ind < (nThreads - 1); offsetStrt += chunkSize,
                     lowerBnd = (upperBnd + 1), upperBnd += chunkSize, ++ind) {
             if (bDivSieve) {
-                threads.emplace_back(DivisorsSieve<T, U>,
-                                     lowerBnd, static_cast<U>(upperBnd),
-                                     offsetStrt, std::ref(MyDivList));
+                batch.launch([&, lowerBnd, upperBnd, offsetStrt] {
+                    DivisorsSieve<T, U>(lowerBnd, static_cast<U>(upperBnd),
+                                       offsetStrt, MyDivList);
+                });
             } else {
-                threads.emplace_back(NumDivisorsSieve<T, V>,
-                                     lowerBnd, upperBnd,
-                                     offsetStrt, DivCountV);
+                batch.launch([&, lowerBnd, upperBnd, offsetStrt] {
+                    NumDivisorsSieve<T, V>(
+                        lowerBnd, upperBnd, offsetStrt, DivCountV);
+                });
             }
         }
 
         if (bDivSieve) {
-            threads.emplace_back(DivisorsSieve<T, U>,
-                                 lowerBnd, myMax, offsetStrt,
-                                 std::ref(MyDivList));
+            batch.launch([&, lowerBnd, offsetStrt] {
+                DivisorsSieve<T, U>(lowerBnd, myMax, offsetStrt, MyDivList);
+            });
         } else {
-            threads.emplace_back(NumDivisorsSieve<T, V>,
-                                 lowerBnd, intMax, offsetStrt, DivCountV);
+            batch.launch([&, lowerBnd, offsetStrt] {
+                NumDivisorsSieve<T, V>(lowerBnd, intMax, offsetStrt, DivCountV);
+            });
         }
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
     } else {
         if (bDivSieve) {
             DivisorsSieve(myMin, myMax, offsetStrt, MyDivList);

@@ -8,6 +8,7 @@
 #include "Partitions/PartitionsRep.h"
 #include <algorithm> // std::find
 #include <numeric>
+#include <stdexcept>
 #include "RMatrix.h"
 
 int PartsStdManager(
@@ -207,6 +208,7 @@ int PartsGenManager(std::vector<T> &partsVec, const std::vector<T> &v,
     }
 }
 
+// Both parallel dispatchers must keep unsupported-case errors off the R API.
 int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
                      int strt, int width, int lastElem, int lastCol, int nRows,
                      PartitionType ptype, int zeroBudget) {
@@ -251,7 +253,7 @@ int PartsStdParallel(RcppParallel::RMatrix<int> &mat, std::vector<int> &z,
             );
 
         default:
-            cpp11::stop("Case not supported");
+            throw std::logic_error("Case not supported");
     }
 }
 
@@ -331,7 +333,7 @@ int PartsGenParallel(RcppParallel::RMatrix<T> &mat, const std::vector<T> &v,
             );
 
         default:
-            cpp11::stop("Case not supported");
+            throw std::logic_error("Case not supported");
     }
 }
 

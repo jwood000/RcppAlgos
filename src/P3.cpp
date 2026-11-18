@@ -1,6 +1,6 @@
 #include "NumbersUtils/PartialSieve.h"
 #include "NumbersUtils/PartialSieveUtils.h"
-#include "NumbersUtils/ThreadBatch.h"
+#include "ThreadBatch.h"
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
@@ -9,6 +9,7 @@
 #include <vector>
 
 namespace PrimeCounting {
+using RcppAlgos::ThreadBatch;
 namespace {
 
     std::int64_t countP3Row(std::int64_t quotient,

@@ -1,7 +1,7 @@
 #include "Combinations/ComboResGlue.h"
 #include "NthResult.h"
+#include "ThreadBatch.h"
 #include <gmpxx.h>
-#include <thread>
 
 template <typename T>
 void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
@@ -12,7 +12,6 @@ void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, nRows, m);
-        std::vector<std::thread> threads;
 
         const int stepSize = nRows / nThreads;
         int nextStep = stepSize;
@@ -21,27 +20,26 @@ void ComboResMain(T* mat, const std::vector<T> &v, const funcPtr<T> myFun,
         const nthResultPtr nthResFun = GetNthResultFunc(true, IsMult,
                                                         IsRep, IsGmp);
         std::vector<std::vector<int>> zs(nThreads, z);
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
 
-            threads.emplace_back(ComboResPar<T>, std::ref(parMat),
-                                 std::cref(v), std::ref(zs[j]), n, m, step,
-                                 nextStep, std::cref(freqs), std::cref(myFun),
-                                 IsMult, IsRep);
+            batch.launch([&, j, step, nextStep] {
+                ComboResPar(parMat, v, zs[j], n, m, step, nextStep,
+                            freqs, myFun, IsMult, IsRep);
+            });
 
             SetNextIter(myReps, zs[j + 1], nthResFun, lower, lowerMpz,
                         stepSize, n, m, IsGmp, true, IsRep, IsMult);
         }
 
-        threads.emplace_back(ComboResPar<T>, std::ref(parMat),
-                             std::cref(v), std::ref(zs.back()), n, m, step,
-                             nRows, std::cref(freqs), std::cref(myFun),
-                             IsMult, IsRep);
+        batch.launch([&, step] {
+            ComboResPar(parMat, v, zs.back(), n, m, step, nRows,
+                        freqs, myFun, IsMult, IsRep);
+        });
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
     } else {
         ComboResStd(mat, v, z, n, m, nRows, IsMult, IsRep, freqs, myFun);
     }

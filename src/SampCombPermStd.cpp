@@ -1,7 +1,7 @@
 #include "SetUpUtils.h"
 #include "NthResult.h"
 #include "RMatrix.h"
-#include <thread>
+#include "ThreadBatch.h"
 
 template <typename T>
 void SampleResults(T* sampleMatrix, const std::vector<T> &v,
@@ -102,29 +102,25 @@ void ThreadSafeSample(T* mat, SEXP res, const std::vector<T> &v,
 
     if (Parallel) {
         RcppParallel::RMatrix<T> parMat(mat, sampSize, m);
-        std::vector<std::thread> threads;
-
         int step = 0;
         int stepSize = sampSize / nThreads;
         int nextStep = stepSize;
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int j = 0; j < (nThreads - 1);
              ++j, step += stepSize, nextStep += stepSize) {
-            threads.emplace_back(ParallelGlue<T>,
-                                 std::ref(parMat), std::cref(v),
-                                 std::cref(mySample), std::cref(myBigSamp),
-                                 std::cref(myReps), nthResFun,
-                                 m, step, nextStep, lenV, IsGmp);
+            batch.launch([&, step, nextStep] {
+                ParallelGlue<T>(parMat, v, mySample, myBigSamp, myReps,
+                                nthResFun, m, step, nextStep, lenV, IsGmp);
+            });
         }
 
-        threads.emplace_back(ParallelGlue<T>, std::ref(parMat), std::cref(v),
-            std::cref(mySample),std::cref(myBigSamp), std::cref(myReps),
-            nthResFun, m, step, sampSize, lenV, IsGmp
-        );
+        batch.launch([&, step] {
+            ParallelGlue<T>(parMat, v, mySample, myBigSamp, myReps,
+                            nthResFun, m, step, sampSize, lenV, IsGmp);
+        });
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
     } else {
         SampleResults(mat, v, mySample, myBigSamp, myReps,
                       nthResFun, m, sampSize, lenV, IsGmp);

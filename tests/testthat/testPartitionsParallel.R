@@ -8,13 +8,13 @@ test_that("partitions/compositionsGeneral Distinct Parallel", {
     expect_identical(partitionsGeneral(20, nThreads = 2),
                      partitionsGeneral(20))
 
-    ## For both of the usages below, only 2 threads will be spawned
+    ## Compare serial and two-thread execution
     ## partitionsCount(0:100, repetition = T)
     ## [1] 190569292
     expect_identical(partitionsGeneral(0:100, repetition = TRUE,
-                                       nThreads = 3, upper = 50000),
+                                       nThreads = 1, upper = 50000),
                      partitionsGeneral(0:100, repetition = TRUE,
-                                       nThreads = 8, upper = 50000))
+                                       nThreads = 2, upper = 50000))
 
     ###### ****************** All Results Distinct ****************** #########
     #### Distinct; Length determined internally; No zero;
@@ -734,17 +734,17 @@ test_that("partition/compositionsGeneral Repetition Parallel", {
                                       v = 0:10, repetition = TRUE),
                      c(1L, 321L, 512L))
 
-    ## For both of the usages below, only 2 threads will be spawned
+    ## Compare serial and two-thread execution
     ## partitionsCount(0:100, repetition = T)
     ## [1] 190569292
     expect_identical(partitionsGeneral(0:100, repetition = TRUE,
-                                       nThreads = 3, upper = 50000),
+                                       nThreads = 1, upper = 50000),
                      partitionsGeneral(0:100, repetition = TRUE,
-                                       nThreads = 8, upper = 50000))
+                                       nThreads = 2, upper = 50000))
     expect_identical(compositionsGeneral(0:30, repetition = TRUE,
-                                         nThreads = 3, upper = 50000),
+                                         nThreads = 1, upper = 50000),
                      compositionsGeneral(0:30, repetition = TRUE,
-                                         nThreads = 8, upper = 50000))
+                                         nThreads = 2, upper = 50000))
 
     ######****************** All Results Repetition **************#########
     #### Repetition; Length determined internally; Multiple Zero;

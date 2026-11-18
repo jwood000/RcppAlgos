@@ -358,6 +358,16 @@ test_that("parttionsSample and compositionsSample produces correct results", {
     expect_equal(partitionsRank(mySamp, v = 800, nThreads = 2),
                  rownames(mySamp))
 
+    ## Duplicate GMP ranks straddle the two-worker split; retain order and names.
+    lower <- gmp::as.bigz("9007199254741009")
+    positions <- c(5L, 2L, 2L, 1L, 4L)
+    ranks <- lower + positions - 1L
+    expected <- partitionsGeneral(800, 15, lower = lower,
+                                  upper = lower + 4L)[positions, ]
+    rownames(expected) <- as.character(ranks)
+    expect_identical(partitionsSample(800, 15, sampleVec = ranks,
+                                      namedSample = TRUE, nThreads = 2), expected)
+
     mySamp = partitionsSample(0:700, 15, n = 4, namedSample = TRUE, nThreads = 2)
     expect_equal(partitionsRank(mySamp, v = 0:700, nThreads = 2),
                  rownames(mySamp))

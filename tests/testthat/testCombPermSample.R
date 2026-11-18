@@ -52,6 +52,15 @@ test_that("comboSample produces correct results", {
     expect_equal(comboSample(500, 200, TRUE, n = 10, seed = 42),
                  comboSample(500, 200, TRUE, n = 10, seed = 42, nThreads = 2))
 
+    ## Duplicate GMP ranks straddle the two-worker split; retain order and names.
+    lower <- gmp::as.bigz("9007199254741009")
+    positions <- c(5L, 2L, 2L, 1L, 4L)
+    ranks <- lower + positions - 1L
+    expected <- comboGeneral(100, 15, lower = lower, upper = lower + 4L)[positions, ]
+    rownames(expected) <- as.character(ranks)
+    expect_identical(comboSample(100, 15, sampleVec = ranks,
+                                 namedSample = TRUE, nThreads = 2), expected)
+
     ## **** MULTISETS ******
     lastRow = comboCount(100, 20, freqs = rep(1:4, 25))
 
@@ -70,10 +79,10 @@ test_that("comboSample produces correct results", {
     expect_equal(comboSample(v, 20, freqs = rep(1:4, 25), n = 10, seed = 42),
                  comboSample(v, 20, freqs = rep(1:4, 25), n = 10, seed = 42, nThreads = 2))
 
-    ## only used 2 threads
+    ## Keep the parallel sample explicitly limited to two threads
     expect_equal(comboSample(as.factor(LETTERS), 12, TRUE, n = 2, seed = 17),
                  comboSample(as.factor(LETTERS), 12, TRUE, n = 2,
-                             seed = 17, Parallel = TRUE))
+                             seed = 17, Parallel = TRUE, nThreads = 2))
 })
 
 test_that("test combo/permuteSample S3 methods", {

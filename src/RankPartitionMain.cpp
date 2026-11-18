@@ -2,7 +2,7 @@
 #include "Partitions/PartitionsUtils.h"
 #include "Partitions/RankPartition.h"
 #include "RankUtils.h"
-#include <thread>
+#include "ThreadBatch.h"
 
 template <typename T>
 void RankPartsResultsGeneric(
@@ -47,26 +47,23 @@ void RankPartsParallel(
     int strtLen, int numResults, int nThreads, int stepSize, int last_sec
 ) {
 
-    std::vector<std::thread> threads;
-
     std::vector<std::vector<int>> idx_section(nThreads);
     Create2D(idx, idx_section, stepSize, m, nThreads);
+    RcppAlgos::ThreadBatch batch(nThreads);
 
     for (int j = 0; j < (nThreads - 1); ++j) {
-        threads.emplace_back(RankPartsResultsGeneric<T>, std::ref(res_sec[j]),
-            std::ref(idx_section[j]), std::cref(myReps), rankFun, tar,
-            m, cap, strtLen, stepSize
-        );
+        batch.launch([&, j] {
+            RankPartsResultsGeneric<T>(res_sec[j], idx_section[j], myReps,
+                                      rankFun, tar, m, cap, strtLen, stepSize);
+        });
     }
 
-    threads.emplace_back(RankPartsResultsGeneric<T>, std::ref(last_res),
-        std::ref(idx_section.back()), std::cref(myReps), rankFun, tar, m, cap,
-        strtLen, last_sec
-    );
+    batch.launch([&] {
+        RankPartsResultsGeneric<T>(last_res, idx_section.back(), myReps,
+                                  rankFun, tar, m, cap, strtLen, last_sec);
+    });
 
-    for (auto& thr: threads) {
-        thr.join();
-    }
+    batch.finish();
 }
 
 template <typename T>

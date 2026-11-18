@@ -2,7 +2,7 @@
 
 #include "NumbersUtils/PollardRhoDepends.h"
 #include "NumbersUtils/PollardRhoUtils.h"
-#include <thread>
+#include "ThreadBatch.h"
 #include <cmath>
 
 template <typename T>
@@ -21,38 +21,42 @@ void PollardRhoMain(const std::vector<double> &myNums, T myMax,
     }
 
     if (Parallel) {
-        std::vector<std::thread> threads;
         const std::size_t chunkSize = myRange / nThreads;
         std::size_t n = chunkSize - 1;
         std::size_t m = 0;
+        RcppAlgos::ThreadBatch batch(nThreads);
 
         for (int j = 0; j < (nThreads - 1); m = n, n += chunkSize, ++j) {
             if (bPrimeFacs) {
-                threads.emplace_back(PrimeFacList<T>, m, n,
-                                     std::cref(myNums), std::ref(MyList));
+                batch.launch([&, m, n] {
+                    PrimeFacList<T>(m, n, myNums, MyList);
+                });
             } else if (bAllFacs) {
-                threads.emplace_back(FactorList<T>, m, n,
-                                     std::cref(myNums), std::ref(MyList));
+                batch.launch([&, m, n] {
+                    FactorList<T>(m, n, myNums, MyList);
+                });
             } else {
-                threads.emplace_back(IsPrimeVec, m, n,
-                                     std::cref(myNums), std::ref(primeTest));
+                batch.launch([&, m, n] {
+                    IsPrimeVec(m, n, myNums, primeTest);
+                });
             }
         }
 
         if (bPrimeFacs) {
-            threads.emplace_back(PrimeFacList<T>, m, myRange,
-                                 std::cref(myNums), std::ref(MyList));
+            batch.launch([&, m] {
+                PrimeFacList<T>(m, myRange, myNums, MyList);
+            });
         } else if (bAllFacs) {
-            threads.emplace_back(FactorList<T>, m, myRange,
-                                 std::cref(myNums), std::ref(MyList));
+            batch.launch([&, m] {
+                FactorList<T>(m, myRange, myNums, MyList);
+            });
         } else {
-            threads.emplace_back(IsPrimeVec, m, myRange,
-                                 std::cref(myNums), std::ref(primeTest));
+            batch.launch([&, m] {
+                IsPrimeVec(m, myRange, myNums, primeTest);
+            });
         }
 
-        for (auto& thr: threads) {
-            thr.join();
-        }
+        batch.finish();
     } else {
         if (bPrimeFacs) {
             PrimeFacList(0u, myRange, myNums, MyList);
