@@ -8,6 +8,10 @@
 constexpr int L1_CACHE_SIZE = 32768;
 constexpr double dblIntMax = std::numeric_limits<int>::max();
 
+// 2^63 is exact as a double; INT64_MAX rounds up to this value.
+// Use an exclusive upper bound before converting a double to int64_t.
+constexpr double Int64UpperExclusive = 9223372036854775808.0;
+
 // std::pow(2, 53) - 1 is not constexpr as of C++11
 constexpr double Significand53 = 9007199254740991.0;
 // The same bound for exact integer arithmetic and integer template arguments.

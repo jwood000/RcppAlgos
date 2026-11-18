@@ -205,13 +205,13 @@ void SetTolerance(const std::vector<double> &vNum,
         bool IsWhole = true;
 
         for (std::size_t i = 0; i < vNum.size() && IsWhole; ++i) {
-            if (static_cast<std::int64_t>(vNum[i]) != vNum[i]) {
+            if (!CppConvert::IsWholeNumber(vNum[i])) {
                 IsWhole = false;
             }
         }
 
         for (std::size_t i = 0; i < targetVals.size() && IsWhole; ++i) {
-            if (static_cast<std::int64_t>(targetVals[i]) != targetVals[i]) {
+            if (!CppConvert::IsWholeNumber(targetVals[i])) {
                 IsWhole = false;
             }
         }
@@ -318,7 +318,7 @@ bool CheckIsInteger(const std::string &funPass, int n,
     const double testIfInt = IsPart ? targetVals.front() :
         myFunDbl(rowVec, static_cast<std::size_t>(m));
 
-    if (testIfInt > dblIntMax) {
+    if (!std::isfinite(testIfInt) || testIfInt > dblIntMax) {
         return false;
     }
 
@@ -326,7 +326,7 @@ bool CheckIsInteger(const std::string &funPass, int n,
         vAbs.clear();
 
         for (auto tar: targetVals) {
-            if (static_cast<std::int64_t>(tar) != tar) {
+            if (!CppConvert::IsWholeNumber(tar)) {
                 return false;
             } else {
                 vAbs.push_back(std::abs(tar));
