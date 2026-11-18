@@ -1,123 +1,118 @@
 diff --git a/inst/include/NumbersUtils/Eratosthenes.h b/inst/include/NumbersUtils/Eratosthenes.h
-index 052bd26..03322b2 100644
 --- a/inst/include/NumbersUtils/Eratosthenes.h
 +++ b/inst/include/NumbersUtils/Eratosthenes.h
-@@ -4,6 +4,8 @@
+@@ -3,6 +3,8 @@
+ #include <cmath>
  #include <vector>
  #include <cstdint>
- 
-+namespace CacheInspection { struct Inspector; }
 +
++namespace CacheInspection { struct Inspector; }
+
  namespace PrimeSieve{
      std::size_t EstimatePiPrime(double minNum, double maxNum);
- 
-@@ -12,7 +14,8 @@ namespace PrimeSieve{
+@@ -12,7 +14,8 @@
                          std::vector<T> &primes, std::int_fast64_t minNum,
                          std::int_fast64_t maxNum, bool &Parallel,
                          int nThreads = 1, int maxThreads = 1,
 -                        int maxCores = 1);
 +                        int maxCores = 1,
 +                        CacheInspection::Inspector* inspector = nullptr);
- 
-     template <typename T>
-     void sqrtBigPrimes(int sqrtBound, bool bAddZero, bool bAddExtraPrime,
+
+     // Internal inclusive interval counter using the same Small/Medium/Big
+     // sieve and worker policy as generation. Caller validates 1 <= minNum <=
 diff --git a/src/Eratosthenes.cpp b/src/Eratosthenes.cpp
-index b9ca575..083b343 100644
 --- a/src/Eratosthenes.cpp
 +++ b/src/Eratosthenes.cpp
-@@ -1,5 +1,8 @@
- #include "NumbersUtils/PrimesSegSieve.h"
+@@ -2,6 +2,7 @@
  #include "NumbersUtils/Wheel.h"
+ #include "NumbersUtils/ThreadBatch.h"
+ #include "CppConvert/Constants.h"
 +#include "NumbersUtils/CacheInspector.h"
-+#include <limits>
-+#include <stdexcept>
  #include <algorithm>
  #include <vector>
- #include <thread>
-@@ -15,6 +18,11 @@
- 
+ #include <cmath>
+@@ -17,6 +18,11 @@
+ //                      https://github.com/kimwalisch/primesieve
+
  namespace PrimeSieve {
- 
++
 +    using CacheInspection::Phase;
 +    using CacheInspection::PhaseTimer;
 +    using CacheInspection::KernelRecord;
 +    using CacheInspection::Inspector;
-+
-     constexpr int L1_CACHE_SIZE = 32768;
- 
+
      //************************ Prime Counting Estimates ************************
-@@ -55,15 +63,23 @@ namespace PrimeSieve {
-         return dblRes;
+     // These numbers were obtained empirically using the prime number theorem
+@@ -112,13 +118,21 @@
+         }
      }
- 
--    template <typename T>
-+    template <typename T, bool Inspect = false>
+
+-    template <typename Output>
++    template <typename Output, bool Inspect = false>
      void PrimeSieveSmall(const std::vector<int> &sievePrimes,
--                         std::vector<T> &primes, int minNum, int maxNum) {
-+                         std::vector<T> &primes, int minNum, int maxNum,
+-                         Output &primes, int minNum, int maxNum) {
++                         Output &primes, int minNum, int maxNum,
 +                         std::vector<KernelRecord>* records = nullptr) {
 +
 +        KernelRecord* record = Inspect ? CacheInspection::BeginKernel(
 +            records, "Small", minNum, maxNum
 +        ) : nullptr;
 +        PhaseTimer timer(record);
-+        const std::size_t initialCount = primes.size();
- 
-         primes.reserve(EstimatePiPrime(
-             static_cast<double>(minNum), static_cast<double>(maxNum)
-         ));
- 
++        const std::size_t initialCount = CacheInspection::OutputCount(primes);
+
+         ReservePrimes(primes, minNum, maxNum);
+
          if (maxNum <= smallPrimeBase.back()) {
 +            if (Inspect) timer.next(Phase::Extract);
              int ind = 0;
              const int smPriBaseSize = smallPrimeBase.size();
- 
-@@ -83,6 +99,11 @@ namespace PrimeSieve {
- 
+
+@@ -133,6 +147,11 @@
+
              int lowerBnd = segSize * (minNum / segSize);
              std::vector<char> sieve(segSize, 1);
 +            if (record) {
 +                record->segmentSpan = segSize;
 +                record->sieveBytes = sieve.capacity() * sizeof(char);
-+                record->bufferBytes = sizeof(compact);
++                record->bufferBytes = CacheInspection::BufferBytes(primes, SZ_WHEEL2310);
 +            }
- 
+
              if (minNum < wheel2310PrimeLim) {
                  sieve[1] = 0;
-@@ -102,6 +123,8 @@ namespace PrimeSieve {
+@@ -152,6 +171,8 @@
              nextStrt.reserve(sievePrimes.size());
- 
+
              if (minNum > 2) {
 +                if (Inspect) timer.next(Phase::Offsets);
 +                if (record) ++record->segments;
                  const int upperBnd = std::min(lowerBnd + segSize, maxNum);
- 
+
                  for (int idx = 0; sqrPrime <= upperBnd; ++p) {
-@@ -126,6 +149,7 @@ namespace PrimeSieve {
+@@ -176,6 +197,7 @@
                  const std::int_fast64_t offsetLim =
                      std::min(segSize, maxNum - lowerBnd + 1);
- 
+
 +                if (Inspect) timer.next(Phase::DenseMark);
                  for (std::size_t i = strt2310; i < nextStrt.size(); ++i) {
                      int j = nextStrt[i];
- 
-@@ -136,6 +160,7 @@ namespace PrimeSieve {
+
+@@ -186,6 +208,7 @@
                      nextStrt[i] = j - segSize;
                  }
- 
+
 +                if (Inspect) timer.next(Phase::Extract);
                  int strtChunk = 0;
- 
+
                  if (minNum > myNum) {
-@@ -180,16 +205,20 @@ namespace PrimeSieve {
+@@ -222,16 +245,20 @@
                      }
                  }
- 
+
 +                if (Inspect) timer.next(Phase::Reset);
                  std::fill(sieve.begin(), sieve.end(), 1);
                  lowerBnd += segSize;
              }
- 
+
              for (; lowerBnd < flrMaxNum; lowerBnd += segSize) {
 +                if (Inspect) timer.next(Phase::Offsets);
 +                if (record) ++record->segments;
@@ -125,27 +120,25 @@ index b9ca575..083b343 100644
                      nextStrt.push_back(sqrPrime - lowerBnd);
                      sqrPrime = sievePrimes[p] * sievePrimes[p];
                  }
- 
+
 +                if (Inspect) timer.next(Phase::DenseMark);
                  if (lowerBnd + segSize < (segSize * segSize / 4)) {
                      for (std::size_t i = strt2310; i < nextStrt.size(); ++i) {
                          int j = nextStrt[i];
-@@ -221,6 +250,7 @@ namespace PrimeSieve {
+@@ -263,16 +290,20 @@
                      }
                  }
- 
+
 +                if (Inspect) timer.next(Phase::Extract);
                  for (int q = 0, idx = myNum - lowerBnd; q < N_WHEELS2310_PER_SEG; ++q) {
-                     T* writeTo = compact;
- 
-@@ -234,11 +264,14 @@ namespace PrimeSieve {
+                     AppendWheel(primes, sieve, idx, lowerBnd, ARR_WHEEL2310);
                  }
- 
+
                  myNum += segSize;
 +                if (Inspect) timer.next(Phase::Reset);
                  std::fill(sieve.begin(), sieve.end(), 1);
              }
- 
+
              // Get remaining primes that are greater than flrMaxNum and less than maxNum
              if (lowerBnd < maxNum) {
 +                if (Inspect) timer.next(Phase::Offsets);
@@ -153,40 +146,43 @@ index b9ca575..083b343 100644
                  for (; sqrPrime <= maxNum; ++p) {
                      nextStrt.push_back(sqrPrime - lowerBnd);
                      sqrPrime = sievePrimes[p] * sievePrimes[p];
-@@ -246,6 +279,7 @@ namespace PrimeSieve {
- 
+@@ -280,6 +311,7 @@
+
                  const std::int_fast64_t offsetLim = maxNum - lowerBnd + 1;
- 
+
 +                if (Inspect) timer.next(Phase::DenseMark);
                  for (int i = strt2310, size = nextStrt.size(); i < size; ++i) {
                      for (int k = sievePrimes[i] * 2, j = nextStrt[i];
                           j < offsetLim; j += k) {
-@@ -254,6 +288,7 @@ namespace PrimeSieve {
+@@ -288,6 +320,7 @@
                      }
                  }
- 
+
 +                if (Inspect) timer.next(Phase::Extract);
                  for (int q = 0; q < N_WHEELS2310_PER_SEG && myNum <= maxNum; ++q) {
                      for (int w = 0; w < SZ_WHEEL2310 && myNum <= maxNum;
                           myNum += ARR_WHEEL2310[w], ++w) {
-@@ -263,13 +298,27 @@ namespace PrimeSieve {
+@@ -297,13 +330,27 @@
                      }
                  }
              }
+-        }
+-    }
+-
+-    template <typename Output>
 +            if (Inspect) timer.stop();
 +            if (record) record->offsetBytes = nextStrt.capacity() * sizeof(int);
 +        }
 +        if (Inspect) timer.stop();
 +        if (record) {
-+            record->primeCount = primes.size() - initialCount;
-+            record->outputCapacityBytes = primes.capacity() * sizeof(T);
-         }
-     }
- 
--    template <typename T>
-+    template <typename T, bool Inspect = false>
++            record->primeCount = CacheInspection::OutputCount(primes) - initialCount;
++            record->outputCapacityBytes = CacheInspection::OutputBytes(primes);
++        }
++    }
++
++    template <typename Output, bool Inspect = false>
      void PrimeSieveMedium(const std::vector<int> &sievePrimes,
-                           std::vector<T> &primes, std::int_fast64_t minNum,
+                           Output &primes, std::int_fast64_t minNum,
 -                          std::int_fast64_t maxNum) {
 +                          std::int_fast64_t maxNum,
 +                          std::vector<KernelRecord>* records = nullptr) {
@@ -195,55 +191,55 @@ index b9ca575..083b343 100644
 +            records, "Medium", minNum, maxNum
 +        ) : nullptr;
 +        PhaseTimer timer(record);
-+        const std::size_t initialCount = primes.size();
- 
++        const std::size_t initialCount = CacheInspection::OutputCount(primes);
+
          constexpr std::size_t szWheel30030  = SZ_WHEEL30030;
          constexpr std::int_fast64_t sz30030 = NUM30030;
-@@ -291,6 +340,12 @@ namespace PrimeSieve {
- 
+@@ -317,6 +364,12 @@
+
          const std::int_fast64_t flrMaxNum = segSize * (maxNum / segSize);
          std::vector<bool> sieve(segSize, true);
 +        if (record) {
 +            record->segmentSpan = segSize;
 +            record->sieveBytes = (sieve.capacity() + 7) / 8;
-+            record->bufferBytes = sizeof(compact);
++            record->bufferBytes = CacheInspection::BufferBytes(primes, SZ_WHEEL30030);
 +            ++record->segments;
 +        }
- 
+
          std::int_fast64_t lowerBnd = segSize * (minNum / segSize);
          const std::int_fast64_t upperBnd = std::min(
-@@ -302,6 +357,7 @@ namespace PrimeSieve {
+@@ -328,6 +381,7 @@
          std::int_fast64_t sqrPrime = 9;
          std::vector<int> nextStrt;
- 
+
 +        if (Inspect) timer.next(Phase::Offsets);
          for (std::int_fast64_t idx = 0; sqrPrime <= upperBnd; ++p) {
              if (minNum > sqrPrime) {
                  const int prime = sievePrimes[p - 1u];
-@@ -327,6 +383,7 @@ namespace PrimeSieve {
+@@ -353,6 +407,7 @@
          const std::int_fast64_t offsetLim =
              std::min(segSize, maxNum - lowerBnd + 1);
- 
+
 +        if (Inspect) timer.next(Phase::DenseMark);
          for (std::size_t i = strt30030; i < nextStrt.size(); ++i) {
              int j = nextStrt[i];
- 
-@@ -337,6 +394,7 @@ namespace PrimeSieve {
+
+@@ -363,6 +418,7 @@
              nextStrt[i] = j - segSize;
          }
- 
+
 +        if (Inspect) timer.next(Phase::Extract);
          std::size_t strtChunk = 0u;
- 
+
          if (minNum > myNum) {
-@@ -379,16 +437,20 @@ namespace PrimeSieve {
+@@ -397,16 +453,20 @@
              }
          }
- 
+
 +        if (Inspect) timer.next(Phase::Reset);
          std::fill(sieve.begin(), sieve.end(), true);
          lowerBnd += segSize;
- 
+
          for (; lowerBnd < flrMaxNum; lowerBnd += segSize) {
 +            if (Inspect) timer.next(Phase::Offsets);
 +            if (record) ++record->segments;
@@ -252,27 +248,25 @@ index b9ca575..083b343 100644
                  sqrPrime = static_cast<std::int_fast64_t>(sievePrimes[p]) *
                      static_cast<std::int_fast64_t>(sievePrimes[p]);
              }
- 
+
 +            if (Inspect) timer.next(Phase::DenseMark);
              for (std::size_t i = strt30030; i < nextStrt.size(); ++i) {
                  int j = nextStrt[i];
- 
-@@ -399,6 +461,7 @@ namespace PrimeSieve {
+
+@@ -417,16 +477,20 @@
                  nextStrt[i] = j - segSize;
              }
- 
+
 +            if (Inspect) timer.next(Phase::Extract);
              for (std::size_t q = 0u, sieveInd = myNum - lowerBnd; q < nWheels; ++q) {
-                 T* writeTo = compact;
- 
-@@ -412,11 +475,14 @@ namespace PrimeSieve {
+                 AppendWheel(primes, sieve, sieveInd, lowerBnd, ARR_WHEEL30030);
              }
- 
+
              myNum += segSize;
 +            if (Inspect) timer.next(Phase::Reset);
              std::fill(sieve.begin(), sieve.end(), true);
          }
- 
+
          // Get remaining primes that are greater than flrMaxNum and less than maxNum
          if (lowerBnd < maxNum) {
 +            if (Inspect) timer.next(Phase::Offsets);
@@ -280,40 +274,42 @@ index b9ca575..083b343 100644
              for (; sqrPrime <= maxNum; ++p) {
                  nextStrt.push_back(sqrPrime - lowerBnd);
                  sqrPrime = static_cast<std::int_fast64_t>(sievePrimes[p]) *
-@@ -425,6 +491,7 @@ namespace PrimeSieve {
- 
+@@ -435,6 +499,7 @@
+
              const std::int_fast64_t offsetLim = maxNum - lowerBnd + 1;
- 
+
 +            if (Inspect) timer.next(Phase::DenseMark);
              for (std::size_t i = strt30030; i < nextStrt.size(); ++i) {
                  for (int k = sievePrimes[i] * 2, j = nextStrt[i];
                       j < offsetLim; j += k) {
-@@ -432,6 +499,7 @@ namespace PrimeSieve {
+@@ -442,6 +507,7 @@
                  }
              }
- 
+
 +            if (Inspect) timer.next(Phase::Extract);
              for (std::size_t q = 0u; q < nWheels && myNum <= maxNum; ++q) {
                  for (std::size_t w = 0u; w < szWheel30030 && myNum <= maxNum;
                       myNum += ARR_WHEEL30030[w], ++w) {
-@@ -439,14 +507,27 @@ namespace PrimeSieve {
+@@ -449,14 +515,27 @@
                  }
              }
          }
+-    }
+-
+-    template <typename Output>
 +        if (Inspect) timer.stop();
 +        if (record) {
 +            record->offsetBytes = nextStrt.capacity() * sizeof(int);
-+            record->primeCount = primes.size() - initialCount;
-+            record->outputCapacityBytes = primes.capacity() * sizeof(T);
++            record->primeCount = CacheInspection::OutputCount(primes) - initialCount;
++            record->outputCapacityBytes = CacheInspection::OutputBytes(primes);
 +        }
-     }
- 
--    template <typename T>
-+    template <typename T, bool Inspect = false>
++    }
++
++    template <typename Output, bool Inspect = false>
      void PrimeSieveBig(const std::vector<int> &svPriOne,
                         const std::vector<int> &svPriTwo,
                         const std::vector<char> &check30030,
-                        std::vector<T> &primes, std::size_t nBigSegs,
+                        Output &primes, std::size_t nBigSegs,
 -                       std::int_fast64_t minNum, std::int_fast64_t maxNum) {
 +                       std::int_fast64_t minNum, std::int_fast64_t maxNum,
 +                       std::vector<KernelRecord>* records = nullptr) {
@@ -322,30 +318,30 @@ index b9ca575..083b343 100644
 +            records, "Big", minNum, maxNum
 +        ) : nullptr;
 +        PhaseTimer timer(record);
-+        const std::size_t initialCount = primes.size();
- 
++        const std::size_t initialCount = CacheInspection::OutputCount(primes);
+
          const int sz30030 = NUM30030;
-         const int segSize = nBigSegs * sz30030;
-@@ -471,6 +552,7 @@ namespace PrimeSieve {
+         const int segSize = static_cast<int>(nBigSegs * sz30030);
+@@ -473,6 +552,7 @@
          const std::size_t svPriOneSize = svPriOne.size();
          std::vector<int> nextStrt(svPriOneSize);
- 
+
 +        if (Inspect) timer.next(Phase::Offsets);
          for (std::size_t i = 0, idx = 0; i < svPriOneSize; ++i) {
              int remTest = minNum % svPriOne[i];
              std::int_fast64_t first =
-@@ -484,6 +566,7 @@ namespace PrimeSieve {
+@@ -486,6 +566,7 @@
              nextStrt[i] = idx;
          }
- 
+
 +        if (Inspect) timer.next(Phase::Buckets);
-         const int myRange = (maxNum - lowerBnd) + 1;
-         int numCacheSegs = myRange / segSize;
- 
-@@ -540,14 +623,30 @@ namespace PrimeSieve {
+         // The aligned prefix can make this wider than the requested interval.
+         // Only positions within one segment are stored as int offsets.
+         const std::int_fast64_t myRange = (maxNum - lowerBnd) + 1;
+@@ -545,14 +626,30 @@
              }
          }
- 
+
 +        if (Inspect) timer.next(Phase::Setup);
 +        if (record) {
 +            for (const auto& bucket : myBuckets) {
@@ -357,120 +353,119 @@ index b9ca575..083b343 100644
          const std::int_fast64_t flrMaxNum = segSize * (maxNum / segSize);
          std::int_fast64_t upperBnd = std::min(lowerBnd + segSize, maxNum);
          std::int_fast64_t myNum = 1 + lowerBnd;
- 
+
          // vector used for sieving
          std::vector<bool> sieve(segSize, true);
 +        if (record) {
 +            record->segmentSpan = segSize;
 +            record->sieveBytes = (sieve.capacity() + 7) / 8;
 +            record->offsetBytes = nextStrt.capacity() * sizeof(int);
-+            record->bufferBytes = sizeof(compact);
++            record->bufferBytes = CacheInspection::BufferBytes(primes, SZ_WHEEL30030);
 +        }
- 
+
          if (minNum != lowerBnd) {
 +            if (Inspect) timer.next(Phase::DenseMark);
 +            if (record) ++record->segments;
              const int offsetLim = static_cast<int>(
                  std::min<std::int_fast64_t>(
                      segSize, maxNum - lowerBnd + 1
-@@ -564,11 +663,13 @@ namespace PrimeSieve {
+@@ -569,11 +666,13 @@
                  nextStrt[i] = j - segSize;
              }
- 
+
 +            if (Inspect) timer.next(Phase::BucketMark);
              for (const auto &elem: myBuckets[0]) {
                  sieve[elem] = false;
              }
- 
+
              myBuckets.pop_front();
 +            if (Inspect) timer.next(Phase::Extract);
              std::size_t strtChunk = 0u;
- 
+
              if (minNum > myNum) {
-@@ -610,11 +711,14 @@ namespace PrimeSieve {
+@@ -607,11 +706,14 @@
                  }
              }
- 
+
 +            if (Inspect) timer.next(Phase::Reset);
              std::fill(sieve.begin(), sieve.end(), true);
              lowerBnd += segSize;
          }
- 
+
          for (; lowerBnd < flrMaxNum; lowerBnd += segSize) {
 +            if (Inspect) timer.next(Phase::DenseMark);
 +            if (record) ++record->segments;
              for (std::size_t i = strt30030; i < svPriOneSize; ++i) {
                  int j = nextStrt[i];
- 
-@@ -625,11 +729,13 @@ namespace PrimeSieve {
+
+@@ -622,11 +724,13 @@
                  nextStrt[i] = j - segSize;
              }
- 
+
 +            if (Inspect) timer.next(Phase::BucketMark);
              for (const auto &elem: myBuckets[0]) {
                  sieve[elem] = false;
              }
- 
+
              myBuckets.pop_front();
 +            if (Inspect) timer.next(Phase::Extract);
              std::int_fast64_t sieveInd = myNum - lowerBnd;
- 
+
              for (std::size_t q = 0u; q < numWheelSegs; ++q) {
-@@ -646,11 +752,14 @@ namespace PrimeSieve {
+@@ -635,11 +739,14 @@
              }
- 
+
              myNum = sieveInd + lowerBnd;
 +            if (Inspect) timer.next(Phase::Reset);
              std::fill(sieve.begin(), sieve.end(), true);
          }
- 
+
          // Get remaining primes that are greater than flrMaxNum and less than maxNum
          if (lowerBnd < maxNum) {
 +            if (Inspect) timer.next(Phase::DenseMark);
 +            if (record) ++record->segments;
              const int offsetLim = static_cast<int>(maxNum - lowerBnd + 1);
- 
+
              for (std::size_t i = strt30030; i < svPriOneSize; ++i) {
-@@ -660,16 +769,23 @@ namespace PrimeSieve {
+@@ -649,15 +756,22 @@
                  }
              }
- 
+
 +            if (Inspect) timer.next(Phase::BucketMark);
              for (const auto &elem: myBuckets[0]) {
                  sieve[elem] = false;
              }
- 
+
 +            if (Inspect) timer.next(Phase::Extract);
              for (std::size_t q = 0u; (myNum <= maxNum) && (q < numWheelSegs); ++q) {
                  for (std::size_t w = 0u; (myNum <= maxNum) && (w < szWheel30030); myNum += ARR_WHEEL30030[w], ++w) {
-                     if (sieve[myNum - lowerBnd]) primes.push_back(myNum);
+                     if (sieve[myNum - lowerBnd]) AppendPrime(primes, myNum);
                  }
              }
-         }
++        }
 +        if (Inspect) timer.stop();
 +        if (record) {
-+            record->primeCount = primes.size() - initialCount;
-+            record->outputCapacityBytes = primes.capacity() * sizeof(T);
-+        }
-     }
- 
-     inline void sqrtSmallPrimes(int sqrtBound, std::vector<int> &sievePrimes) {
-@@ -721,37 +837,38 @@ namespace PrimeSieve {
++            record->primeCount = CacheInspection::OutputCount(primes) - initialCount;
++            record->outputCapacityBytes = CacheInspection::OutputBytes(primes);
          }
      }
- 
--    template <typename T>
-+    template <typename T, bool Inspect>
+
+@@ -719,37 +833,38 @@
+         }
+     }
+
+-    template <typename Output>
++    template <typename Output, bool Inspect>
      void PrimeWorker(const std::vector<int> &svPriMain,
                       const std::vector<int> &svPriOne,
                       const std::vector<int> &svPriTwo,
                       const std::vector<char> &check30030,
-                      std::vector<T> &primes, std::int_fast64_t minNum,
+                      Output &primes, std::int_fast64_t minNum,
                       std::int_fast64_t maxNum, std::int_fast64_t smallCut,
 -                     std::int_fast64_t medCut, std::size_t nBigSegs) {
 +                     std::int_fast64_t medCut, std::size_t nBigSegs,
 +                     std::vector<KernelRecord>* records) {
- 
+
          if (maxNum > medCut) {
              // PrimeSieveBig is not meant for small values, so we
              // first get them with PrimeSieveMed/Small
@@ -478,37 +473,37 @@ index b9ca575..083b343 100644
 -                PrimeSieveSmall(svPriMain, primes, minNum, smallCut);
 -                PrimeSieveMedium(svPriMain, primes, smallCut, medCut);
 -                PrimeSieveBig(svPriOne, svPriTwo, check30030, primes, nBigSegs, medCut, maxNum);
-+                PrimeSieveSmall<T, Inspect>(svPriMain, primes, minNum, smallCut, records);
-+                PrimeSieveMedium<T, Inspect>(svPriMain, primes, smallCut, medCut, records);
-+                PrimeSieveBig<T, Inspect>(svPriOne, svPriTwo, check30030, primes, nBigSegs, medCut, maxNum, records);
++                PrimeSieveSmall<Output, Inspect>(svPriMain, primes, minNum, smallCut, records);
++                PrimeSieveMedium<Output, Inspect>(svPriMain, primes, smallCut, medCut, records);
++                PrimeSieveBig<Output, Inspect>(svPriOne, svPriTwo, check30030, primes, nBigSegs, medCut, maxNum, records);
              } else if (minNum < medCut) {
 -                PrimeSieveMedium(svPriMain, primes, minNum, medCut);
 -                PrimeSieveBig(svPriOne, svPriTwo, check30030, primes, nBigSegs, medCut, maxNum);
-+                PrimeSieveMedium<T, Inspect>(svPriMain, primes, minNum, medCut, records);
-+                PrimeSieveBig<T, Inspect>(svPriOne, svPriTwo, check30030, primes, nBigSegs, medCut, maxNum, records);
++                PrimeSieveMedium<Output, Inspect>(svPriMain, primes, minNum, medCut, records);
++                PrimeSieveBig<Output, Inspect>(svPriOne, svPriTwo, check30030, primes, nBigSegs, medCut, maxNum, records);
              } else {
 -                PrimeSieveBig(svPriOne, svPriTwo, check30030, primes, nBigSegs, minNum, maxNum);
-+                PrimeSieveBig<T, Inspect>(svPriOne, svPriTwo, check30030, primes, nBigSegs, minNum, maxNum, records);
++                PrimeSieveBig<Output, Inspect>(svPriOne, svPriTwo, check30030, primes, nBigSegs, minNum, maxNum, records);
              }
          } else if (maxNum > smallCut) {
              if (minNum < smallCut) {
 -                PrimeSieveSmall(svPriMain, primes, minNum, smallCut);
 -                PrimeSieveMedium(svPriMain, primes, smallCut, maxNum);
-+                PrimeSieveSmall<T, Inspect>(svPriMain, primes, minNum, smallCut, records);
-+                PrimeSieveMedium<T, Inspect>(svPriMain, primes, smallCut, maxNum, records);
++                PrimeSieveSmall<Output, Inspect>(svPriMain, primes, minNum, smallCut, records);
++                PrimeSieveMedium<Output, Inspect>(svPriMain, primes, smallCut, maxNum, records);
              } else {
 -                PrimeSieveMedium(svPriMain, primes, minNum, maxNum);
-+                PrimeSieveMedium<T, Inspect>(svPriMain, primes, minNum, maxNum, records);
++                PrimeSieveMedium<Output, Inspect>(svPriMain, primes, minNum, maxNum, records);
              }
          } else {
 -            PrimeSieveSmall(svPriMain, primes, minNum, maxNum);
-+            PrimeSieveSmall<T, Inspect>(svPriMain, primes, minNum, maxNum, records);
++            PrimeSieveSmall<Output, Inspect>(svPriMain, primes, minNum, maxNum, records);
          }
      }
- 
-@@ -759,7 +876,12 @@ namespace PrimeSieve {
-     void PrimeSieveMain(std::vector<std::vector<T>> &primeList,
-                         std::vector<T> &primes, std::int_fast64_t minNum,
+
+@@ -757,7 +872,12 @@
+     void SieveMain(std::vector<Output> &primeList,
+                         Output &primes, std::int_fast64_t minNum,
                          std::int_fast64_t maxNum, bool &Parallel,
 -                        int nThreads, int maxThreads, int maxCores) {
 +                        int nThreads, int maxThreads, int maxCores,
@@ -517,13 +512,13 @@ index b9ca575..083b343 100644
 +        const auto policyStart = inspector ? CacheInspection::Clock::now() :
 +            CacheInspection::Clock::time_point();
 +        if (inspector) inspector->requestedThreads = nThreads;
- 
+
          const std::int_fast64_t myRange = maxNum - minNum;
          std::int_fast64_t smallCut = Almost2310L1Cache - 100;
-@@ -792,8 +914,31 @@ namespace PrimeSieve {
+@@ -803,8 +923,31 @@
          std::vector<char> check30030(maxNum > medCut ? NUM30030 : 0, 1);
          std::int_fast64_t segUnitSize = NUM30030;
- 
+
 +        if (inspector && inspector->bigSegmentSpan) {
 +            if (maxNum <= medCut || minNum < medCut) {
 +                throw std::invalid_argument(
@@ -549,22 +544,23 @@ index b9ca575..083b343 100644
 +            inspector->baseSeconds = CacheInspection::SecondsSince(baseStart);
 +            inspector->sharedPrimeBytes = svPriMain.capacity() * sizeof(int);
 +        }
- 
+
          if (maxNum > medCut) {
              // Similar to sqrtMedCut above (see comment). This formulation
-@@ -813,3 +958,8 @@ namespace PrimeSieve {
-             // we reduce the segment size as nThreads increases.
-             nBigSegs = ((maxThreads / nThreads) * 2 * 1024 * 1024) /  L1_CACHE_SIZE;
-+
+@@ -826,6 +969,9 @@
+                 requestedSegs,
+                 maxSegment / segUnitSize
+             );
 +            if (inspector && inspector->bigSegmentSpan) {
 +                nBigSegs = inspector->bigSegmentSpan / NUM30030;
 +            }
-+
-             const int limitOne = static_cast<int>(nBigSegs * segUnitSize);
-@@ -851,6 +1000,21 @@ namespace PrimeSieve {
-             }
+
+             const std::int_fast64_t limitOne = nBigSegs * segUnitSize;
+
+@@ -872,6 +1018,21 @@
+             Parallel = false;
          }
- 
+
 +        if (inspector) {
 +            inspector->effectiveThreads = Parallel ? nThreads : 1;
 +            inspector->workers.resize(inspector->effectiveThreads);
@@ -579,34 +575,33 @@ index b9ca575..083b343 100644
 +            CacheInspection::Clock::time_point();
 +        // Inspect guards in the kernels remove phase timing from normal loops.
 +        // Separate instantiations keep that decision out of the hot path.
-+        const auto worker = inspector ? PrimeWorker<T, true> : PrimeWorker<T, false>;
++        const auto worker = inspector ? PrimeWorker<Output, true> : PrimeWorker<Output, false>;
          if (Parallel) {
-             std::vector<std::thread> threads;
-             std::int_fast64_t upperBnd;
-@@ -862,36 +1026,45 @@ namespace PrimeSieve {
-             upperBnd = segSize * std::floor(minNum / segSize) + chunkSize;
- 
-             for (int idx = 0; idx < (nThreads - 1); lowerBnd = upperBnd, upperBnd += chunkSize, ++idx) {
--                threads.emplace_back(PrimeWorker<T>, std::cref(svPriMain),
-+                threads.emplace_back(worker, std::cref(svPriMain),
-                                      std::cref(svPriOne), std::cref(svPriTwo),
-                                      std::cref(check30030), std::ref(primeList[idx]),
--                                     lowerBnd, upperBnd, smallCut, medCut, nBigSegs);
-+                                     lowerBnd, upperBnd, smallCut, medCut, nBigSegs,
-+                                     inspector ? &inspector->workers[idx] : nullptr);
+             // Allocate output slots after determining the useful worker count.
+             // The final worker writes to primeList.back().
+@@ -896,22 +1057,28 @@
+                  lowerBnd = upperBnd, upperBnd += chunkSize, ++idx) {
+
+                 batch.launch([&, idx, lowerBnd, upperBnd]() {
+-                    PrimeWorker(svPriMain, svPriOne, svPriTwo, check30030,
++                    worker(svPriMain, svPriOne, svPriTwo, check30030,
+                                 primeList[idx], lowerBnd, upperBnd,
+-                                smallCut, medCut, nBigSegs);
++                                smallCut, medCut, nBigSegs,
++                                inspector ? &inspector->workers[idx] : nullptr);
+                 });
              }
- 
--            threads.emplace_back(PrimeWorker<T>, std::cref(svPriMain),
-+            threads.emplace_back(worker, std::cref(svPriMain),
-                                  std::cref(svPriOne), std::cref(svPriTwo),
-                                  std::cref(check30030), std::ref(primeList.back()),
--                                 lowerBnd, maxNum, smallCut, medCut, nBigSegs);
-+                                 lowerBnd, maxNum, smallCut, medCut, nBigSegs,
-+                                 inspector ? &inspector->workers.back() : nullptr);
- 
-             for (auto& thr: threads) {
-                 thr.join();
-             }
+
+             batch.launch([&, lowerBnd]() {
+-                PrimeWorker(svPriMain, svPriOne, svPriTwo, check30030,
++                worker(svPriMain, svPriOne, svPriTwo, check30030,
+                             primeList.back(), lowerBnd, maxNum,
+-                            smallCut, medCut, nBigSegs);
++                            smallCut, medCut, nBigSegs,
++                            inspector ? &inspector->workers.back() : nullptr);
+             });
+
+             batch.finish();
          } else {
 -            PrimeWorker(svPriMain, svPriOne, svPriTwo, check30030,
 -                        primes, minNum, maxNum, smallCut, medCut, nBigSegs);
@@ -618,50 +613,67 @@ index b9ca575..083b343 100644
 +            inspector->sieveSeconds = CacheInspection::SecondsSince(sieveStart);
          }
      }
- }
- 
- template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<int>>&,
-                                          std::vector<int>&, std::int_fast64_t,
--                                         std::int_fast64_t, bool&, int, int, int);
-+                                         std::int_fast64_t, bool&, int, int, int,
-+                                         CacheInspection::Inspector*);
- template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<double>>&,
-                                          std::vector<double>&, std::int_fast64_t,
--                                         std::int_fast64_t, bool&, int, int, int);
-+                                         std::int_fast64_t, bool&, int, int, int,
-+                                         CacheInspection::Inspector*);
- template void PrimeSieve::PrimeSieveMain(std::vector<std::vector<std::int64_t>>&,
-                                          std::vector<std::int64_t>&, std::int_fast64_t,
--                                         std::int_fast64_t, bool&, int, int, int);
-+                                         std::int_fast64_t, bool&, int, int, int,
-+                                         CacheInspection::Inspector*);
- 
- template void PrimeSieve::sqrtBigPrimes(int, bool, bool, bool, std::vector<int>&);
- template void PrimeSieve::sqrtBigPrimes(int, bool, bool, bool, std::vector<double>&);
+
+@@ -919,10 +1086,11 @@
+     void PrimeSieveMain(std::vector<std::vector<T>> &primeList,
+                         std::vector<T> &primes, std::int_fast64_t minNum,
+                         std::int_fast64_t maxNum, bool &Parallel,
+-                        int nThreads, int maxThreads, int maxCores) {
++                        int nThreads, int maxThreads, int maxCores,
++                        Inspector* inspector = nullptr) {
+
+         SieveMain(primeList, primes, minNum, maxNum, Parallel,
+-                  nThreads, maxThreads, maxCores);
++                  nThreads, maxThreads, maxCores, inspector);
+     }
+
+     // Caller supplies 1 <= nThreads <= maxThreads and maxCores >= 1.
+@@ -953,15 +1121,15 @@
+
+ template void PrimeSieve::PrimeSieveMain(
+     std::vector<std::vector<int>>&, std::vector<int>&, std::int_fast64_t,
+-    std::int_fast64_t, bool&, int, int, int
++    std::int_fast64_t, bool&, int, int, int, CacheInspection::Inspector*
+ );
+ template void PrimeSieve::PrimeSieveMain(
+     std::vector<std::vector<double>>&, std::vector<double>&, std::int_fast64_t,
+-    std::int_fast64_t, bool&, int, int, int
++    std::int_fast64_t, bool&, int, int, int, CacheInspection::Inspector*
+ );
+ template void PrimeSieve::PrimeSieveMain(
+     std::vector<std::vector<std::int64_t>>&, std::vector<std::int64_t>&,
+-    std::int_fast64_t, std::int_fast64_t, bool&, int, int, int
++    std::int_fast64_t, std::int_fast64_t, bool&, int, int, int, CacheInspection::Inspector*
+ );
+
+ template void PrimeSieve::sqrtBigPrimes(
 diff --git a/src/PrimeSieve.cpp b/src/PrimeSieve.cpp
-index 565ac99..af0dbcb 100644
 --- a/src/PrimeSieve.cpp
 +++ b/src/PrimeSieve.cpp
-@@ -1,9 +1,12 @@
+@@ -1,11 +1,14 @@
  #include "NumbersUtils/Eratosthenes.h"
+ #include "NumbersUtils/PrimeCount.h"
  #include "CppConvert.h"
 +#include "NumbersUtils/CacheInspector.h"
 +#include "NumbersUtils/Wheel.h"
 +#include "cpp11/strings.hpp"
- 
+ #include "cpp11/as.hpp"
+
 -[[cpp11::register]]
 -SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
--                   SEXP RmaxCores, SEXP RmaxThreads) {
+-                   SEXP RmaxCores, SEXP RmaxThreads, SEXP RCountOnly) {
 +static SEXP PrimeSieveImpl(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
-+                   SEXP RmaxCores, SEXP RmaxThreads,
++                   SEXP RmaxCores, SEXP RmaxThreads, SEXP RCountOnly,
 +                           CacheInspection::Inspector* inspector) {
- 
-     double bound1;
-     double bound2;
-@@ -37,6 +40,25 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
+
+     const bool countOnly = CppConvert::convertFlag(RCountOnly, "countOnly");
+
+@@ -39,6 +42,28 @@
+     } else {
+         myMax = static_cast<std::int_fast64_t>(std::floor(bound2));
          myMin = static_cast<std::int_fast64_t>(std::ceil(bound1));
-     }
- 
++    }
++
 +    if (inspector) {
 +        if (!Rf_isNull(RNumThreads)) {
 +            CppConvert::convertPrimitive(RNumThreads, nThreads,
@@ -674,32 +686,34 @@ index 565ac99..af0dbcb 100644
 +            if (nThreads > 1 && maxThreads > 1) {
 +                cutoff /= std::min(nThreads, maxThreads);
 +            }
-+            cutoff *= cutoff;
++            std::int_fast64_t smallCut = Almost2310L1Cache - 100;
++            smallCut *= smallCut;
++            cutoff = std::max<std::int_fast64_t>(smallCut,
++                cutoff > Sqrt53Max ? Significand53Int : cutoff * cutoff);
 +            if (myMax <= cutoff || myMin < cutoff) {
 +                cpp11::stop("segmentBytes requires an interval entirely in the Big kernel");
 +            }
 +        }
-+    }
-+
-     if (myMax <= 1) {
-         return Rf_allocVector(INTSXP, 0);
      }
-@@ -73,8 +95,10 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
+
+     if (!countOnly && myMax <= 1) {
+@@ -89,8 +114,10 @@
          std::vector<double> tempPrimes;
- 
+
          PrimeSieve::PrimeSieveMain(primeList, tempPrimes, myMin, myMax,
 -                                   Parallel, nThreads, maxThreads, maxCores);
+-
 +                                   Parallel, nThreads, maxThreads, maxCores, inspector);
- 
++
 +        const auto copyStart = inspector ? CacheInspection::Clock::now() :
 +            CacheInspection::Clock::time_point();
          if (Parallel) {
-             for (int i = 0; i < numSects; ++i) {
-                 numPrimes += primeList[i].size();
-@@ -89,10 +113,16 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
+             const std::size_t numSects = primeList.size();
+
+@@ -107,10 +134,16 @@
                            primes + runningCount[i]);
              }
- 
+
 +            if (inspector) {
 +                inspector->resultSeconds = CacheInspection::SecondsSince(copyStart);
 +            }
@@ -713,22 +727,23 @@ index 565ac99..af0dbcb 100644
              return primes;
          }
      } else {
-@@ -101,8 +131,10 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
+@@ -118,8 +151,10 @@
          std::vector<int> tempPrimes;
- 
+
          PrimeSieve::PrimeSieveMain(primeList, tempPrimes, myMin, myMax,
 -                                   Parallel, nThreads, maxThreads, maxCores);
+-
 +                                   Parallel, nThreads, maxThreads, maxCores, inspector);
- 
++
 +        const auto copyStart = inspector ? CacheInspection::Clock::now() :
 +            CacheInspection::Clock::time_point();
          if (Parallel) {
-             for (int i = 0; i < numSects; ++i) {
-                 numPrimes += primeList[i].size();
-@@ -117,11 +149,141 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
+             const std::size_t numSects = primeList.size();
+
+@@ -136,11 +171,144 @@
                            primes + runningCount[i]);
              }
- 
+
 +            if (inspector) {
 +                inspector->resultSeconds = CacheInspection::SecondsSince(copyStart);
 +            }
@@ -747,8 +762,9 @@ index 565ac99..af0dbcb 100644
 +// Retain the existing registered interface for ordinary calls and regressions.
 +[[cpp11::register]]
 +SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
-+                   SEXP RmaxCores, SEXP RmaxThreads) {
-+    return PrimeSieveImpl(Rb1, Rb2, RNumThreads, RmaxCores, RmaxThreads, nullptr);
++                   SEXP RmaxCores, SEXP RmaxThreads, SEXP RCountOnly) {
++    return PrimeSieveImpl(Rb1, Rb2, RNumThreads, RmaxCores, RmaxThreads,
++                          RCountOnly, nullptr);
 +}
 +
 +namespace {
@@ -863,32 +879,33 @@ index 565ac99..af0dbcb 100644
 +        }
 +        inspector.bigSegmentSpan = static_cast<std::size_t>(bytes * 8 / NUM30030) * NUM30030;
 +    }
++    // Inspection profiles generation; ordinary calls can request counting.
++    cpp11::sexp countOnly = cpp11::as_sexp(false);
 +    cpp11::sexp primes = PrimeSieveImpl(Rb1, Rb2, RNumThreads,
-+                                       RmaxCores, RmaxThreads, &inspector);
++                                       RmaxCores, RmaxThreads, countOnly, &inspector);
 +    return InspectionReport(primes, inspector, RsegmentBytes);
 +}
 diff --git a/src/cpp11.cpp b/src/cpp11.cpp
-index 8fd7457..276e3c0 100644
 --- a/src/cpp11.cpp
 +++ b/src/cpp11.cpp
-@@ -243,6 +243,13 @@ extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, S
-     return cpp11::as_sexp(PrimeSieveCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
-   END_CPP11
- }
+@@ -269,6 +269,13 @@
+ extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads, SEXP RCountOnly) {
+   BEGIN_CPP11
+     return cpp11::as_sexp(PrimeSieveCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RCountOnly)));
++  END_CPP11
++}
 +// PrimeSieve.cpp
 +SEXP PrimeSieveInspectCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads, SEXP RsegmentBytes);
 +extern "C" SEXP _RcppAlgos_PrimeSieveInspectCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads, SEXP RsegmentBytes) {
 +  BEGIN_CPP11
 +    return cpp11::as_sexp(PrimeSieveInspectCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RsegmentBytes)));
-+  END_CPP11
-+}
+   END_CPP11
+ }
  // ProductCartesian.cpp
- SEXP ExpandGridCpp(cpp11::list RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads, SEXP RmaxThreads, bool IsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv, bool Force_DF);
- extern "C" SEXP _RcppAlgos_ExpandGridCpp(SEXP RList, SEXP Rlow, SEXP Rhigh, SEXP RNumThreads, SEXP RmaxThreads, SEXP IsSample, SEXP RindexVec, SEXP RmySeed, SEXP RNumSamp, SEXP baseSample, SEXP RNamed, SEXP myEnv, SEXP Force_DF) {
-@@ -335,6 +342,7 @@ static const R_CallMethodDef CallEntries[] = {
-     {"_RcppAlgos_PrevNumIterGlue",         (DL_FUNC) &_RcppAlgos_PrevNumIterGlue,          2},
-     {"_RcppAlgos_PrimeCountCpp",           (DL_FUNC) &_RcppAlgos_PrimeCountCpp,            3},
-     {"_RcppAlgos_PrimeSieveCpp",           (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,            5},
+@@ -365,6 +372,7 @@
+     {"_RcppAlgos_PrimeCountCpp",           (DL_FUNC) &_RcppAlgos_PrimeCountCpp,            4},
+     {"_RcppAlgos_PrimePhiCpp",             (DL_FUNC) &_RcppAlgos_PrimePhiCpp,              4},
+     {"_RcppAlgos_PrimeSieveCpp",           (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,            6},
 +    {"_RcppAlgos_PrimeSieveInspectCpp",    (DL_FUNC) &_RcppAlgos_PrimeSieveInspectCpp,     6},
      {"_RcppAlgos_RandomAccessGlue",        (DL_FUNC) &_RcppAlgos_RandomAccessGlue,         2},
      {"_RcppAlgos_RankCombPerm",            (DL_FUNC) &_RcppAlgos_RankCombPerm,             8},

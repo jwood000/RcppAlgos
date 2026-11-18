@@ -1,0 +1,77 @@
+{
+  "x": 80000000000,
+  "threads": 2,
+  "table_numerator": 6,
+  "table_denominator": 5,
+  "root": 282842,
+  "table_limit": 339410,
+  "cube_root": 4308,
+  "meissel_a": 590,
+  "b": 24668,
+  "stream_first": 1725,
+  "non_table_last": 20886,
+  "stream_span": 5089103,
+  "zero_prefix_queries": 1724,
+  "meissel_prefix_queries": 1134,
+  "common_tail_queries": 19161,
+  "direct_queries": 3783,
+  "sums": {
+    "extra_zero_prefix": 9169193027,
+    "common_prefix": 718298196,
+    "common_tail": 1336311383,
+    "direct": 15077983
+  },
+  "zero_prefix": 9887491223,
+  "meissel_prefix": 718298196,
+  "zero_p2": 11238880589,
+  "meissel_p2": 2069687562,
+  "stream_intervals": [
+    {
+      "slot": 0,
+      "lower": 339410,
+      "upper": 2883962,
+      "first": 3026,
+      "last": 20886,
+      "finish": 2883610,
+      "queries": 17860,
+      "pi_lower": 29142,
+      "sum": 978797669
+    },
+    {
+      "slot": 1,
+      "lower": 2883962,
+      "upper": 5428513,
+      "first": 1725,
+      "last": 3026,
+      "finish": 5428513,
+      "queries": 1301,
+      "pi_lower": 209033,
+      "sum": 357513714
+    }
+  ],
+  "reference_provenance": {
+    "description": "Independent Python Eratosthenes sieve for i>=591; installed primecount Gourdon C API for i=1..590. No RcppAlgos kernel participates in calculation.",
+    "sieve_limit": 18488560,
+    "sieve_terms": 24078,
+    "primecount_terms": 590,
+    "primecount_library": "/opt/homebrew/Cellar/primecount/8.0/lib/libprimecount.8.0.dylib",
+    "primecount_sha256": "7599fdf8f40aae2c61175cd2dc1f4a498d516288bcd7f892bd0ea0f76e166cb2",
+    "primecount_version": "8.0",
+    "primecount_threads": 1,
+    "sieve_api_cross_targets": [
+      4308,
+      282842,
+      282852,
+      339381,
+      339410,
+      339415,
+      2883962,
+      5428513,
+      18488560
+    ],
+    "prior_v3_expectations_match": true,
+    "prior_v3_expectations_sha256": "899b6b1070b4f04f0e2b26e37b9c1497fa114b1cf0d0df6bd0d81cb823700f63"
+  },
+  "reference_terms_sha256": "950f46edfe69b38bbc2bd4c124a0415035467cb4ada31c912826e152c96b5052",
+  "script_sha256": "695bf4060de6b14bda4fab5221330a3b23ea39ab65b0045c6131484782c2b7ca"
+}

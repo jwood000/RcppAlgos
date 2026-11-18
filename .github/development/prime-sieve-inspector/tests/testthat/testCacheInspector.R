@@ -117,6 +117,14 @@ test_that("primeSieveInspect rejects invalid or inapplicable segment budgets", {
     expect_error(inspect(8000, 1e6), "Big")
     expect_error(inspect(8000, 1.5e9), "Big")
 
+    # A large hardware-derived cutoff saturates at the supported input limit.
+    # The inspector must reject a Big-only override before allocating tables.
+    expect_error(.Call(RcppAlgos:::`_RcppAlgos_PrimeSieveInspectCpp`,
+                       1e14, 1e14 + 100, 1L, 512L, 1L, 3754), "Big")
+    # Independent worker/core budgets must retain the Small/Medium ordering.
+    expect_error(.Call(RcppAlgos:::`_RcppAlgos_PrimeSieveInspectCpp`,
+                       1e8, 1e8 + 100, 1000L, 1L, 1000L, 3754), "Big")
+
     # Bucket preparation may advance twice after its last admitted strike.
     # Reject this span before allocating buckets or evaluating int offsets.
     expect_error(.Call(RcppAlgos:::`_RcppAlgos_PrimeSieveInspectCpp`,

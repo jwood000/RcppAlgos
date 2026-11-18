@@ -33,6 +33,109 @@ primeSieveTrialPrimes <- function(lower, upper) {
     if (upper <= .Machine$integer.max) as.integer(primes) else as.double(primes)
 }
 
+test_that("primeSieve countOnly preserves defaults and positional calls", {
+    expect_identical(names(formals(primeSieve)),
+                     c("bound1", "bound2", "nThreads", "countOnly"))
+    expected <- c(11L, 13L, 17L, 19L, 23L, 29L)
+    expect_identical(primeSieve(10, 30, 1L), expected)
+    expect_identical(primeSieve(10, 30, 1L, FALSE), expected)
+    expect_identical(primeSieve(10, 30, 1L, TRUE), 6L)
+    expect_identical(primeSieve(10, 30, countOnly = NULL), expected)
+    expect_identical(primeSieve(100, countOnly = TRUE), 25L)
+
+    # Generation retains its existing early return before thread conversion.
+    expect_identical(primeSieve(1, nThreads = NA_integer_), integer(0))
+})
+
+test_that("primeSieve counts inclusive rounded intervals", {
+    for (upper in c(2L, 3L, 10L, 101L, 997L)) {
+        expected <- length(primeSieveTrialPrimes(1L, upper))
+        expect_identical(primeSieve(upper, countOnly = TRUE), expected)
+    }
+
+    intervals <- list(c(2, 13), c(2.1, 10.9), c(10.1, 30.9),
+                      c(31625, 31628), c(32300, 32400), c(64650, 64700))
+    for (bounds in intervals) {
+        expected <- length(primeSieveTrialPrimes(ceiling(bounds[1]),
+                                                 floor(bounds[2])))
+        expect_identical(primeSieve(bounds[1], bounds[2], countOnly = TRUE),
+                         expected)
+        expect_identical(primeSieve(bounds[2], bounds[1], countOnly = TRUE),
+                         expected)
+    }
+    expect_identical(primeSieve(31627, countOnly = TRUE), 3402L)
+
+    # Empty intervals, no integer between the bounds, and composite singletons.
+    for (bounds in list(c(1, 1), c(14, 16), c(3.1, 3.9), c(31627.1, 31627.2),
+                        c(4, 4), c(9, 9), c(65537^2, 65537^2))) {
+        expect_identical(primeSieve(bounds[1], bounds[2], countOnly = TRUE), 0L)
+    }
+    for (prime in c(2, 3, 13, 31627)) {
+        expect_identical(primeSieve(prime, prime, countOnly = TRUE), 1L)
+    }
+})
+
+test_that("primeSieve counts have integer type even with large bounds", {
+    # Independent prime lists used by the generation checks below.
+    expect_identical(primeSieve(1e10, 1e10 + 100, countOnly = TRUE), 5L)
+    expect_identical(primeSieve(1e12 - 100, 1e12, countOnly = TRUE), 4L)
+    expect_identical(primeSieve(1e10 + 19, 1e10 + 19, countOnly = TRUE), 1L)
+    expect_identical(primeSieve(1e10, 1e10, countOnly = TRUE), 0L)
+
+    # The last supported prime, independently verified with primecount.
+    lastPrime <- 9007199254740881
+    expect_identical(primeSieve(lastPrime, lastPrime, countOnly = TRUE), 1L)
+    limit <- 2^53 - 1
+    expect_identical(primeSieve(limit, limit, countOnly = TRUE), 0L)
+})
+
+test_that("primeSieve counts agree across kernels and thread requests", {
+    # The same public conversion is used with fixed native hardware budgets.
+    nativeCount <- function(lower, upper, threads, cores = 1L) {
+        .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
+              lower, upper, threads, cores, 8L, TRUE)
+    }
+    expected <- length(primeSieveTrialPrimes(32357, 60000))
+    expect_identical(nativeCount(32357, 60000, 8L), expected)
+
+    # Independent inclusive references from primesieve 12.17, also used in
+    # pi-prime-check.cpp. Fixed core budgets keep the cases in Medium and Big,
+    # respectively, while the eight-thread request supplies useful workers.
+    cases <- list(c(1e12, 1e12 + 10000031, 361727, 8),
+                  c(1e15, 1e15 + 32000031, 926210, 1))
+    for (case in cases) {
+        expected <- as.integer(case[3])
+        expect_identical(nativeCount(case[1], case[2], 1L, case[4]), expected)
+        expect_identical(nativeCount(case[1], case[2], 8L, case[4]), expected)
+        expect_identical(primeSieve(case[1], case[2], nThreads = 2L,
+                                    countOnly = TRUE), expected)
+    }
+
+    # Nondivisible segment counts and partial endpoints exercise reduction.
+    lower <- 32340 + 17
+    upper <- lower + 17 * 32340 + 101
+    expected <- length(primeSieve(lower, upper))
+    for (threads in c(1L, 2L, 3L, 8L)) {
+        expect_identical(primeSieve(lower, upper, nThreads = threads,
+                                    countOnly = TRUE), expected)
+    }
+})
+
+test_that("primeSieve validates countOnly and count inputs before shortcuts", {
+    for (flag in list(NA, logical(0), c(TRUE, FALSE), 1L, 1, "TRUE", list(TRUE))) {
+        expect_error(primeSieve(1, countOnly = flag), "countOnly")
+    }
+    for (bad in list(-1, NA_real_, NaN, Inf, 2^53, numeric(0), c(1, 2), "10")) {
+        expect_error(primeSieve(bad, countOnly = TRUE))
+        expect_error(primeSieve(1, bad, countOnly = TRUE))
+    }
+    for (threads in list(0L, -1L, NA_integer_, NaN, Inf, 1.5, 2^31,
+                        integer(0), c(1L, 2L), "2")) {
+        expect_error(primeSieve(1, nThreads = threads, countOnly = TRUE))
+        expect_error(primeSieve(4, 4, nThreads = threads, countOnly = TRUE))
+    }
+})
+
 test_that("primeSieve agrees with trial division across segment boundaries", {
     # Almost2310L1Cache in NumbersUtils/Wheel.h.
     segmentSize <- 32340
@@ -140,7 +243,7 @@ test_that("primeSieve preserves square starts and carry when cropping medium seg
     # Fix dispatch inputs so these intervals use PrimeSieveMedium on any host.
     nativeSieve <- function(lower, upper) {
         .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
-              lower, upper, 1L, 1L, 1L)
+              lower, upper, 1L, 1L, 1L, FALSE)
     }
 
     # Prime squares in the medium range, with integer and double outputs.
@@ -176,7 +279,7 @@ test_that("primeSieve carries cropped medium offsets through several full segmen
     # Fix dispatch inputs to exercise Medium with integer and double outputs.
     nativeSieve <- function(lower, upper) {
         .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
-              lower, upper, 1L, 1L, 1L)
+              lower, upper, 1L, 1L, 1L, FALSE)
     }
 
     for (base in c(1.5e9, 4e9)) {
@@ -203,7 +306,7 @@ test_that("primeSieve preserves results across the medium/large cutoff", {
     # This invokes the same registered entry point as the public R wrapper.
     nativeSieve <- function(lower, upper) {
         .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
-              lower, upper, 1L, 1L, 1L)
+              lower, upper, 1L, 1L, 1L, FALSE)
     }
     cutoff <- (6 * 1024^2)^2
     values <- seq.int(cutoff - 100, cutoff + 100)
@@ -222,7 +325,7 @@ test_that("primeSieve bounds bucket scheduling at the final segment", {
     # uses 640 wheels of 30030 integers, regardless of the host core count.
     nativeSieve <- function(lower, upper) {
         .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
-              lower, upper, 1L, 1L, 10L)
+              lower, upper, 1L, 1L, 10L, FALSE)
     }
     segmentSize <- 640 * 30030
     composite <- 10000019 * 103751579
@@ -251,7 +354,7 @@ test_that("primeSieve preserves results when cropping large-sieve segments", {
     # Force PrimeSieveBig with 640 wheels per segment, independent of the host.
     nativeSieve <- function(lower, upper) {
         .Call(RcppAlgos:::`_RcppAlgos_PrimeSieveCpp`,
-              lower, upper, 1L, 1L, 10L)
+              lower, upper, 1L, 1L, 10L, FALSE)
     }
     segmentSize <- 640 * 30030
     boundary <- floor(1e14 / segmentSize) * segmentSize

@@ -57,6 +57,29 @@ namespace CacheInspection {
         std::vector<std::vector<KernelRecord>> workers;
     };
 
+    // The shared kernels also instantiate for a scalar count. Inspection is
+    // exposed only for generation, but both output forms must compile.
+    template <typename T>
+    std::size_t OutputCount(const std::vector<T>& primes) {
+        return primes.size();
+    }
+
+    inline std::size_t OutputCount(std::int64_t count) { return count; }
+
+    template <typename T>
+    std::size_t OutputBytes(const std::vector<T>& primes) {
+        return primes.capacity() * sizeof(T);
+    }
+
+    inline std::size_t OutputBytes(std::int64_t) { return sizeof(std::int64_t); }
+
+    template <typename T>
+    std::size_t BufferBytes(const std::vector<T>&, std::size_t candidates) {
+        return candidates * sizeof(T);
+    }
+
+    inline std::size_t BufferBytes(std::int64_t, std::size_t) { return 0; }
+
     class PhaseTimer {
         KernelRecord* record;
         Phase phase;

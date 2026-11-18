@@ -215,11 +215,39 @@ extern "C" SEXP _RcppAlgos_MotleyContainer(SEXP Rb1, SEXP Rb2, SEXP RIsEuler, SE
     return cpp11::as_sexp(MotleyContainer(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RIsEuler), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNamed), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
   END_CPP11
 }
+// NthPrimeR.cpp
+SEXP NthPrimeCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, SEXP RmaxCores);
+extern "C" SEXP _RcppAlgos_NthPrimeCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, SEXP RmaxCores) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(NthPrimeCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores)));
+  END_CPP11
+}
 // NumThreads.cpp
 SEXP cpp11GetNumThreads();
 extern "C" SEXP _RcppAlgos_cpp11GetNumThreads() {
   BEGIN_CPP11
     return cpp11::as_sexp(cpp11GetNumThreads());
+  END_CPP11
+}
+// PartialSieve.cpp
+SEXP PrimePhiCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads);
+extern "C" SEXP _RcppAlgos_PrimePhiCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(PrimePhiCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Ra), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
+  END_CPP11
+}
+// PartialSieve.cpp
+SEXP SemiPrimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads);
+extern "C" SEXP _RcppAlgos_SemiPrimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(SemiPrimeCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Ra), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
+  END_CPP11
+}
+// PartialSieve.cpp
+SEXP TriPrimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads);
+extern "C" SEXP _RcppAlgos_TriPrimeCountCpp(SEXP Rn, SEXP Ra, SEXP RNumThreads, SEXP RmaxThreads) {
+  BEGIN_CPP11
+    return cpp11::as_sexp(TriPrimeCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Ra), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
   END_CPP11
 }
 // PollardRhoContainer.cpp
@@ -230,17 +258,17 @@ extern "C" SEXP _RcppAlgos_PollardRhoContainer(SEXP Rv, SEXP RNamed, SEXP RbPrim
   END_CPP11
 }
 // PrimeCount.cpp
-SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads);
-extern "C" SEXP _RcppAlgos_PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads) {
+SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, SEXP Rmethod);
+extern "C" SEXP _RcppAlgos_PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, SEXP Rmethod) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PrimeCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
+    return cpp11::as_sexp(PrimeCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rmethod)));
   END_CPP11
 }
 // PrimeSieve.cpp
-SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads);
-extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads) {
+SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads, SEXP RCountOnly);
+extern "C" SEXP _RcppAlgos_PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads, SEXP RmaxCores, SEXP RmaxThreads, SEXP RCountOnly) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PrimeSieveCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads)));
+    return cpp11::as_sexp(PrimeSieveCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb1), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rb2), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxCores), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RCountOnly)));
   END_CPP11
 }
 // ProductCartesian.cpp
@@ -327,22 +355,26 @@ static const R_CallMethodDef CallEntries[] = {
     {"_RcppAlgos_NextGatherGlue",          (DL_FUNC) &_RcppAlgos_NextGatherGlue,           1},
     {"_RcppAlgos_NextIterGlue",            (DL_FUNC) &_RcppAlgos_NextIterGlue,             1},
     {"_RcppAlgos_NextNumIterGlue",         (DL_FUNC) &_RcppAlgos_NextNumIterGlue,          2},
+    {"_RcppAlgos_NthPrimeCpp",             (DL_FUNC) &_RcppAlgos_NthPrimeCpp,              4},
     {"_RcppAlgos_PartitionsCount",         (DL_FUNC) &_RcppAlgos_PartitionsCount,         13},
     {"_RcppAlgos_PartitionsMultisetCount", (DL_FUNC) &_RcppAlgos_PartitionsMultisetCount, 11},
     {"_RcppAlgos_PollardRhoContainer",     (DL_FUNC) &_RcppAlgos_PollardRhoContainer,      6},
     {"_RcppAlgos_PrevGatherGlue",          (DL_FUNC) &_RcppAlgos_PrevGatherGlue,           1},
     {"_RcppAlgos_PrevIterGlue",            (DL_FUNC) &_RcppAlgos_PrevIterGlue,             1},
     {"_RcppAlgos_PrevNumIterGlue",         (DL_FUNC) &_RcppAlgos_PrevNumIterGlue,          2},
-    {"_RcppAlgos_PrimeCountCpp",           (DL_FUNC) &_RcppAlgos_PrimeCountCpp,            3},
-    {"_RcppAlgos_PrimeSieveCpp",           (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,            5},
+    {"_RcppAlgos_PrimeCountCpp",           (DL_FUNC) &_RcppAlgos_PrimeCountCpp,            4},
+    {"_RcppAlgos_PrimePhiCpp",             (DL_FUNC) &_RcppAlgos_PrimePhiCpp,              4},
+    {"_RcppAlgos_PrimeSieveCpp",           (DL_FUNC) &_RcppAlgos_PrimeSieveCpp,            6},
     {"_RcppAlgos_RandomAccessGlue",        (DL_FUNC) &_RcppAlgos_RandomAccessGlue,         2},
     {"_RcppAlgos_RankCombPerm",            (DL_FUNC) &_RcppAlgos_RankCombPerm,             8},
     {"_RcppAlgos_RankPartitionMain",       (DL_FUNC) &_RcppAlgos_RankPartitionMain,       12},
     {"_RcppAlgos_SampleCombPerm",          (DL_FUNC) &_RcppAlgos_SampleCombPerm,          16},
     {"_RcppAlgos_SamplePartitions",        (DL_FUNC) &_RcppAlgos_SamplePartitions,        16},
+    {"_RcppAlgos_SemiPrimeCountCpp",       (DL_FUNC) &_RcppAlgos_SemiPrimeCountCpp,        4},
     {"_RcppAlgos_SourceVectorGlue",        (DL_FUNC) &_RcppAlgos_SourceVectorGlue,         1},
     {"_RcppAlgos_StartOverGlue",           (DL_FUNC) &_RcppAlgos_StartOverGlue,            1},
     {"_RcppAlgos_SummaryGlue",             (DL_FUNC) &_RcppAlgos_SummaryGlue,              1},
+    {"_RcppAlgos_TriPrimeCountCpp",        (DL_FUNC) &_RcppAlgos_TriPrimeCountCpp,         4},
     {"_RcppAlgos_cpp11GetNumThreads",      (DL_FUNC) &_RcppAlgos_cpp11GetNumThreads,       0},
     {"_RcppAlgos_linked_version",          (DL_FUNC) &_RcppAlgos_linked_version,           0},
     {"_RcppAlgos_testCountCoverage",       (DL_FUNC) &_RcppAlgos_testCountCoverage,        0},

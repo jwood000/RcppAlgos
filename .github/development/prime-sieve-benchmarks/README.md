@@ -53,6 +53,21 @@ addition to its base Git revision. Build/install and sanitizer validation of
 that implementation are documented in the inspector guide; sanitizer timings
 must not be mixed with release benchmarks.
 
+The retained evidence consists of raw R/native/control observations, independent
+checks, host/toolchain/source metadata, the selected configurations, and the
+final sizing plot. Redundant derived tables and the initial plot export remain
+in Git history. Recreate tables and plots in a disposable copy, so the analyzer
+does not rewrite the frozen evidence:
+
+```sh
+cp -R .github/development/prime-sieve-benchmarks/results-2026-11-01 /tmp/prime-sieve-analysis
+Rscript .github/development/prime-sieve-benchmarks/analyze.R /tmp/prime-sieve-analysis
+```
+
+Choose a new destination. The dated `artifact-hashes.csv` is the original study
+inventory, including derived files now available through Git history; it is
+not a claim that every listed file remains in the compact directory.
+
 The original measurement scripts are preserved under
 `results-2026-11-01/scripts/`. Their original source paths assumed the inspector
 was in the checkout. Use the current scripts above with the isolated build for

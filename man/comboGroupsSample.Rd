@@ -23,8 +23,26 @@ comboGroupsSample(v, numGroups = NULL, grpSizes = NULL, retType = "matrix",
   \item{n}{Number of results to return. The default is \code{NULL}.}
   \item{sampleVec}{A vector of numbers representing the lexicographical partition of groups to return. Accepts vectors of class \code{bigz} as well as vectors of characters}
   \item{seed}{Random seed initialization. The default is \code{NULL}. N.B. If the gmp library is needed, this parameter must be set in order to have reproducible results (\emph{E.g} \code{set.seed()} has no effect in these cases).}
-  \item{Parallel}{Logical value indicating whether results should be generated in parallel. The default is \code{FALSE}. If \code{TRUE} and \code{nThreads = NULL}, the number of threads used is equal to the minimum of one minus the number of threads available on your system and the number of results requested (\emph{e.g.} if user has 16 threads and only needs 5 results, 5 threads will be used (\emph{i.e.} \code{min(16 - 1, 5) = 5})). If \code{nThreads} is not \code{NULL}, it will be given preference (\emph{e.g.} if user has 8 threads with \code{Parallel = TRUE} and \code{nThreads = 4}, only 4 threads will be spawned). If your system is single-threaded, the arguments \code{Parallel} and \code{nThreads} are ignored.}
-  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}. See \code{Parallel}.}
+  \item{Parallel}{Logical value indicating whether results
+  should be generated in parallel. The default is \code{FALSE}. If
+  \code{TRUE} and \code{nThreads = NULL}, up to \eqn{n - 1} threads
+  are used, where \eqn{n} is the number of threads available on your
+  system (both threads may be used on a two-thread system).
+  This is also capped by the number of results requested (\emph{e.g.}
+  with 16 available threads and 5 results requested, up to 5 threads
+  may be used, since \code{min(16 - 1, 5) = 5}).
+  If \code{nThreads} is not \code{NULL}, it will be given preference
+  (\emph{e.g.} with 8 available threads, \code{Parallel = TRUE} and
+  \code{nThreads = 4}, up to 4 threads may be used). In either case,
+  the actual number of threads depends on the useful work in the
+  calculation; small or simple cases may use fewer threads.
+  If your system is single-threaded, the arguments \code{Parallel}
+  and \code{nThreads} are ignored.}
+  \item{nThreads}{Requested number of threads. The default is
+  \code{NULL} for serial execution unless \code{Parallel = TRUE}.
+  Requests are capped by the available hardware and the useful work in
+  the calculation. Small or simple cases may use fewer threads.
+  See \code{Parallel}.}
   \item{namedSample}{Logical flag. If \code{TRUE}, \code{rownames} corresponding to the lexicographical result, will be added to the returned matrix. The default is \code{FALSE}.}
  }
 \details{

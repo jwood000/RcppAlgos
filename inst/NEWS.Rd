@@ -5,6 +5,10 @@
 
     \subsection{New Features}{
         \itemize{
+          \item Added \code{nthPrime(n, nThreads = NULL)} to find the prime at a one-based position. The calculation uses at most two whole-range prime counts, then reuses the optimized sieve for interval counting and bounded final selection. Results are exact throughout the supported range; requested threads apply to counting and sieving.
+          \item Added \code{countOnly = TRUE} to \code{primeSieve()} for counting primes in an inclusive interval without constructing the result vector. The default continues to generate primes, and existing positional calls are unchanged.
+          \item Added \code{primePhi()}, \code{semiPrimeCount()}, and \code{triPrimeCount()} for exploring the partial sieve functions used in prime counting. The optional cutoff in the product counters excludes an initial set of primes; repeated prime factors are included. Each function documents its mathematical definition, supported inputs, and memory requirements.
+          \item Added \code{method = "auto"}, \code{"legendre"}, \code{"meissel"}, and \code{"lehmer"} to \code{primeCount()}. Explicit choices use the named algorithm for all accepted inputs. The new argument follows \code{nThreads}, preserving existing positional calls. The \code{"auto"} policy uses lookup/sieve counting below 100000, Legendre below 1e10, and Meissel for larger inputs, except that inputs of at least 1e12 with at least six usable threads select Lehmer. Usable threads are the requested count capped by the available hardware.
           \item Added ranking, sampling, and iterator random access for supported multiset partitions, including GMP support for large ranks.
           \item Added parallel generation of supported multiset partitions. \code{lower} and \code{upper} now index matching partitions in lexicographical order, including equivalent sum/equality calls to \code{comboGeneral()}. Previously, supplying \code{lower} could select ordinary combination candidates instead of matching partitions, so existing bounded calls may return different results.
         }
@@ -27,6 +31,7 @@
 
     \subsection{Improvements}{
         \itemize{
+          \item Corrected the \code{primeCount()} help's inclusive endpoint, Legendre cutoff, and Phi recurrence, and documented the Meissel and Lehmer formulas, threading behavior, exact result types, and memory requirements.
           \item Documented that supported sum/equality permutation calls without \code{lower} generate matching partitions followed by each partition's permutations. Supplying \code{lower} selects ordinary permutation candidates instead. Supported partitions and compositions use lexicographical matching-result order.
           \item Clarified that zeros in permutations are actual elements, unlike padding in non-weak compositions.
         }

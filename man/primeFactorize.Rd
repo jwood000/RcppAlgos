@@ -12,7 +12,10 @@ primeFactorize(v, namedList = FALSE, nThreads = NULL)
 \arguments{
     \item{v}{Vector of integers or numeric values. Non-integral values will be cured to whole numbers.}
     \item{namedList}{Logical flag. If \code{TRUE} and the \code{length(v) > 1}, a named list is returned. The default is \code{FALSE}.}
-    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads.}
 }
 \details{
 As noted in the Description section above, this algorithm is based on the "factorize.c" source code from the gmp library. Much of the code in RcppAlgos::primeFactorize is a straightforward translation from multiple precision C data types to standard C++ data types. A crucial part of the algorithm's efficiency is based on quickly determining \href{https://en.wikipedia.org/wiki/Primality_test}{primality}, which is easily computed with gmp. However, with standard C++, this is quite challenging. Much of the research for RcppAlgos::primeFactorize was focused on developing an algorithm that could accurately and efficiently compute primality.

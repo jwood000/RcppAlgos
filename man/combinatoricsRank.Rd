@@ -19,7 +19,10 @@ permuteRank(..., v, repetition = FALSE, freqs = NULL, nThreads = NULL)
   \item{v}{Source vector. If \code{v} is a positive integer, it will be converted to the sequence \code{1:v}. If \code{v} is a negative integer, it will be converted to the sequence \code{v:-1}. All atomic types are supported (See \code{\link{is.atomic}}).}
   \item{repetition}{Logical value indicating whether combinations/permutations should be with or without repetition. The default is \code{FALSE}.}
   \item{freqs}{A vector of frequencies used for producing all combinations/permutations of a multiset of \code{v}. Each element of \code{freqs} represents how many times each element of the source vector, \code{v}, is repeated. It is analogous to the \code{times} argument in \code{\link[base]{rep}}. The default value is \code{NULL}.}
-  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+  \item{nThreads}{Requested number of threads. The default is
+  \code{NULL} for serial execution. Requests are capped by the available
+  hardware and the useful work in the calculation. Small or simple cases
+  may use fewer threads.}
  }
 \details{
 These algorithms rely on efficiently ranking the \eqn{n^{th}}{nth} lexicographical combination/permutation.

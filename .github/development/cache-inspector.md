@@ -6,7 +6,8 @@ along with phase timings and estimates of storage used by the sieve. It is
 available only in the isolated developer build created by the
 [inspector toolkit](prime-sieve-inspector/README.md). The production package
 contains no inspector hooks, wrapper, registration, or extra kernel variants.
-Ordinary `primeSieve()` retains its interface and default sizing policy.
+Ordinary `primeSieve()` calls use the production sizing policy. Count-only
+calls are not inspected.
 
 The inspector measures elapsed time and records data structure sizes. It does
 **not** measure cache hits, misses, cache residency, memory bandwidth, or hardware
@@ -153,61 +154,23 @@ The number of segments, bucket scheduling, allocation, and worker eligibility
 can also change at the same point. Hardware performance counters would require
 a separate platform-specific profiling experiment.
 
-## Developer validation
+## Historical validation and current workflow
 
-These are historical checks of the instrumented implementation. For the current
-build-and-test command, use the [toolkit README](prime-sieve-inspector/README.md).
-The production source files have since been restored to the uninstrumented base.
+The original inspector was checked against commit `0364f49` with Apple Clang
+17 ARM64 C++11 `-O3`. Fifteen alternating warmed native runs found ordinary
+calls with instrumentation disabled close to the uninstrumented baseline:
+2.034/2.037 ms at `1...1e7`, 22.808/22.647 ms at `1...1e8`, 1.112/1.124 ms
+near `1e12`, and 13.590/13.661 ms near `1e15` (the last two widths were `1e6`).
+The fixed native policy used one physical core, ten available threads and one
+requested worker, so the last workload selected Big. These measurements are
+historical instrumentation checks, not portable performance guarantees.
+Twenty-eight additional native output comparisons passed ASan/UBSan, including
+segment overrides and parallel execution.
 
-Normal calls were compared with commit `0364f49` using a standalone Apple
-Clang 17 ARM64 C++11 `-O3` build. After warming each version, 15 runs alternated
-execution order; these are median native milliseconds, excluding R conversion:
-
-| Interval | Committed baseline | Inspector disabled |
-|---|---:|---:|
-| `1 ... 1e7` | 2.034 | 2.037 |
-| `1 ... 1e8` | 22.808 | 22.647 |
-| `1e12 ... 1e12 + 1e6` | 1.112 | 1.124 |
-| `1e15 ... 1e15 + 1e6` | 13.590 | 13.661 |
-
-These native checks used a fixed policy of one physical core and ten available
-threads, with one requested worker. That makes the final workload Big; it is
-not the normal ten-physical-core policy used by the later measurement suite.
-These local measurements check for instrumentation regressions, not a portable
-performance guarantee. Twenty-eight additional native comparisons matched the
-committed implementation under ASan/UBSan, including segment overrides and
-parallel execution.
-
-The native registration was regenerated with `cpp11::cpp_register(".")`.
-This updates `src/cpp11.cpp` and also creates `R/cpp11.R`. This repository uses
-hand-written R wrappers and does not track that generated R file. During this
-change, `R/cpp11.R` was absent before generation, and the newly generated file
-was removed afterward. Preserve any pre-existing file or local edits when
-repeating the workflow; review generated changes before retaining them.
-
-The installation command verified for this change was:
-
-```sh
-MAKEFLAGS=-j4 R CMD INSTALL --preclean --no-multiarch \
-    --library=/tmp/rcppalgos-inspector-library /tmp/rcppalgos-inspector-package
-```
-
-Here the source directory was a fresh copy of tracked package sources plus the
-new helper files, with no cached object files, and the development library
-directory already existed. Use your own source and library paths when repeating
-the command.
-
-After installation, load that specific library in a fresh R process and run
-both focused test files:
-
-```r
-library(RcppAlgos, lib.loc = "/path/to/development-library")
-testthat::test_file("/path/to/build/package/tests/testthat/testCacheInspector.R",
-                    reporter = "summary", stop_on_failure = TRUE)
-testthat::test_file("/path/to/build/package/tests/testthat/testPrimeSieve.R",
-                    reporter = "summary", stop_on_failure = TRUE)
-```
-
-These commands were verified against the modified package. The inspector tests
-cover default and overridden sizes, independent prime outputs, kernel changes,
-parallel reporting, serial fallback, and invalid or unsafe byte budgets.
+Use the [toolkit README](prime-sieve-inspector/README.md) for the maintained
+isolated build, focused tests, exact dated-study reconstruction, and registration
+workflow. The toolkit tests default/overridden sizes, independent prime outputs,
+kernel changes, parallel reporting, fallback and invalid byte budgets. Its
+current patch follows production changes separately from the frozen study.
+Neither this guide nor the old timing records claim a full `R CMD check`,
+current-HEAD sanitizer run, hardware-counter measurement or cross-platform study.

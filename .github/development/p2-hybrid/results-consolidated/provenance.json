@@ -1,0 +1,34 @@
+{
+  "historical_studies_commit": "36303eb268288a2449e348ba6d5b911ffb2fac51",
+  "computational_baseline": "8b43ed790435b22eb9ec02627379082fe7deb103",
+  "compiler": "Apple clang version 17.0.0 (clang-1700.0.13.3)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin\n",
+  "platform": "macOS-15.7.4-arm64-arm-64bit",
+  "flags": "-std=c++11 -O3 -pthread; debug symbols and frame pointers",
+  "measurement": "Native isolated P2 excludes prepared-table setup; complete method is setup+Phi+P2+P3+teardown. No R adapter or diagnostic instrumentation inside timers.",
+  "cohorts": {
+    "focus": {
+      "rows": 8840,
+      "processes": 2210,
+      "seed": 2026110711,
+      "sha256": "b6a61faefe1f35976718bc3e19db79108ba1a9cb71f6605a52a755c7cc1533a0",
+      "suite_sha256": "dacedfe45d03e3d658375a8c4b2e7a3e2d9b4f63fd592e1b40036fed6862a553",
+      "candidate_sha256": "2d6e81e0964aa354b45708c6e99cd96cb32aab83773523f4ca78d32326b9649c"
+    },
+    "holdout": {
+      "rows": 3264,
+      "processes": 816,
+      "seed": 2026110712,
+      "sha256": "9e72a5015f9120c7ce18569f5885a1bc5d021aba15898230104673b92b71823f",
+      "suite_sha256": "dacedfe45d03e3d658375a8c4b2e7a3e2d9b4f63fd592e1b40036fed6862a553",
+      "candidate_sha256": "2d6e81e0964aa354b45708c6e99cd96cb32aab83773523f4ca78d32326b9649c"
+    }
+  },
+  "raw_files": {
+    "focus.csv.gz": "b6a61faefe1f35976718bc3e19db79108ba1a9cb71f6605a52a755c7cc1533a0",
+    "holdout.csv.gz": "9e72a5015f9120c7ce18569f5885a1bc5d021aba15898230104673b92b71823f",
+    "suite.json": "dacedfe45d03e3d658375a8c4b2e7a3e2d9b4f63fd592e1b40036fed6862a553",
+    "expectations.json": "3e86ed1b51429179b1b91ccd2485bdfd82cac7f0a4389cd07361e5461962bab8",
+    "memory.csv": "76d8a6ef6fdf3b1e4e7f0025e8a6e3464584c5b479a8ce144fe7c4b57fce52f2"
+  },
+  "note": "Original full metadata, exploratory variants and analysis outputs are recoverable from historical_studies_commit. Existing raw samples are unchanged."
+}

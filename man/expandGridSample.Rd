@@ -21,7 +21,10 @@ expandGridSample(
   \item{n}{Number of results to return. The default is \code{NULL}.}
   \item{sampleVec}{A vector of numbers representing the lexicographical partition of groups to return. Accepts vectors of class \code{bigz} as well as vectors of characters}
   \item{seed}{Random seed initialization. The default is \code{NULL}. N.B. If the gmp library is needed, this parameter must be set in order to have reproducible results (\emph{E.g} \code{set.seed()} has no effect in these cases).}
-  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+  \item{nThreads}{Requested number of threads. The default is
+  \code{NULL} for serial execution. Requests are capped by the available
+  hardware and the useful work in the calculation. Small or simple cases
+  may use fewer threads.}
   \item{namedSample}{Logical flag. If \code{TRUE}, \code{rownames} corresponding to the lexicographical result, will be added to the returned matrix. The default is \code{FALSE}.}
   \item{return_df}{Logical flag to force the output to be a \code{data.frame}. The default is \code{FALSE}.}
 }

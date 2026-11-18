@@ -12,7 +12,10 @@ divisorsRcpp(v, namedList = FALSE, nThreads = NULL)
 \arguments{
     \item{v}{Vector of integers or numeric values. Non-integral values will be coerced to whole numbers.}
     \item{namedList}{Logical flag. If \code{TRUE} and the \code{length(v) > 1}, a named list is returned. The default is \code{FALSE}.}
-    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads.}
 }
 \details{
 Efficient algorithm that builds on \code{\link{primeFactorize}} to generate the complete factorization of many numbers.

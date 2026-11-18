@@ -46,6 +46,11 @@ before compilation; resolve it deliberately instead of forcing an application.
 Successful patch application alone is not evidence that new algorithm changes
 were instrumented appropriately—review phase boundaries when the sieve changes.
 
+The current patch follows the shared generation/counting kernels. Inspection
+still reports generated prime vectors; count-only calls remain uninspected.
+Compaction-buffer storage describes the per-wheel scratch capacity used by
+generation, including after that extraction code moved into a shared helper.
+
 ## Reconstruct the recorded study
 
 `studies/2026-11-01/` preserves the original patch, helpers, source hashes, and
@@ -139,3 +144,12 @@ archived bundle remained byte-for-byte identical to its original materials,
 and its reconstruction matched all eight source hashes. Reverse-applying the
 current patch restored all four production files exactly. This refresh did not
 rerun performance benchmarks or a full `R CMD check`.
+
+During the November 17 documentation consolidation, the current patch was
+refreshed for output slots allocated after useful-worker selection. It applied
+cleanly to the then-current working sources, and an isolated installation
+passed 119 inspector and 213 prime-sieve expectations. Production sources and
+the dated study bundle were unchanged. The C++11 native confirmation workflow
+also compiled and passed 36 output comparisons with one repeat. These were
+workflow checks; the recorded performance study, sanitizer checks and full
+`R CMD check` were not rerun.

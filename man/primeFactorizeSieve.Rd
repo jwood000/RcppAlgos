@@ -13,7 +13,10 @@ primeFactorizeSieve(bound1, bound2 = NULL, namedList = FALSE, nThreads = NULL)
     \item{bound1}{Positive integer or numeric value.}
     \item{bound2}{Positive integer or numeric value.}
     \item{namedList}{Logical flag. If \code{TRUE}, a named list is returned. The default is \code{FALSE}.}
-    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads.}
 }
 \details{
 This function is useful when many prime factorizations are needed. Instead of generating the prime factorization on the fly, one can reference the indices/names of the generated list.

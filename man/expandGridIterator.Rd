@@ -16,7 +16,10 @@ expandGridIter(..., nThreads = NULL, return_df = FALSE)
 }
 \arguments{
   \item{...}{vectors, factors or a list containing these. (See \code{?expand.grid}).}
-  \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+  \item{nThreads}{Requested number of threads. The default is
+  \code{NULL} for serial execution. Requests are capped by the available
+  hardware and the useful work in the calculation. Small or simple cases
+  may use fewer threads.}
   \item{return_df}{Logical flag to force the output to be a \code{data.frame}. The default is \code{FALSE}.}
 }
 

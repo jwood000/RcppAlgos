@@ -10,9 +10,10 @@ eulerPhiSieve <- function(bound1, bound2 = NULL,
                  nThreads, pkgEnv$maxThreads))
 }
 
-primeSieve <- function(bound1, bound2 = NULL, nThreads = NULL) {
+primeSieve <- function(bound1, bound2 = NULL, nThreads = NULL,
+                        countOnly = FALSE) {
     return(.Call(`_RcppAlgos_PrimeSieveCpp`, bound1, bound2, nThreads,
-                 pkgEnv$nCores, pkgEnv$maxThreads))
+                 pkgEnv$nCores, pkgEnv$maxThreads, countOnly))
 }
 
 divisorsSieve <- function(bound1, bound2 = NULL,
@@ -42,6 +43,28 @@ isPrimeRcpp <- function(v, namedVector = FALSE, nThreads = NULL) {
                  FALSE, nThreads, pkgEnv$maxThreads))
 }
 
-primeCount <- function(n, nThreads = NULL) {
-    return(.Call(`_RcppAlgos_PrimeCountCpp`, n, nThreads, pkgEnv$maxThreads))
+primeCount <- function(n, nThreads = NULL, method = "auto") {
+    method <- match.arg(method, c("auto", "legendre", "meissel", "lehmer"))
+    return(.Call(`_RcppAlgos_PrimeCountCpp`, n, nThreads,
+                 pkgEnv$maxThreads, method))
+}
+
+nthPrime <- function(n, nThreads = NULL) {
+    return(.Call(`_RcppAlgos_NthPrimeCpp`, n, nThreads,
+                 pkgEnv$maxThreads, pkgEnv$nCores))
+}
+
+primePhi <- function(n, a, nThreads = NULL) {
+    return(.Call(`_RcppAlgos_PrimePhiCpp`, n, a, nThreads,
+                 pkgEnv$maxThreads))
+}
+
+semiPrimeCount <- function(n, a = 0, nThreads = NULL) {
+    return(.Call(`_RcppAlgos_SemiPrimeCountCpp`, n, a, nThreads,
+                 pkgEnv$maxThreads))
+}
+
+triPrimeCount <- function(n, a = 0, nThreads = NULL) {
+    return(.Call(`_RcppAlgos_TriPrimeCountCpp`, n, a, nThreads,
+                 pkgEnv$maxThreads))
 }

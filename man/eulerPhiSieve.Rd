@@ -13,7 +13,10 @@ eulerPhiSieve(bound1, bound2 = NULL, namedVector = FALSE, nThreads = NULL)
     \item{bound1}{Positive integer or numeric value.}
     \item{bound2}{Positive integer or numeric value.}
     \item{namedVector}{Logical flag. If \code{TRUE}, a named vector is returned. The default is \code{FALSE}.}
-    \item{nThreads}{Specific number of threads to be used. The default is \code{NULL}.}
+    \item{nThreads}{Requested number of threads. The default is
+    \code{NULL} for serial execution. Requests are capped by the available
+    hardware and the useful work in the calculation. Small or simple cases
+    may use fewer threads.}
 }
 \details{
 For the simple case (i.e. when \code{bound2 = NULL}), this algorithm first generates all primes up to \eqn{n} via the sieve of Eratosthenes. We use these primes to sieve over the sequence \code{1:n}, dividing each value by \eqn{p}, creating a temporary value that will be subtracted from the original value at each index (i.e. equivalent to multiply each index by \eqn{(1 - 1/p)} but more efficient as we don't have to deal with floating point numbers). The case when \code{is.null(bound2) = FALSE} is more complicated but the basic ideas still hold.
@@ -39,6 +42,10 @@ The maximum allowed value is \eqn{2^{53} - 1}{2^53 - 1}.
 \item{\href{https://github.com/ridiculousfish/libdivide}{github.com/ridiculousfish/libdivide}}
 \item{\href{https://en.wikipedia.org/wiki/Double-precision_floating-point_format}{53-bit significand precision}}
 }
+}
+\seealso{
+\code{\link{primePhi}} for the different partial-sieve function
+\eqn{\Phi(n, a)} used in prime counting.
 }
 \examples{
 ## Generate some random data
