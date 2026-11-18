@@ -84,6 +84,11 @@
   `primeSieve(1.5e9, 1.5e9 + 1e5)`
   ([Issue](https://github.com/jwood000/RcppAlgos/issues/84)
   [\#84](https://github.com/jwood000/RcppAlgos/issues/84)).
+- Fixed potential R session termination when parallel workers encounter
+  errors or threads cannot be started. Failures are now safely reported
+  as R errors after active workers finish
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/87)
+  [\#87](https://github.com/jwood000/RcppAlgos/issues/87)).
 
 ### Improvements
 
