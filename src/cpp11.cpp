@@ -258,10 +258,10 @@ extern "C" SEXP _RcppAlgos_PollardRhoContainer(SEXP Rv, SEXP RNamed, SEXP RbPrim
   END_CPP11
 }
 // PrimeCount.cpp
-SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, std::string method);
-extern "C" SEXP _RcppAlgos_PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, SEXP method) {
+SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, SEXP Rmethod);
+extern "C" SEXP _RcppAlgos_PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads, SEXP Rmethod) {
   BEGIN_CPP11
-    return cpp11::as_sexp(PrimeCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<std::string>>(method)));
+    return cpp11::as_sexp(PrimeCountCpp(cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rn), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RNumThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(RmaxThreads), cpp11::as_cpp<cpp11::decay_t<SEXP>>(Rmethod)));
   END_CPP11
 }
 // PrimeSieve.cpp

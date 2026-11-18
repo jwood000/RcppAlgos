@@ -7,10 +7,13 @@
 
 [[cpp11::register]]
 SEXP PrimeCountCpp(SEXP Rn, SEXP RNumThreads, SEXP RmaxThreads,
-                   std::string method) {
+                   SEXP Rmethod) {
+
     double dblNum;
     CppConvert::convertPrimitive(Rn, dblNum, VecType::Numeric, "n");
+
     const std::int64_t n = static_cast<std::int64_t>(dblNum);
+    const std::string method = cpp11::as_cpp<std::string>(Rmethod);
 
     int nThreads = 1;
     int maxThreads = 1;
