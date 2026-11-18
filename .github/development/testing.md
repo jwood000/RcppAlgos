@@ -154,6 +154,12 @@ races; use TSan for that purpose.
 `phi-parallel --batch-only` checks callable transfers and exception-safe batch
 lifetimes with at most two workers, without running the broader Phi cases.
 
+Validation on November 18, 2026 (macOS arm64, `cd688747`): all 34 native runs
+passed under ASan/UBSan and TSan without diagnostics. Temporary fixture-only
+budget changes limited execution to two workers. Wider concurrency,
+six-worker automatic Lehmer execution, and `pi-prime --wide` were not run;
+direct Lehmer and policy-selection checks remained covered.
+
 ## Scheduler bounds and worker failures
 
 The preparers verify expected production structure, then create instrumented
