@@ -1,7 +1,7 @@
 # Number of combinations/permutations
 
 Calculate the number of combinations/permutations of a vector chosen
-\\m\\ at a time with or without replacement. Additionally, these
+$`m`$ at a time with or without replacement. Additionally, these
 functions can calculate the number of combinations/permutations of
 multisets.
 
@@ -61,7 +61,7 @@ combinations/permutations.
 
 ## Note
 
-When the number of results exceeds \\2^{53} - 1\\, a number of class
+When the number of results exceeds $`2^{53} - 1`$, a number of class
 `bigz` is returned.
 
 ## See also

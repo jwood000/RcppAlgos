@@ -164,17 +164,23 @@ permuteIter(v, m = NULL, repetition = FALSE, freqs = NULL, ...)
 - Parallel:
 
   Logical value indicating whether combinations/permutations should be
-  generated in parallel using \\n - 1\\ threads, where \\n\\ is the
-  maximum number of threads. The default is `FALSE`. If `nThreads` is
-  not `NULL`, it will be given preference (*e.g.* if user has 8 threads
-  with `Parallel = TRUE` and `nThreads = 4`, only 4 threads will be
-  spawned). If your system is single-threaded, the arguments `Parallel`
-  and `nThreads` are ignored.
+  generated in parallel. The default is `FALSE`. If `TRUE` and
+  `nThreads = NULL`, up to $`n - 1`$ threads are used, where $`n`$ is
+  the number of threads available on your system (both threads may be
+  used on a two-thread system). If `nThreads` is not `NULL`, it will be
+  given preference (*e.g.* with 8 available threads, `Parallel = TRUE`
+  and `nThreads = 4`, up to 4 threads may be used). In either case, the
+  actual number of threads depends on the useful work in the
+  calculation; small or simple cases may use fewer threads. If your
+  system is single-threaded, the arguments `Parallel` and `nThreads` are
+  ignored.
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`. See
-  `Parallel`.
+  Requested number of threads. The default is `NULL` for serial
+  execution unless `Parallel = TRUE`. Requests are capped by the
+  available hardware and the useful work in the calculation. Small or
+  simple cases may use fewer threads. See `Parallel`.
 
 - tolerance:
 
@@ -182,7 +188,7 @@ permuteIter(v, m = NULL, repetition = FALSE, freqs = NULL, ...)
   utilized when a constraint is applied on a numeric vector. The default
   value is 0 when it can be determined that whole values are being
   utilized, otherwise it is `sqrt(.Machine$double.eps)` which is
-  approximately \\1.5e-8\\. N.B. If the input vector is of type integer,
+  approximately $`1.5e-8`$. N.B. If the input vector is of type integer,
   this parameter will be ignored and strict equality will be enforced.
 
 - FUN.VALUE:
@@ -194,7 +200,7 @@ permuteIter(v, m = NULL, repetition = FALSE, freqs = NULL, ...)
 
 - If `nextIter` or `prevIter` is called, a vector is returned
 
-- Otherwise, a matrix with \\m\\ or \\m + 1\\ columns, depending on the
+- Otherwise, a matrix with $`m`$ or $`m + 1`$ columns, depending on the
   value of `keepResults`
 
 - If `FUN` is utilized, `FUN.VALUE = NULL`, and either `nextIter` or
@@ -298,10 +304,10 @@ and
   `NULL` –or– if the class of the vector passed is `logical`,
   `character`, `raw`, `factor`, or `complex`, the constraint check will
   not be carried out. This is equivalent to simply finding all
-  combinations/permutations of \\v\\ choose \\m\\.
+  combinations/permutations of $`v`$ choose $`m`$.
 
 - The maximum number of combinations/permutations that can be generated
-  at one time is \\2^{31} - 1\\.
+  at one time is $`2^{31} - 1`$.
 
 - Factor vectors are accepted. Class and level attributes are preserved
   except when `FUN` is used.

@@ -6,7 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Constraints in RcppAlgos: Constraint-Driven Combinatorial Enumeration • RcppAlgos</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -20,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +75,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">2026-10-16</h4>
+            <h4 data-toc-skip class="date">2026-11-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/CombPermConstraints.Rmd" class="external-link"><code>vignettes/CombPermConstraints.Rmd</code></a></small>
       <div class="d-none name"><code>CombPermConstraints.Rmd</code></div>
@@ -116,7 +122,7 @@ also set <code>keepResults = TRUE</code> (more on this later).</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"RcppAlgos"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '2.10.2'</span></span>
+<span><span class="co">#&gt; [1] '2.10.3'</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
@@ -152,10 +158,10 @@ also set <code>keepResults = TRUE</code> (more on this later).</p>
 <span><span class="co">#&gt; Warning in microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"), : less</span></span>
 <span><span class="co">#&gt; accurate nanosecond times to avoid potential integer overflows</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;      expr        min        lq       mean     median         uq       max neval</span></span>
-<span><span class="co">#&gt;    serial   3.553696   3.53826   2.380518   3.376396   3.231047 0.2241168   100</span></span>
-<span><span class="co">#&gt;  parallel   1.000000   1.00000   1.000000   1.000000   1.000000 1.0000000   100</span></span>
-<span><span class="co">#&gt;  combnSum 179.385784 166.98372 107.478717 156.157469 145.623739 5.2626977   100</span></span></code></pre></div>
+<span><span class="co">#&gt;      expr        min         lq       mean     median         uq       max neval</span></span>
+<span><span class="co">#&gt;    serial   3.607002   3.375352   2.962785   3.219318   3.042854  2.029336   100</span></span>
+<span><span class="co">#&gt;  parallel   1.000000   1.000000   1.000000   1.000000   1.000000  1.000000   100</span></span>
+<span><span class="co">#&gt;  combnSum 172.865302 151.989019 133.406977 143.990664 136.275861 88.094053   100</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="faster-than-rowsums-and-rowmeans">Faster than <code>rowSums</code> and <code>rowMeans</code><a class="anchor" aria-label="anchor" href="#faster-than-rowsums-and-rowmeans"></a>
 </h3>
@@ -172,9 +178,9 @@ highly efficient <code>rowSums</code>/<code>rowMeans</code>
 <span>              rowsums <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
 <span><span class="co">#&gt;      expr      min       lq     mean   median       uq      max neval</span></span>
-<span><span class="co">#&gt;    serial 3.199242 3.256680 3.103672 3.038256 2.953369 4.166331   100</span></span>
+<span><span class="co">#&gt;    serial 3.209338 3.263483 3.062705 3.078841 3.001418 1.855496   100</span></span>
 <span><span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100</span></span>
-<span><span class="co">#&gt;   rowsums 1.937897 1.865647 1.777153 1.713324 1.663387 1.755051   100</span></span>
+<span><span class="co">#&gt;   rowsums 1.924158 1.857400 1.740365 1.729305 1.683055 0.746824   100</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowSums</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>,</span>
 <span>          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>,</span>
@@ -187,10 +193,10 @@ highly efficient <code>rowSums</code>/<code>rowMeans</code>
 <span>             parallel <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>, constraintFun <span class="op">=</span> <span class="st">"mean"</span>, Parallel <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
 <span>             rowmeans <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;      expr      min       lq     mean   median       uq      max neval</span></span>
-<span><span class="co">#&gt;    serial 2.179622 2.052607 2.083628 2.038001 2.015864 3.108075   100</span></span>
-<span><span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100</span></span>
-<span><span class="co">#&gt;  rowmeans 1.450018 1.333029 1.318941 1.315303 1.298094 1.289494   100</span></span>
+<span><span class="co">#&gt;      expr      min       lq     mean   median       uq       max neval</span></span>
+<span><span class="co">#&gt;    serial 2.023427 2.011975 2.006793 2.005144 1.998356 1.4792665   100</span></span>
+<span><span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100</span></span>
+<span><span class="co">#&gt;  rowmeans 1.360293 1.333271 1.306581 1.319539 1.311027 0.6128386   100</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">rowMeans</a></span><span class="op">(</span><span class="va">combs</span><span class="op">)</span>,</span>
 <span>          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">10</span>,</span>
@@ -406,13 +412,25 @@ throw off precision in floating point operations.</p>
 <div class="section level3">
 <h3 id="output-order-with-permutegeneral">Output Order with <code>permuteGeneral</code><a class="anchor" aria-label="anchor" href="#output-order-with-permutegeneral"></a>
 </h3>
-<p>Typically, when we call <code>permuteGeneral</code>, the output is in
-lexicographical order, however when we apply a constraint, the
-underlying algorithm checks against combinations only, as this is more
-efficient. If a particular combination meets a constraint, then all
-permutations of that vector also meet that constraint, so there is no
-need to check them. For this reason, the output isn’t in order.
-Observe:</p>
+<p>Unconstrained <code>permuteGeneral</code> output is in
+lexicographical order. Constrained calls with an explicit
+<code>lower</code>, including <code>lower = 1</code>, test ordinary
+permutation ranks from <code>lower</code> through <code>upper</code> and
+return only matches, retaining that order. With no <code>upper</code>,
+testing continues through all remaining candidates.</p>
+<p>Without <code>lower</code>, supported sum/equality cases use
+partition-then-permute order: visit matching partitions in
+lexicographical order and emit each partition’s distinct permutations in
+lexicographical order before moving to the next partition.
+<code>upper</code> alone caps matching rows in this order. An equivalent
+composition algorithm does not change this choice;
+<code>compositionsGeneral</code> provides lexicographic ordering across
+all matches.</p>
+<p>Other constraints can also work by testing combinations and then
+permuting each match, as in the example below. Special constraints such
+as products involving negative values instead test ordinary candidates.
+Do not assume all constrained calls without <code>lower</code> have the
+same order.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">7</span><span class="op">)</span>, <span class="fl">3</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span>,</span>
 <span>               constraintFun <span class="op">=</span> <span class="st">"mean"</span>, comparisonFun <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"&gt;"</span>, <span class="st">"&lt;"</span><span class="op">)</span>,</span>
@@ -510,7 +528,7 @@ combinatorial explosion without fear of having to restart R.</p>
 <span><span class="co">## Test one iteration to see if we need to relax the tolerance</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">iter</span><span class="op">@</span><span class="va">nextIter</span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   2.365   0.004   2.369</span></span>
+<span><span class="co">#&gt;   2.328   0.002   2.330</span></span>
 <span></span>
 <span><span class="co">## That's a bit much per iteration... Let's loosen things a little by</span></span>
 <span><span class="co">## increasing the tolerance from sqrt(.Machine$double.eps) ~= 1.49e-8</span></span>

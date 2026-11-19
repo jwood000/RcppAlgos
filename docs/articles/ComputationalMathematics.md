@@ -28,25 +28,25 @@ microbenchmark(primeSieve(1e6))
 #> Warning in microbenchmark(primeSieve(1000000)): less accurate nanosecond times to avoid
 #> potential integer overflows
 #> Unit: microseconds
-#>               expr     min      lq     mean median     uq     max neval
-#>  primeSieve(1e+06) 470.762 478.798 507.6329 495.69 523.57 779.369   100
+#>               expr     min       lq     mean  median       uq     max neval
+#>  primeSieve(1e+06) 161.909 165.2915 168.8085 166.706 170.2115 239.153   100
 
 ## Single threaded primes under a billion!!!
 system.time(primeSieve(10^9))
 #>    user  system elapsed 
-#>   0.689   0.021   0.710
+#>   0.367   0.017   0.384
 
 ## Using 8 threads we can get under 0.5 seconds!!!
 system.time(primeSieve(10^9, nThreads = 8))
 #>    user  system elapsed 
-#>   1.018   0.025   0.167
+#>   0.488   0.019   0.088
 
 ## Quickly generate large primes over small interval. N.B. The
 ## order for the bounds does not matter.
 options(scipen = 50)
 system.time(myPs <- primeSieve(10^13 + 10^3, 10^13))
 #>    user  system elapsed 
-#>   0.004   0.000   0.004
+#>   0.000   0.000   0.002
 
 myPs
 #>  [1] 10000000000037 10000000000051 10000000000099 10000000000129 10000000000183
@@ -73,19 +73,19 @@ Oliveira](https://sweet.ua.pt/tos/software/prime_sieve.html).
 ## Version <= 2.2.0.. i.e. older versions
 system.time(old <- RcppAlgos220::primeSieve(1e15, 1e15 + 1e9))
 #>    user  system elapsed 
-#>   2.257   0.031   2.309
+#>   1.977   0.026   2.008
 
 invisible(gc())
 ## v2.3.0+ is faster
 system.time(a <- primeSieve(1e15, 1e15 + 1e9))
 #>    user  system elapsed 
-#>   0.961   0.022   0.984
+#>   0.743   0.019   0.762
 
 invisible(gc())
 ## And using nThreads is much much faster
 system.time(b <- primeSieve(1e15, 1e15 + 1e9, nThreads = 8))
 #>    user  system elapsed 
-#>   1.654   0.053   0.284
+#>   1.350   0.048   0.221
 
 identical(old, a)
 #> [1] TRUE
@@ -96,60 +96,74 @@ identical(a, b)
 
 ## `primeCount`
 
-The library by Kim Walisch relies on
-[OpenMP](https://en.wikipedia.org/wiki/OpenMP) for parallel computation
-with [Legendre’s
-Formula](https://mathworld.wolfram.com/LegendresFormula.html).
-Currently, the default compiler on `macOS` is `clang`, which does not
-support `OpenMP`. James Balamuta (a.k.a. TheCoatlessProfessor… well at
-least [we think so](https://blog.thecoatlessprofessor.com)) has written
-a great article on this topic, which you can find here:
-<https://blog.thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/index.html>.
-One of the goals of `RcppAlgos` is to be accessible by all users. With
-this in mind, we set out to count primes in parallel *without* `OpenMP`.
+`primeCount` gives the number of primes less than or equal to `n`,
+without constructing a vector of all those primes. It supports Legendre,
+Meissel, and Lehmer methods, all of which return the same exact count
+throughout the supported range.
 
-At first glance, this seems trivial as we have a function in
-`Primes.cpp` called `phiWorker` that counts the primes up to `x`. If you
-look in
-[phi.cpp](https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp)
-in the `primecount` library by Kim Walisch, we see that `OpenMP` does
-its magic on a for loop that makes repeated calls to `phi` (which is
-what `phiWorker` is based on). All we need to do is break this loop into
-*n* intervals where *n* is the number of threads. Simple, right?
+The Legendre implementation and shared partial-sieve routines build on
+the excellent work by [Kim
+Walisch](https://github.com/kimwalisch/primecount), which requires
+OpenMP. One of the original goals was to make parallel prime counting
+available without requiring OpenMP, including with the default macOS
+toolchain. For this reason, `RcppAlgos` uses C++ threads for its
+parallel calculations.
 
-We can certainly do this, but what you will find is that *n - 1* threads
-will complete very quickly and the *n^(th)* thread will be left with a
-heavy computation. In order to alleviate this unbalanced load, we divide
-the loop mentioned above into smaller intervals. The idea is to
-completely calculate `phi` up to a limit *m* using all *n* threads and
-then gradually increase *m*. The advantage here is that we are
-benefiting greatly from the caching done by the work of the previous *n*
-threads.
+By default, `method = "auto"` selects a method based on `n` and the
+number of threads it can use. You can also select a method explicitly,
+which is useful when comparing them on your own inputs. See
+[`?primeCount`](https://jwood000.github.io/RcppAlgos/reference/primeCount.md)
+for the selection rules, counting formulas, and memory requirements.
 
-With this is mind, here are some results:
+Calculations are serial by default. Use `nThreads` for parallel
+computation when the problem is large enough; the actual number of
+threads is limited by the available hardware and useful work.
 
 ``` r
 
-## Enumerate the number of primes below trillion
+## Count the primes less than or equal to a trillion
 system.time(underOneTrillion <- primeCount(10^12))
 #>    user  system elapsed 
-#>   0.085   0.001   0.086
+#>   0.056   0.001   0.056
 
 underOneTrillion
 #> [1] 37607912018
 
-## Enumerate the number of primes below ten billion in 2 milliseconds
-microbenchmark(primeCount(10^10))
-#> Unit: milliseconds
-#>               expr      min       lq     mean   median       uq      max neval
-#>  primeCount(10^10) 1.197938 1.205297 1.222203 1.208516 1.216819 1.770093   100
+## Select a method explicitly
+primeCount(10^6, method = "legendre")
+#> [1] 78498
+primeCount(10^6, method = "meissel")
+#> [1] 78498
+primeCount(10^6, method = "lehmer")
+#> [1] 78498
 
+## Count the primes less than or equal to ten billion
+## and rely on auto choice for the method
+microbenchmark(primeCount(10^10))
+#> Unit: microseconds
+#>               expr     min       lq     mean   median      uq      max neval
+#>  primeCount(10^10) 791.259 797.0605 832.4226 833.1815 839.188 1932.781   100
+
+## Use multiple threads for larger inputs
+## again relying on auto choice for the method
 system.time(underOneHundredTrillion <- primeCount(1e14, nThreads = 8))
 #>    user  system elapsed 
-#>   5.017   0.419   0.918
+#>   2.163   0.007   0.317
 
 underOneHundredTrillion
 #> [1] 3204941750802
+
+system.time(primeCount(1e14, nThreads = 8, method = "legendre"))
+#>    user  system elapsed
+#>   3.316   0.026   0.572
+
+system.time(primeCount(1e14, nThreads = 8, method = "meissel"))
+#>    user  system elapsed
+#>   1.755   0.015   0.291
+
+system.time(primeCount(1e14, nThreads = 8, method = "lehmer"))
+#>    user  system elapsed
+#>   1.932   0.006   0.283
 
 ## Still not as fast as Kim Walisch's primecount library:
 cat(paste(
@@ -158,6 +172,84 @@ cat(paste(
 ))
 #> 3204941750802
 #> Seconds: 0.212
+
+cat(paste(
+    system("primecount 1e14 --meissel --time", intern = TRUE),
+    collapse = "\n"
+))
+#> 3204941750802
+#> Seconds: 0.087
+
+## For some reason, lehmer's method is not as efficient as the other
+## methods in the primecount library
+cat(paste(
+    system("primecount 1e14 --lehmer --time", intern = TRUE),
+    collapse = "\n"
+))
+#> 3204941750802
+#> Seconds: 0.404
+```
+
+## `nthPrime`
+
+`nthPrime` finds the prime at a given position, starting with
+`nthPrime(1)` returning 2. For example, `nthPrime(25)` returns 97,
+whereas `primeCount(25)` returns 9.
+
+For larger positions, `nthPrime` combines prime counting with a
+segmented sieve, without storing all preceding primes. Like
+`primeCount`, it runs serially by default and accepts `nThreads` for
+parallel computation when useful. See
+[`?nthPrime`](https://jwood000.github.io/RcppAlgos/reference/nthPrime.md)
+for the supported range.
+
+``` r
+
+nthPrime(25)
+#> [1] 97
+
+## Find the millionth prime
+nthPrime(10^6)
+#> [1] 15485863
+
+## Confirm a prime's position
+p <- nthPrime(1000)
+primeCount(p)
+#> [1] 1000
+primeCount(p - 1)
+#> [1] 999
+```
+
+While `nthPrime` is convenient for finding individual primes by
+position, generating consecutive primes this way repeats the counting
+and search work for every prime. A better approach is to find the two
+endpoints with `nthPrime`, then generate the primes between them with
+`primeSieve`:
+
+``` r
+
+primes_by_position <- function(first, last) {
+    sapply(seq.int(first, last), nthPrime)
+}
+
+primes_by_interval <- function(first, last) {
+    lower <- nthPrime(first)
+    upper <- nthPrime(last)
+    primeSieve(lower, upper)
+}
+
+first <- 1e9
+last <- first + 1000
+
+system.time(by_position <- primes_by_position(first, last))
+#>    user  system elapsed
+#>   2.691   0.003   2.693
+system.time(by_interval <- primes_by_interval(first, last))
+#>    user  system elapsed
+#>   0.007   0.000   0.007
+
+identical(by_position, by_interval)
+#> [1] TRUE
 ```
 
 ## Other Sieving Functions
@@ -180,7 +272,7 @@ numDivisorSieve(20)
 ## If you want the complete factorization from 1 to n, use divisorsList
 system.time(allFacs <- divisorsSieve(10^5, namedList = TRUE))
 #>    user  system elapsed 
-#>   0.020   0.005   0.024
+#>   0.019   0.005   0.024
 
 allFacs[c(4339, 15613, 22080)]
 #> $`4339`
@@ -230,7 +322,7 @@ system.time(a <- eulerPhiSieve(1e12, 1e12 + 1e7))
 ## Using nThreads for greater efficiency
 system.time(b <- eulerPhiSieve(1e12, 1e12 + 1e7, nThreads = 8))
 #>    user  system elapsed 
-#>   0.752   0.040   0.111
+#>   0.745   0.036   0.108
 
 identical(a, b)
 #> [1] TRUE
@@ -286,12 +378,12 @@ isPrimeRcpp(995:1000, namedVector = TRUE)
 
 system.time(a <- primeFactorize(1e12:(1e12 + 1e5)))
 #>    user  system elapsed 
-#>   0.496   0.005   0.503
+#>   0.497   0.006   0.503
 
 ## Using nThreads for greater efficiency
 system.time(b <- primeFactorize(1e12:(1e12 + 1e5), nThreads = 8))
 #>    user  system elapsed 
-#>   0.692   0.006   0.112
+#>   0.698   0.006   0.112
 
 identical(a, b)
 #> [1] TRUE

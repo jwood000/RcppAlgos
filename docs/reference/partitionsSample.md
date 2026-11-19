@@ -3,8 +3,7 @@
 - Generate a specific (lexicographically) or random sample of
   partitions/compositions of a number.
 
-- Produce results in parallel using the `Parallel` or `nThreads`
-  arguments.
+- Produce results in parallel using the `nThreads` argument.
 
 - GMP support allows for exploration of cases where the number of
   partitions/compositions is large.
@@ -52,7 +51,7 @@ compositionsSample(
 
   Width of the partition. If `m = NULL`, the length will be determined
   by the partitioning case (*e.g.* When we are generating distinct
-  partitions of \\n\\, the width will be equal to the smallest \\m\\
+  partitions of $`n`$, the width will be equal to the smallest $`m`$
   such that `sum(1:m) >= n`).
 
 - ...:
@@ -101,7 +100,10 @@ compositionsSample(
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 - namedSample:
 
@@ -111,13 +113,13 @@ compositionsSample(
 
 ## Details
 
-These algorithms rely on efficiently generating the \\n^{th}\\
+These algorithms rely on efficiently generating the $`n^{th}`$
 lexicographical partition. This is the process of
 [unranking](https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation).
 
 ## Value
 
-A matrix is returned with each row containing a vector of length \\m\\.
+A matrix is returned with each row containing a vector of length $`m`$.
 
 ## References
 
@@ -133,14 +135,16 @@ Joseph Wood
 
 ## Note
 
-- `partitionsSample` is not available for the following cases:
+- Supported multiset partitions can be sampled using `freqs`, including
+  explicit ranks through `sampleVec` and GMP-sized result spaces.
 
-  - With standard multisets. If zero is the only element with a
-    non-trivial multiplicity, sampling is allowed (*e.g.*
-    `partitionsSample(0:100, freqs = c(100, rep(1, 100)), n = 2)`)
+- Sampling requires an integer-valued, evenly spaced source vector and
+  an integer target. Irregular source vectors such as
+  `v = c(1, 4, 6, 7, 8)` are not supported.
 
-  - If the source vector is not isomorphic to `1:length(v)` (*e.g.*
-    `v = c(1, 4, 6, 7, 8)`).
+- General multiset compositions can be counted with
+  [`compositionsCount`](https://jwood000.github.io/RcppAlgos/reference/partitionsCount.md),
+  but are not supported by `compositionsSample`.
 
 - `n` and `sampleVec` cannot both be `NULL`.
 
@@ -172,4 +176,11 @@ partitionsSample(100, 10, TRUE, target = 500,
 #> [1,]    1    1    1    1    1   95  100  100  100   100
 #> [2,]    1    1    1    1   16   90   94   96  100   100
 #> [3,]   50   50   50   50   50   50   50   50   50    50
+
+## Retrieve specific multiset partitions
+partitionsSample(1:5, 3, freqs = rep(2, 5), target = 9,
+                 sampleVec = c(1, 4))
+#>      [,1] [,2] [,3]
+#> [1,]    1    3    5
+#> [2,]    2    3    4
 ```

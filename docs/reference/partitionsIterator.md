@@ -49,7 +49,7 @@ compositionsIter(
 
   Width of the partition. If `m = NULL`, the length will be determined
   by the partitioning case (*e.g.* When we are generating distinct
-  partitions of \\n\\, the width will be equal to the smallest \\m\\
+  partitions of $`n`$, the width will be equal to the smallest $`m`$
   such that `sum(1:m) >= n`).
 
 - ...:
@@ -80,7 +80,10 @@ compositionsIter(
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 - tolerance:
 
@@ -88,14 +91,14 @@ compositionsIter(
   utilized when a constraint is applied on a numeric vector. The default
   value is 0 when it can be determined that whole values are being
   utilized, otherwise it is `sqrt(.Machine$double.eps)` which is
-  approximately \\1.5e-8\\. N.B. If the input vector is of type integer,
+  approximately $`1.5e-8`$. N.B. If the input vector is of type integer,
   this parameter will be ignored and strict equality will be enforced.
 
 ## Value
 
 - If `nextIter` is called, a vector is returned
 
-- Otherwise, a matrix with \\m\\ columns
+- Otherwise, a matrix with $`m`$ columns
 
 ## Details
 
@@ -158,16 +161,22 @@ Once you initialize a new iterator, the following methods are available:
       microbenchmark(multi@nextNIter(1e6), serial@nextNIter(1e6))
       microbenchmark(multi@nextNIter(1e3), serial@nextNIter(1e3))
 
-- `nThreads` will be ignored in the following cases (i.e. Generating the
-  \\n^{th}\\ partition in these cases are currently unavailable):
+- Supported multiset partitions allow random access through `[[`,
+  including GMP-sized indices. For general multiset partitions,
+  `nextNIter` and `nextRemaining` currently run serially; random access
+  with a vector of indices can use `nThreads`.
 
-  - With standard multisets. If zero is the only element with a
-    non-trivial multiplicity, multithreading is possible.
+- Random access and multithreading are unavailable for irregular source
+  vectors that do not form an integer-valued arithmetic progression.
 
-  - If the source vector is not isomorphic to `1:length(v)`
+- General multiset compositions can be counted with
+  [`compositionsCount`](https://jwood000.github.io/RcppAlgos/reference/partitionsCount.md),
+  but are not supported by `compositionsIter`.
+
+- Backward traversal through the `prevIter` methods is not available.
 
 - The maximum number of partitions/compositions that can be generated at
-  one time is \\2^{31} - 1\\.
+  one time is $`2^{31} - 1`$.
 
 - If an error occurs while generating results, the iterator's internal
   state is not guaranteed to remain at its previous position. Call
@@ -300,7 +309,7 @@ a@summary()
 #> [1] 37
 #> 
 
-## Multisets... no random access
+## Multiset partitions with random access
 b = partitionsIter(40, 5, freqs = rep(1:4, 10), target = 80)
 b@nextIter()
 #> [1]  1  2  2 35 40
@@ -333,4 +342,9 @@ b@nextIter()
 #> [1]  1  2  5 33 39
 b@currIter()
 #> [1]  1  2  5 33 39
+b[[c(1, 5, 10)]]
+#>      [,1] [,2] [,3] [,4] [,5]
+#> [1,]    1    2    2   35   40
+#> [2,]    1    2    3   35   39
+#> [3,]    1    2    4   36   37
 ```

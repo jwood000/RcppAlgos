@@ -26,7 +26,10 @@ primeFactorizeSieve(bound1, bound2 = NULL, namedList = FALSE, nThreads = NULL)
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 ## Details
 
@@ -46,11 +49,11 @@ This algorithm benefits greatly from the fast integer division library
 ## Value
 
 Returns a named/unnamed list of integer vectors if `max(bound1, bound2)`
-\\\< 2^{31}\\, or a list of numeric vectors otherwise.
+$`< 2^{31}`$, or a list of numeric vectors otherwise.
 
 ## Note
 
-The maximum value for either of the bounds is \\2^{53} - 1\\.
+The maximum value for either of the bounds is $`2^{53} - 1`$.
 
 ## References
 
@@ -84,7 +87,7 @@ mySamp <- sample(10^5, 5*10^4)
 ## to 10^5 (max element from mySamp)
 system.time(allPFacs <- primeFactorizeSieve(10^5))
 #>    user  system elapsed 
-#>   0.016   0.004   0.019 
+#>   0.017   0.004   0.020 
 
 ## Use generated prime factorization for further
 ## analysis by accessing the index of allPFacs
@@ -97,7 +100,7 @@ for (s in mySamp) {
 ## a range is efficient as well
 system.time(primeFactorizeSieve(10^12, 10^12 + 10^5))
 #>    user  system elapsed 
-#>   0.021   0.004   0.026 
+#>   0.022   0.004   0.025 
 
 ## Set 'namedList' to TRUE to return a named list
 primeFactorizeSieve(27, 30, namedList = TRUE)
@@ -117,5 +120,5 @@ primeFactorizeSieve(27, 30, namedList = TRUE)
 ## Using nThreads
 system.time(primeFactorizeSieve(1e4, 5e4, nThreads = 2))
 #>    user  system elapsed 
-#>   0.006   0.002   0.008 
+#>   0.007   0.002   0.008 
 ```
