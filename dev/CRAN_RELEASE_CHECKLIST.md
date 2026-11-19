@@ -19,7 +19,7 @@ This checklist is optimized for small patch releases and CRAN pretests
 
 - [ ] Bump version in `DESCRIPTION` (e.g., `2.9.4` → `2.9.5`).
 - [ ] Update `NEWS.md` with a new top entry.
-- [ ] Update `man/NEWS.Rd` (if shipped) to match `NEWS.md`.
+- [ ] Update `inst/NEWS.Rd` to match `NEWS.md`.
 
 ---
 
@@ -56,7 +56,7 @@ This checklist is optimized for small patch releases and CRAN pretests
 - [ ] Ensure non-package files are excluded in `.Rbuildignore`, at minimum:
   - [ ] `^docs$` (pkgdown output)
   - [ ] `^_pkgdown\.yml$`
-  - [ ] `^CRAN_RELEASE_CHECKLIST\.md$`
+  - [ ] `^dev$` (development files, including `dev/CRAN_RELEASE_CHECKLIST.md`)
   - [ ] Any local tooling directories (e.g., `^ai_git_helpers$`)
 - [ ] Confirm `R CMD build` tarball does not include website/config extras.
 
