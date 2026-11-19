@@ -98,7 +98,7 @@ mySamp <- sample(10^6, 5*10^5)
 ## Generate number of coprime elements for many numbers
 system.time(myPhis <- eulerPhiSieve(10^6))
 #>    user  system elapsed 
-#>   0.008   0.002   0.009 
+#>   0.006   0.002   0.008 
 
 ## Now use result in algorithm
 for (s in mySamp) {
@@ -109,13 +109,13 @@ for (s in mySamp) {
 ## See https://projecteuler.net
 system.time(which.max((1:10^6)/eulerPhiSieve(10^6)))
 #>    user  system elapsed 
-#>   0.009   0.006   0.015 
+#>   0.011   0.003   0.014 
 
 ## Generating number of coprime elements
 ## for every number in a range is no problem
 system.time(myPhiRange <- eulerPhiSieve(10^13, 10^13 + 10^6))
 #>    user  system elapsed 
-#>   0.027   0.001   0.029 
+#>   0.024   0.000   0.024 
 
 ## Returning a named vector
 eulerPhiSieve(10, 20, namedVector = TRUE)
@@ -128,5 +128,5 @@ eulerPhiSieve(10, namedVector = TRUE)
 ## Using nThreads
 system.time(eulerPhiSieve(1e5, 2e5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.002   0.000   0.001 
+#>   0.001   0.000   0.000 
 ```

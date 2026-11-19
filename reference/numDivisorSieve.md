@@ -82,7 +82,7 @@ mySamp <- sample(10^6, 5*10^5)
 ## every number less than a million
 system.time(mySigmas <- numDivisorSieve(10^6))
 #>    user  system elapsed 
-#>   0.008   0.000   0.007 
+#>   0.005   0.000   0.004 
 
 ## Now use result in algorithm
 for (s in mySamp) {
@@ -94,7 +94,7 @@ for (s in mySamp) {
 ## number in a range is no problem
 system.time(sigmaRange <- numDivisorSieve(10^13, 10^13 + 10^6))
 #>    user  system elapsed 
-#>   0.023   0.002   0.025 
+#>   0.019   0.000   0.018 
 
 ## Returning a named vector
 numDivisorSieve(10, 20, namedVector = TRUE)
@@ -107,5 +107,5 @@ numDivisorSieve(10, namedVector = TRUE)
 ## Using nThreads
 system.time(numDivisorSieve(1e5, 2e5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.001   0.000   0.000 
+#>       0       0       0 
 ```

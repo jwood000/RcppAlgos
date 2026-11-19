@@ -162,13 +162,13 @@ primeSieve(100, countOnly = TRUE)
 ## Primes up to one hundred million in no time
 system.time(primeSieve(10^8))
 #>    user  system elapsed 
-#>   0.073   0.018   0.093 
+#>   0.051   0.018   0.070 
 
 ## options(scipen = 50)
 ## Generate large primes over interval
 system.time(myPs <- primeSieve(10^13+10^6, 10^13))
 #>    user  system elapsed 
-#>   0.004   0.000   0.005 
+#>   0.003   0.000   0.004 
 ## Object created is small
 object.size(myPs)
 #> 267696 bytes
@@ -176,5 +176,5 @@ object.size(myPs)
 ## Using nThreads
 system.time(primeSieve(1e7, nThreads = 2))
 #>    user  system elapsed 
-#>   0.006   0.000   0.004 
+#>   0.004   0.000   0.003 
 ```
