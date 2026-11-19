@@ -191,7 +191,7 @@ reprex::reprex({
                      target = 320, n = 3, seed = 111)
 
     #'
-    #' There are sampling algorithms available for most partition cases, but some cases are not covered. For example, with standard multisets, we are currently unable to _efficiently_ generate the _n<sup>th</sup>_ lexicographical result. Another example is when the source vector is not uniform (_e.g._ when the distance between each element is irregular).
+    #' Supported multiset partitions can now be sampled, including by lexicographical position through `sampleVec` and with GMP-sized ranks. Sampling still requires an integer-valued, evenly spaced source vector and an integer target.
     #'
     #' Observe the following:
     #'
@@ -199,11 +199,10 @@ reprex::reprex({
     ## No sampling algorithm available when the source vector is not uniform
     partitionsSample(c(1, 4, 6, 7, 10, seq(11, 100, 7)), 10, n = 1, target = 340)
 
-    ## As stated above, the standard multiset case doesn't work either
-    partitionsSample(0:50, 6, freqs = rep(1:3, 17), n = 2)
+    ## Sample multiset partitions with a reproducible seed
+    partitionsSample(0:50, 6, freqs = rep(1:3, 17), n = 2, seed = 42)
 
-    ## If we use freqs to indicate that zeros can repeat,
-    ## then we can obtain random samples
+    ## Repeated zeros are also supported
     partitionsSample(0:50, 6, freqs = c(50, rep(1, 50)), n = 3, seed = 222)
 
     ## Even works when the vector is restricted in regards to the target
@@ -211,11 +210,9 @@ reprex::reprex({
                      n = 3, seed = 222, target = 100)
 
     #'
-    #' There is ongoing research in this area and our goal is to eventually be able to cover the standard multiset case.
-    #'
     #' ## `compositionsSample`
     #'
-    #' The `compositionsSample` function allows one to draw a random sample of compositions of a number. Many of the features present in `comboSample` and `permuteSample` are available in `compositionsSample`.
+    #' The `compositionsSample` function allows one to draw a random sample of compositions of a number. Many of the features present in `comboSample` and `permuteSample` are available in `compositionsSample`. General multiset composition sampling is not yet supported.
     #'
 
     ## Use the seed parameter to obtain reproducible results
@@ -398,12 +395,20 @@ reprex::reprex({
     #'
     #' ## `partitionsRank`
     #'
+    #' Ranking also supports multiset partitions. Supply the same `v`, `freqs`, and `target` used to generate or sample the results.
+    #'
 
     parts = partitionsSample(50, 8, target = 100, repetition = TRUE,
                              n = 3, seed = 42, namedSample = TRUE)
     parts
 
     partitionsRank(parts, v = 50, target = 100, repetition = TRUE)
+
+    ## Retrieve and rank specific multiset partitions
+    fr <- rep(1:5, 2)
+    multiset_parts <- partitionsSample(10, 5, freqs = fr, target = 25,
+                                      sampleVec = c(1, 5, 10))
+    partitionsRank(multiset_parts, v = 10, freqs = fr, target = 25)
 
     #'
     #' ## `compositionsRank`

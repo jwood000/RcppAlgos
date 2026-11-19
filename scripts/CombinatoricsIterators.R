@@ -369,10 +369,7 @@ reprex::reprex({
     #'
     #' ## Iterating over Partitions and Compositions of a Number
     #'
-    #' For most partition cases, we have all of the capabilities of the standard
-    #' `comboIter` and `permuteIter` except for bidirectionality (i.e. the
-    #' `prevIter` methods). Supported multiset partition cases also provide
-    #' random access methods.
+    #' For most partition cases, we have all of the capabilities of the standard `comboIter` and `permuteIter` except for bidirectionality (i.e. the `prevIter` methods). Supported multiset partition cases also provide random access methods.
     #'
 
     ## Similar illustration of comboIter(5, 3) at the top
@@ -400,8 +397,12 @@ reprex::reprex({
     ## No previous iterators
     p@prevIter()
 
+    ## Random access also works for multiset partitions
+    p_multi <- partitionsIter(10, 5, freqs = rep(1:5, 2), target = 25)
+    p_multi[[c(1, 5, 10)]]
+
     #'
-    #' For compositions, we have the same functionality as with `partitionsIter`.
+    #' Supported composition cases provide the same iterator methods. General multiset compositions can be counted, but do not yet support iteration or random access.
     #'
 
     ## Similar illustration of comboIter(5, 3) at the top
@@ -432,32 +433,18 @@ reprex::reprex({
     #'
     #' ## Iterating over Constrained Combinations/Permutations
     #'
-    #' Now, the combinatorial iterators have all of the features of their "general" analogs (I.e. `{combo|permute|partitions|compositions}General`), which includes constrained results.
+    #' Now, the combinatorial iterators have all of the features of their general analogs (I.e. `{combo|permute|partitions|compositions}General`), which includes constrained results.
     #'
-    #' For general constrained cases, these iterators offer huge advantages over their "general" counterparts. Previously, one had to guess how many results there would be using the `upper` parameter as executing the function with no constraints meant the user could be waiting for a while or consume a large amount of resources.
+    #' For general constrained cases, these iterators offer huge advantages over their general counterparts. Previously, one had to guess how many results there would be using the `upper` parameter as executing the function with no constraints meant the user could be waiting for a while or consume a large amount of resources.
     #'
-    #' Another drawback is that it difficult to start generating from a particular point. With the "general" functions, if the `lower` parameter is used, we have to make a decision in order to disambiguate the use. Without constraints, using `lower` is easy to understand. It simply means to start generating results starting at a particular lexicographical result, which we can do efficiently (i.e. no need to generate the first `lower - 1` results). With constraints, it could mean one of two things:
+    #' Another drawback is that it difficult to start generating from a particular point. With the general functions, if the `lower` parameter is used, we have to make a decision in order to disambiguate the use. Without constraints, using `lower` is easy to understand. It simply means to start generating results starting at a particular lexicographical result, which we can do efficiently (i.e. no need to generate the first `lower - 1` results). With constraints, it could mean one of two things:
     #'
     #'   1. Start checking from a particular lexicographical result without considering the constraint (as we do normally).
     #'   2. Start generating results from a particular result with regards to the final constrained output.
     #'
-    #' Generic constraint searches and all constrained `permuteGeneral` calls
-    #' use the first interpretation when `lower` is supplied, including
-    #' `lower = 1`: bounds select ordinary candidate ranks to test. Matching
-    #' permutations retain lexicographical order. Without `lower`, supported
-    #' sum/equality permutation calls instead visit matching partitions and
-    #' emit each partition's permutations before moving to the next partition.
-    #' `upper` alone caps matches in that partition-then-permute order.
+    #' Generic constraint searches and all constrained `permuteGeneral` calls use the first interpretation when `lower` is supplied, including `lower = 1`: bounds select ordinary candidate ranks to test. Matching permutations retain lexicographical order. Without `lower`, supported sum/equality permutation calls instead visit matching partitions and emit each partition's permutations before moving to the next partition. `upper` alone caps matches in that partition-then-permute order.
     #'
-    #' Supported partition and composition algorithms use the second
-    #' interpretation: bounds index matching results in lexicographical order.
-    #' This includes multiset partitions and equivalent `comboGeneral` calls
-    #' using `constraintFun = "sum"` and `comparisonFun = "=="`. When matches
-    #' exist, omitting `lower` and supplying `lower = 1` select the same
-    #' prefix for these calls, but have different meanings for constrained
-    #' `permuteGeneral`. For an empty partition or composition result set,
-    #' omitting both bounds returns an empty matrix; explicit positive
-    #' bounds exceed the zero result count and raise an error.
+    #' Supported partition and composition algorithms use the second interpretation: bounds index matching results in lexicographical order. This includes multiset partitions and equivalent `comboGeneral` calls using `constraintFun = "sum"` and `comparisonFun = "=="`. When matches exist, omitting `lower` and supplying `lower = 1` select the same prefix for these calls, but have different meanings for constrained `permuteGeneral`. For an empty partition or composition result set, omitting both bounds returns an empty matrix; explicit positive bounds exceed the zero result count and raise an error.
     #'
     #' With iterators, we can generate _n_ results with `nextNIter(n)` or calling `nextIter()` _n_ times (or some combination of the two). Then, if we want to continue iterating, we pick up where we left off fetching the _(n + 1)<sup>th</sup>_ result and beyond (if there are any results left). This allows us to keep memory low without sacrificing our current state.
     #'

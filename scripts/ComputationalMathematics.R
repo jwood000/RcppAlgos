@@ -55,32 +55,98 @@ reprex::reprex({
     #'
     #' ## `primeCount`
     #'
-    #' The library by Kim Walisch relies on [OpenMP](<https://en.wikipedia.org/wiki/OpenMP>) for parallel computation with [Legendre's Formula](<https://mathworld.wolfram.com/LegendresFormula.html>). Currently, the default compiler on `macOS` is `clang`, which does not support `OpenMP`. James Balamuta (a.k.a. TheCoatlessProfessor... well at least [we think so](<https://blog.thecoatlessprofessor.com>)) has written a great article on this topic, which you can find here: <https://blog.thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/index.html>. One of the goals of `RcppAlgos` is to be accessible by all users. With this in mind, we set out to count primes in parallel _without_ `OpenMP`.
+    #' `primeCount` gives the number of primes less than or equal to `n`, without constructing a vector of all those primes. It supports Legendre, Meissel, and Lehmer methods, all of which return the same exact count throughout the supported range.
     #'
-    #' At first glance, this seems trivial as we have a function in `Primes.cpp` called `phiWorker` that counts the primes up to `x`. If you look in [phi.cpp](<https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp>) in the `primecount` library by Kim Walisch, we see that `OpenMP` does its magic on a for loop that makes repeated calls to `phi` (which is what `phiWorker` is based on). All we need to do is break this loop into _n_ intervals where _n_ is the number of threads. Simple, right?
+    #' The Legendre implementation and shared partial-sieve routines build on the excellent work by [Kim Walisch](<https://github.com/kimwalisch/primecount>), which requires OpenMP. One of the original goals was to make parallel prime counting available without requiring OpenMP, including with the default macOS toolchain. For this reason, `RcppAlgos` uses C++ threads for its parallel calculations.
     #'
-    #' We can certainly do this, but what you will find is that _n - 1_ threads will complete very quickly and the _n<sup>th</sup>_ thread will be left with a heavy computation. In order to alleviate this unbalanced load, we divide the loop mentioned above into smaller intervals. The idea is to completely calculate `phi` up to a limit _m_ using all _n_ threads and then gradually increase _m_. The advantage here is that we are benefiting greatly from the caching done by the work of the previous _n_ threads.
+    #' By default, `method = "auto"` selects a method based on `n` and the number of threads it can use. You can also select a method explicitly, which is useful when comparing them on your own inputs. See `?primeCount` for the selection rules, counting formulas, and memory requirements.
     #'
-    #' With this is mind, here are some results:
+    #' Calculations are serial by default. Use `nThreads` for parallel computation when the problem is large enough; the actual number of threads is limited by the available hardware and useful work.
     #'
 
-    ## Enumerate the number of primes below trillion
+    ## Count the primes less than or equal to a trillion
     system.time(underOneTrillion <- primeCount(10^12))
 
     underOneTrillion
 
-    ## Enumerate the number of primes below ten billion in 2 milliseconds
+    ## Select a method explicitly
+    primeCount(10^6, method = "legendre")
+    primeCount(10^6, method = "meissel")
+    primeCount(10^6, method = "lehmer")
+
+    ## Count the primes less than or equal to ten billion
+    ## and rely on auto choice for the method
     microbenchmark(primeCount(10^10))
 
+    ## Use multiple threads for larger inputs
+    ## again relying on auto choice for the method
     system.time(underOneHundredTrillion <- primeCount(1e14, nThreads = 8))
 
     underOneHundredTrillion
+
+    system.time(primeCount(1e14, nThreads = 8, method = "legendre"))
+
+    system.time(primeCount(1e14, nThreads = 8, method = "meissel"))
+
+    system.time(primeCount(1e14, nThreads = 8, method = "lehmer"))
 
     ## Still not as fast as Kim Walisch's primecount library:
     cat(paste(
         system("primecount 1e14 --legendre --time", intern = TRUE),
         collapse = "\n"
     ))
+
+    cat(paste(
+        system("primecount 1e14 --meissel --time", intern = TRUE),
+        collapse = "\n"
+    ))
+
+    ## For some reason, lehmer's method is not as efficient as the other
+    ## methods in the primecount library
+    cat(paste(
+        system("primecount 1e14 --lehmer --time", intern = TRUE),
+        collapse = "\n"
+    ))
+
+    #'
+    #' ## `nthPrime`
+    #'
+    #' `nthPrime` finds the prime at a given position, starting with `nthPrime(1)` returning 2. For example, `nthPrime(25)` returns 97, whereas `primeCount(25)` returns 9.
+    #'
+    #' For larger positions, `nthPrime` combines prime counting with a segmented sieve, without storing all preceding primes. Like `primeCount`, it runs serially by default and accepts `nThreads` for parallel computation when useful. See `?nthPrime` for the supported range.
+    #'
+
+    nthPrime(25)
+
+    ## Find the millionth prime
+    nthPrime(10^6)
+
+    ## Confirm a prime's position
+    p <- nthPrime(1000)
+    primeCount(p)
+    primeCount(p - 1)
+
+    #'
+    #' While `nthPrime` is convenient for finding individual primes by position, generating consecutive primes this way repeats the counting and search work for every prime. A better approach is to find the two endpoints with `nthPrime`, then generate the primes between them with `primeSieve`:
+    #'
+
+    primes_by_position <- function(first, last) {
+        sapply(seq.int(first, last), nthPrime)
+    }
+
+    primes_by_interval <- function(first, last) {
+        lower <- nthPrime(first)
+        upper <- nthPrime(last)
+        primeSieve(lower, upper)
+    }
+
+    first <- 1e9
+    last <- first + 1000
+
+    system.time(by_position <- primes_by_position(first, last))
+    system.time(by_interval <- primes_by_interval(first, last))
+
+    identical(by_position, by_interval)
 
     #'
     #' ## Other Sieving Functions

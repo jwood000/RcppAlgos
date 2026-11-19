@@ -91,7 +91,7 @@ reprex::reprex({
     ht(genParts2)
 
     #'
-    #' Although the above was about `r round(uneven_time[["elapsed"]] / even_time[["elapsed"]])` times slower than the first example dealing with 573 million combinations (`r uneven_time[["elapsed"]]` milliseconds vs. `r even_time[["elapsed"]]` milliseconds), we are still dealing in milliseconds!!! For reference, version `2.3.4` takes about 18 seconds to find all 118,560 solutions.
+    #' Although the above was about `r round(uneven_time[["elapsed"]] / even_time[["elapsed"]])` times slower than the first example dealing with 573 million combinations (`r uneven_time[["elapsed"]]` seconds vs. `r even_time[["elapsed"]]` seconds), we are still dealing in milliseconds!!! For reference, version `2.3.4` takes about 18 seconds to find all 118,560 solutions.
     #'
     #' Here are some more exotic examples demonstrating the power of these algorithms.
     #'

@@ -1,7 +1,7 @@
 ---
 title: "Combination and Permutation Basics"
 author: "Joseph Wood"
-date: "2026-10-16"
+date: "2026-11-18"
 output:
   prettydoc::html_pretty:
     theme: architect
@@ -92,7 +92,7 @@ head(permuteGeneral(v))
 ## They are very efficient...
 system.time(comboGeneral(25, 12))
 #>    user  system elapsed 
-#>   0.046   0.007   0.054
+#>   0.046   0.007   0.053
 
 comboCount(25, 12)
 #> [1] 5200300
@@ -117,7 +117,7 @@ ht(comboGeneral(25, 12))
 ## And for permutations... over 8 million instantly
 system.time(permuteGeneral(13, 7))
 #>    user  system elapsed 
-#>   0.018   0.008   0.026
+#>   0.017   0.008   0.025
 
 permuteCount(13, 7)
 #> [1] 8648640
@@ -260,7 +260,7 @@ a <- as.integer(c(1, 1, 1, 1, 2, 2, 2, 7, 7, 7, 7, 7))
 
 system.time(test <- getPermsWithSpecificRepetition(a, 6))
 #>    user  system elapsed 
-#>   0.041   0.004   0.045
+#>   0.041   0.003   0.045
 ```
 
 ### Enter `freqs`
@@ -272,7 +272,7 @@ of times each unique element is repeated and Voila!
 ## Using the S3 method for class 'table'
 system.time(test2 <- permuteGeneral(table(a), 6))
 #>    user  system elapsed 
-#>   0.000   0.000   0.001
+#>       0       0       0
 
 identical(test, test2)
 #> [1] TRUE
@@ -333,10 +333,10 @@ microbenchmark(combn = combn(26, 13),
 #> Warning in microbenchmark(combn = combn(26, 13), serAlgos = comboGeneral(26, : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>      expr        min         lq       mean    median        uq       max neval
-#>     combn 155.623147 153.613251 115.606034 142.95779 86.566910 84.914130    10
-#>  serAlgos   3.167804   3.158121   2.566542   2.98952  2.193876  2.194353    10
-#>  parAlgos   1.000000   1.000000   1.000000   1.00000  1.000000  1.000000    10
+#>      expr        min         lq       mean     median        uq       max neval
+#>     combn 148.967091 149.510129 112.629019 141.558913 83.734350 84.100671    10
+#>  serAlgos   3.178061   3.178255   2.707246   3.324717  2.251064  2.287895    10
+#>  parAlgos   1.000000   1.000000   1.000000   1.000000  1.000000  1.000000    10
 
 ## Using 7 cores w/ Parallel = TRUE
 microbenchmark(
@@ -345,9 +345,9 @@ microbenchmark(
     unit = "relative"
 )
 #> Unit: relative
-#>      expr      min       lq     mean   median      uq      max neval
-#>    serial 3.478031 3.359026 3.058748 2.771335 2.85077 3.762908   100
-#>  parallel 1.000000 1.000000 1.000000 1.000000 1.00000 1.000000   100
+#>      expr     min       lq     mean   median       uq      max neval
+#>    serial 3.41302 3.354193 3.018305 2.937722 2.886236 3.334796   100
+#>  parallel 1.00000 1.000000 1.000000 1.000000 1.000000 1.000000   100
 ```
 
 ### Using arguments `lower` and `upper`
@@ -389,7 +389,7 @@ system.time(lapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }))
 #>    user  system elapsed 
-#>  22.490   6.326  28.831
+#>  22.536   5.819  28.367
 
 ## Enter parallel
 library(parallel)
@@ -399,7 +399,7 @@ system.time(mclapply(seq(1, 3247943160, 10086780), function(x) {
      x
 }, mc.cores = 6))
 #>    user  system elapsed 
-#>  24.447   9.631   7.078
+#>  14.744   5.406   6.905
 ```
 
 ## GMP Support
@@ -448,7 +448,7 @@ microbenchmark(f1 = funCustomComb(15, 8),
                f2 = comboGeneral(15, 8, FUN = cumprod), unit = "relative")
 #> Unit: relative
 #>  expr      min      lq     mean   median       uq      max neval
-#>    f1 5.237589 5.25893 5.168972 5.162497 5.201461 3.842287   100
+#>    f1 5.361036 5.29817 5.169643 5.277775 5.148283 2.921143   100
 #>    f2 1.000000 1.00000 1.000000 1.000000 1.000000 1.000000   100
 
 comboGeneral(15, 8, FUN = cumprod, upper = 3)
