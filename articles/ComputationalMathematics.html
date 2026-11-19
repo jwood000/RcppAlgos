@@ -5,7 +5,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Computational Mathematics Overview • RcppAlgos</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -68,7 +74,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">2026-10-16</h4>
+            <h4 data-toc-skip class="date">2026-11-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/main/vignettes/ComputationalMathematics.Rmd" class="external-link"><code>vignettes/ComputationalMathematics.Rmd</code></a></small>
       <div class="d-none name"><code>ComputationalMathematics.Rmd</code></div>
@@ -99,25 +105,25 @@ facilitates use of the cache.</p>
 <span><span class="co">#&gt; Warning in microbenchmark(primeSieve(1000000)): less accurate nanosecond times to avoid</span></span>
 <span><span class="co">#&gt; potential integer overflows</span></span>
 <span><span class="co">#&gt; Unit: microseconds</span></span>
-<span><span class="co">#&gt;               expr     min      lq     mean median     uq     max neval</span></span>
-<span><span class="co">#&gt;  primeSieve(1e+06) 470.762 478.798 507.6329 495.69 523.57 779.369   100</span></span>
+<span><span class="co">#&gt;               expr     min       lq     mean  median       uq     max neval</span></span>
+<span><span class="co">#&gt;  primeSieve(1e+06) 161.909 165.2915 168.8085 166.706 170.2115 239.153   100</span></span>
 <span></span>
 <span><span class="co">## Single threaded primes under a billion!!!</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">9</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.689   0.021   0.710</span></span>
+<span><span class="co">#&gt;   0.367   0.017   0.384</span></span>
 <span></span>
 <span><span class="co">## Using 8 threads we can get under 0.5 seconds!!!</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">9</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.018   0.025   0.167</span></span>
+<span><span class="co">#&gt;   0.488   0.019   0.088</span></span>
 <span></span>
 <span><span class="co">## Quickly generate large primes over small interval. N.B. The</span></span>
 <span><span class="co">## order for the bounds does not matter.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>scipen <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">myPs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">13</span> <span class="op">+</span> <span class="fl">10</span><span class="op">^</span><span class="fl">3</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">13</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.004   0.000   0.004</span></span>
+<span><span class="co">#&gt;   0.000   0.000   0.002</span></span>
 <span></span>
 <span><span class="va">myPs</span></span>
 <span><span class="co">#&gt;  [1] 10000000000037 10000000000051 10000000000099 10000000000129 10000000000183</span></span>
@@ -141,19 +147,19 @@ Oliveira</a>.</p>
 <code class="sourceCode R"><span><span class="co">## Version &lt;= 2.2.0.. i.e. older versions</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">old</span> <span class="op">&lt;-</span> <span class="fu">RcppAlgos220</span><span class="fu">::</span><span class="fu">primeSieve</span><span class="op">(</span><span class="fl">1e15</span>, <span class="fl">1e15</span> <span class="op">+</span> <span class="fl">1e9</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   2.257   0.031   2.309</span></span>
+<span><span class="co">#&gt;   1.977   0.026   2.008</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">## v2.3.0+ is faster</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">1e15</span>, <span class="fl">1e15</span> <span class="op">+</span> <span class="fl">1e9</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.961   0.022   0.984</span></span>
+<span><span class="co">#&gt;   0.743   0.019   0.762</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html" class="external-link">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/gc.html" class="external-link">gc</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">## And using nThreads is much much faster</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="fl">1e15</span>, <span class="fl">1e15</span> <span class="op">+</span> <span class="fl">1e9</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   1.654   0.053   0.284</span></span>
+<span><span class="co">#&gt;   1.350   0.048   0.221</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">old</span>, <span class="va">a</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span>
@@ -166,54 +172,68 @@ Oliveira</a>.</p>
 <h2 id="primecount">
 <code>primeCount</code><a class="anchor" aria-label="anchor" href="#primecount"></a>
 </h2>
-<p>The library by Kim Walisch relies on <a href="https://en.wikipedia.org/wiki/OpenMP" class="external-link">OpenMP</a> for parallel
-computation with <a href="https://mathworld.wolfram.com/LegendresFormula.html" class="external-link">Legendre’s
-Formula</a>. Currently, the default compiler on <code>macOS</code> is
-<code>clang</code>, which does not support <code>OpenMP</code>. James
-Balamuta (a.k.a. TheCoatlessProfessor… well at least <a href="https://blog.thecoatlessprofessor.com" class="external-link">we think so</a>) has
-written a great article on this topic, which you can find here: <a href="https://blog.thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/index.html" class="external-link uri">https://blog.thecoatlessprofessor.com/programming/openmp-in-r-on-os-x/index.html</a>.
-One of the goals of <code>RcppAlgos</code> is to be accessible by all
-users. With this in mind, we set out to count primes in parallel
-<em>without</em> <code>OpenMP</code>.</p>
-<p>At first glance, this seems trivial as we have a function in
-<code>Primes.cpp</code> called <code>phiWorker</code> that counts the
-primes up to <code>x</code>. If you look in <a href="https://github.com/kimwalisch/primecount/blob/master/src/phi.cpp" class="external-link">phi.cpp</a>
-in the <code>primecount</code> library by Kim Walisch, we see that
-<code>OpenMP</code> does its magic on a for loop that makes repeated
-calls to <code>phi</code> (which is what <code>phiWorker</code> is based
-on). All we need to do is break this loop into <em>n</em> intervals
-where <em>n</em> is the number of threads. Simple, right?</p>
-<p>We can certainly do this, but what you will find is that <em>n -
-1</em> threads will complete very quickly and the
-<em>n<sup>th</sup></em> thread will be left with a heavy computation. In
-order to alleviate this unbalanced load, we divide the loop mentioned
-above into smaller intervals. The idea is to completely calculate
-<code>phi</code> up to a limit <em>m</em> using all <em>n</em> threads
-and then gradually increase <em>m</em>. The advantage here is that we
-are benefiting greatly from the caching done by the work of the previous
-<em>n</em> threads.</p>
-<p>With this is mind, here are some results:</p>
+<p><code>primeCount</code> gives the number of primes less than or equal
+to <code>n</code>, without constructing a vector of all those primes. It
+supports Legendre, Meissel, and Lehmer methods, all of which return the
+same exact count throughout the supported range.</p>
+<p>The Legendre implementation and shared partial-sieve routines build
+on the excellent work by <a href="https://github.com/kimwalisch/primecount" class="external-link">Kim Walisch</a>, which
+requires OpenMP. One of the original goals was to make parallel prime
+counting available without requiring OpenMP, including with the default
+macOS toolchain. For this reason, <code>RcppAlgos</code> uses C++
+threads for its parallel calculations.</p>
+<p>By default, <code>method = "auto"</code> selects a method based on
+<code>n</code> and the number of threads it can use. You can also select
+a method explicitly, which is useful when comparing them on your own
+inputs. See <code><a href="../reference/primeCount.html">?primeCount</a></code> for the selection rules, counting
+formulas, and memory requirements.</p>
+<p>Calculations are serial by default. Use <code>nThreads</code> for
+parallel computation when the problem is large enough; the actual number
+of threads is limited by the available hardware and useful work.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co">## Enumerate the number of primes below trillion</span></span>
+<code class="sourceCode R"><span><span class="co">## Count the primes less than or equal to a trillion</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">underOneTrillion</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.085   0.001   0.086</span></span>
+<span><span class="co">#&gt;   0.056   0.001   0.056</span></span>
 <span></span>
 <span><span class="va">underOneTrillion</span></span>
 <span><span class="co">#&gt; [1] 37607912018</span></span>
 <span></span>
-<span><span class="co">## Enumerate the number of primes below ten billion in 2 milliseconds</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Unit: milliseconds</span></span>
-<span><span class="co">#&gt;               expr      min       lq     mean   median       uq      max neval</span></span>
-<span><span class="co">#&gt;  primeCount(10^10) 1.197938 1.205297 1.222203 1.208516 1.216819 1.770093   100</span></span>
+<span><span class="co">## Select a method explicitly</span></span>
+<span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span>, method <span class="op">=</span> <span class="st">"legendre"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 78498</span></span>
+<span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span>, method <span class="op">=</span> <span class="st">"meissel"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 78498</span></span>
+<span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span>, method <span class="op">=</span> <span class="st">"lehmer"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 78498</span></span>
 <span></span>
+<span><span class="co">## Count the primes less than or equal to ten billion</span></span>
+<span><span class="co">## and rely on auto choice for the method</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: microseconds</span></span>
+<span><span class="co">#&gt;               expr     min       lq     mean   median      uq      max neval</span></span>
+<span><span class="co">#&gt;  primeCount(10^10) 791.259 797.0605 832.4226 833.1815 839.188 1932.781   100</span></span>
+<span></span>
+<span><span class="co">## Use multiple threads for larger inputs</span></span>
+<span><span class="co">## again relying on auto choice for the method</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">underOneHundredTrillion</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">1e14</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   5.017   0.419   0.918</span></span>
+<span><span class="co">#&gt;   2.163   0.007   0.317</span></span>
 <span></span>
 <span><span class="va">underOneHundredTrillion</span></span>
 <span><span class="co">#&gt; [1] 3204941750802</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">1e14</span>, nThreads <span class="op">=</span> <span class="fl">8</span>, method <span class="op">=</span> <span class="st">"legendre"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;   3.316   0.026   0.572</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">1e14</span>, nThreads <span class="op">=</span> <span class="fl">8</span>, method <span class="op">=</span> <span class="st">"meissel"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;   1.755   0.015   0.291</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">1e14</span>, nThreads <span class="op">=</span> <span class="fl">8</span>, method <span class="op">=</span> <span class="st">"lehmer"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;   1.932   0.006   0.283</span></span>
 <span></span>
 <span><span class="co">## Still not as fast as Kim Walisch's primecount library:</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
@@ -221,7 +241,79 @@ are benefiting greatly from the caching done by the work of the previous
 <span>    collapse <span class="op">=</span> <span class="st">"\n"</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; 3204941750802</span></span>
-<span><span class="co">#&gt; Seconds: 0.212</span></span></code></pre></div>
+<span><span class="co">#&gt; Seconds: 0.212</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"primecount 1e14 --meissel --time"</span>, intern <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    collapse <span class="op">=</span> <span class="st">"\n"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 3204941750802</span></span>
+<span><span class="co">#&gt; Seconds: 0.087</span></span>
+<span></span>
+<span><span class="co">## For some reason, lehmer's method is not as efficient as the other</span></span>
+<span><span class="co">## methods in the primecount library</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">"primecount 1e14 --lehmer --time"</span>, intern <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>    collapse <span class="op">=</span> <span class="st">"\n"</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 3204941750802</span></span>
+<span><span class="co">#&gt; Seconds: 0.404</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="nthprime">
+<code>nthPrime</code><a class="anchor" aria-label="anchor" href="#nthprime"></a>
+</h2>
+<p><code>nthPrime</code> finds the prime at a given position, starting
+with <code>nthPrime(1)</code> returning 2. For example,
+<code>nthPrime(25)</code> returns 97, whereas
+<code>primeCount(25)</code> returns 9.</p>
+<p>For larger positions, <code>nthPrime</code> combines prime counting
+with a segmented sieve, without storing all preceding primes. Like
+<code>primeCount</code>, it runs serially by default and accepts
+<code>nThreads</code> for parallel computation when useful. See
+<code><a href="../reference/nthPrime.html">?nthPrime</a></code> for the supported range.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/nthPrime.html">nthPrime</a></span><span class="op">(</span><span class="fl">25</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 97</span></span>
+<span></span>
+<span><span class="co">## Find the millionth prime</span></span>
+<span><span class="fu"><a href="../reference/nthPrime.html">nthPrime</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 15485863</span></span>
+<span></span>
+<span><span class="co">## Confirm a prime's position</span></span>
+<span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nthPrime.html">nthPrime</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1000</span></span>
+<span><span class="fu"><a href="../reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="va">p</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 999</span></span></code></pre></div>
+<p>While <code>nthPrime</code> is convenient for finding individual
+primes by position, generating consecutive primes this way repeats the
+counting and search work for every prime. A better approach is to find
+the two endpoints with <code>nthPrime</code>, then generate the primes
+between them with <code>primeSieve</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">primes_by_position</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">first</span>, <span class="va">last</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq.int</a></span><span class="op">(</span><span class="va">first</span>, <span class="va">last</span><span class="op">)</span>, <span class="va">nthPrime</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">primes_by_interval</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">first</span>, <span class="va">last</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">lower</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nthPrime.html">nthPrime</a></span><span class="op">(</span><span class="va">first</span><span class="op">)</span></span>
+<span>    <span class="va">upper</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/nthPrime.html">nthPrime</a></span><span class="op">(</span><span class="va">last</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="../reference/primeSieve.html">primeSieve</a></span><span class="op">(</span><span class="va">lower</span>, <span class="va">upper</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">first</span> <span class="op">&lt;-</span> <span class="fl">1e9</span></span>
+<span><span class="va">last</span> <span class="op">&lt;-</span> <span class="va">first</span> <span class="op">+</span> <span class="fl">1000</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">by_position</span> <span class="op">&lt;-</span> <span class="fu">primes_by_position</span><span class="op">(</span><span class="va">first</span>, <span class="va">last</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;   2.691   0.003   2.693</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">by_interval</span> <span class="op">&lt;-</span> <span class="fu">primes_by_interval</span><span class="op">(</span><span class="va">first</span>, <span class="va">last</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed</span></span>
+<span><span class="co">#&gt;   0.007   0.000   0.007</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">by_position</span>, <span class="va">by_interval</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="other-sieving-functions">Other Sieving Functions<a class="anchor" aria-label="anchor" href="#other-sieving-functions"></a>
@@ -234,7 +326,7 @@ parallel by using the argument <code>nThreads</code>.</p>
 <code>divisorsSieve</code>, <code>numDivisorSieve</code>, &amp;
 <code>eulerPhiSieve</code>) are very useful and flexible. Generate
 components up to a number or between two bounds.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## get the number of divisors for every number from 1 to n</span></span>
 <span><span class="fu"><a href="../reference/numDivisorSieve.html">numDivisorSieve</a></span><span class="op">(</span><span class="fl">20</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] 1 2 2 3 2 4 2 4 3 4 2 6 2 4 4 5 2 6 2 6</span></span>
@@ -242,7 +334,7 @@ components up to a number or between two bounds.</p>
 <span><span class="co">## If you want the complete factorization from 1 to n, use divisorsList</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">allFacs</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/divisorsSieve.html">divisorsSieve</a></span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">5</span>, namedList <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.020   0.005   0.024</span></span>
+<span><span class="co">#&gt;   0.019   0.005   0.024</span></span>
 <span></span>
 <span><span class="va">allFacs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4339</span>, <span class="fl">15613</span>, <span class="fl">22080</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; $`4339`</span></span>
@@ -292,7 +384,7 @@ components up to a number or between two bounds.</p>
 <span><span class="co">## Using nThreads for greater efficiency</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/eulerPhiSieve.html">eulerPhiSieve</a></span><span class="op">(</span><span class="fl">1e12</span>, <span class="fl">1e12</span> <span class="op">+</span> <span class="fl">1e7</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.752   0.040   0.111</span></span>
+<span><span class="co">#&gt;   0.745   0.036   0.108</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
@@ -304,7 +396,7 @@ components up to a number or between two bounds.</p>
 (e.g. all divisors of number), primality testing, as well as prime
 factoring (<code>divisorsRcpp</code>, <code>isPrimeRcpp</code>,
 <code>primeFactorize</code>).</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## get result for individual numbers</span></span>
 <span><span class="fu"><a href="../reference/primeFactorize.html">primeFactorize</a></span><span class="op">(</span><span class="fl">123456789</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1]    3    3 3607 3803</span></span>
@@ -347,12 +439,12 @@ factoring (<code>divisorsRcpp</code>, <code>isPrimeRcpp</code>,
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">a</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/primeFactorize.html">primeFactorize</a></span><span class="op">(</span><span class="fl">1e12</span><span class="op">:</span><span class="op">(</span><span class="fl">1e12</span> <span class="op">+</span> <span class="fl">1e5</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.496   0.005   0.503</span></span>
+<span><span class="co">#&gt;   0.497   0.006   0.503</span></span>
 <span></span>
 <span><span class="co">## Using nThreads for greater efficiency</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/primeFactorize.html">primeFactorize</a></span><span class="op">(</span><span class="fl">1e12</span><span class="op">:</span><span class="op">(</span><span class="fl">1e12</span> <span class="op">+</span> <span class="fl">1e5</span><span class="op">)</span>, nThreads <span class="op">=</span> <span class="fl">8</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.692   0.006   0.112</span></span>
+<span><span class="co">#&gt;   0.698   0.006   0.112</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>

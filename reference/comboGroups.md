@@ -70,7 +70,7 @@ comboGroups(v, numGroups = NULL, grpSizes = NULL,
 
   Logical value indicating whether results should be generated in
   parallel. The default is `FALSE`. If `TRUE` and `nThreads = NULL`, up
-  to \\n - 1\\ threads are used, where \\n\\ is the number of threads
+  to $`n - 1`$ threads are used, where $`n`$ is the number of threads
   available on your system (both threads may be used on a two-thread
   system). If `nThreads` is not `NULL`, it will be given preference
   (*e.g.* with 8 available threads, `Parallel = TRUE` and
@@ -110,7 +110,7 @@ illustrate this, let us consider the case of generating partitions of
 
 - Note that the permutations above are equivalent partitions of 2 groups
   of size 4 as only the last four elements are permuted. If we look at
-  at the \\25^{th}\\ lexicographical permutation, we observe our second
+  at the $`25^{th}`$ lexicographical permutation, we observe our second
   distinct partition.
 
   |         |          |       |       |          |          |       |       |          |
@@ -123,7 +123,7 @@ illustrate this, let us consider the case of generating partitions of
   | R27     | \| 1     | 2     | 3     | 5 \|     | \| 4     | 7     | 6     | 8 \|     |
   | R28     | \| 1     | 2     | 3     | 5 \|     | \| 4     | 7     | 8     | 6 \|     |
 
-- Continuing on, we will reach the \\3,457^{th}\\ lexicographical
+- Continuing on, we will reach the $`3,457^{th}`$ lexicographical
   permutation, which represents the last result:
 
   |           |          |       |       |          |          |       |       |          |
@@ -161,7 +161,7 @@ Joseph Wood
 ## Note
 
 - The maximum number of partitions of groups that can be generated at
-  one time is \\2^{31} - 1\\. Utilizing `lower` and `upper` makes it
+  one time is $`2^{31} - 1`$. Utilizing `lower` and `upper` makes it
   possible to generate additional combinations/permutations.
 
 - The length of `grpSizes` must equal `numGroups` if both `grpSize` and

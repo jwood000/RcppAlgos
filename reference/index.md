@@ -87,7 +87,7 @@
   [`compositionsSample()`](https://jwood000.github.io/RcppAlgos/reference/partitionsSample.md)
   : Sample Partitions/Compositions
 - [`primeCount()`](https://jwood000.github.io/RcppAlgos/reference/primeCount.md)
-  : Prime Counting Function \\\pi(x)\\
+  : Prime Counting Function $`\pi(x)`$
 - [`primeFactorize()`](https://jwood000.github.io/RcppAlgos/reference/primeFactorize.md)
   : Vectorized Prime Factorization
 - [`primeFactorizeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeFactorizeSieve.md)

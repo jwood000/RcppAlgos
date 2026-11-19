@@ -31,7 +31,7 @@ isPrimeRcpp(v, namedVector = FALSE, nThreads = NULL)
 
 ## Note
 
-The maximum value for each element in \\v\\ is \\2^{53} - 1\\.
+The maximum value for each element in $`v`$ is $`2^{53} - 1`$.
 
 ## Details
 
@@ -39,31 +39,35 @@ The Miller-Rabin primality test is a probabilistic algorithm that makes
 heavy use of [modular
 exponentiation](https://en.wikipedia.org/wiki/Modular_exponentiation).
 At the heart of modular exponentiation is the ability to accurately
-obtain the remainder of the product of two numbers \\\pmod p\\.
+obtain the remainder of the product of two numbers $`\pmod p`$.
 
 With the gmp library, producing accurate calculations for problems like
 this is trivial because of the nature of the multiple precision data
 type. However, standard C++ does not afford this luxury and simply
 relying on a strict translation would have limited this algorithm to
-numbers less than \\\sqrt 2^{63} - 1\\ (N.B. We are taking advantage of
+numbers less than $`\sqrt 2^{63} - 1`$ (N.B. We are taking advantage of
 the signed 64-bit fixed width integer from the stdint library in C++. If
-we were confined to base R, the limit would have been \\\sqrt 2^{53} -
-1\\). RcppAlgos::isPrimeRcpp gets around this limitation with a [divide
-and conquer](https://en.wikipedia.org/wiki/Divide_and_conquer_algorithm)
+we were confined to base R, the limit would have been
+$`\sqrt 2^{53} - 1`$). RcppAlgos::isPrimeRcpp gets around this
+limitation with a [divide and
+conquer](https://en.wikipedia.org/wiki/Divide_and_conquer_algorithm)
 approach taking advantage of properties of arithmetic.
 
 The problem we are trying to solve can be summarized as follows:
 
-\$\$(x_1 \* x_2) \pmod p\$\$
+``` math
+(x_1 * x_2) \pmod p
+```
 
-Now, we rewrite \\x_2\\ as \\x_2 = y_1 + y_2 + \dots + y_n\\, so that we
+Now, we rewrite $`x_2`$ as $`x_2 = y_1 + y_2 + \dots + y_n`$, so that we
 obtain:
 
-\$\$(x_1 \* y_1) \pmod p + (x_1 \* y_2) \pmod p + \dots + (x_1 \* y_n)
-\pmod p\$\$
+``` math
+(x_1 * y_1) \pmod p + (x_1 * y_2) \pmod p + \dots + (x_1 * y_n) \pmod p
+```
 
-Where each product \\(x_1 \* y_j)\\ for \\j \<= n\\ is smaller than the
-original \\x_1 \* x_2\\. With this approach, we are now capable of
+Where each product $`(x_1 * y_j)`$ for $`j <= n`$ is smaller than the
+original $`x_1 * x_2`$. With this approach, we are now capable of
 handling much larger numbers. Many details have been omitted for
 clarity.
 
@@ -124,5 +128,5 @@ isPrimeRcpp(mySamp, namedVector = TRUE)
 ## Using nThreads
 system.time(isPrimeRcpp(mySamp, nThreads = 2))
 #>    user  system elapsed 
-#>   0.000   0.000   0.001 
+#>       0       0       0 
 ```

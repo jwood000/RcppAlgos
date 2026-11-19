@@ -51,7 +51,7 @@ primeSieve(bound1, bound2 = NULL, nThreads = NULL, countOnly = FALSE)
   bound is rounded down. These rules apply to both generation and
   counting.
 
-- The maximum value for either of the bounds is \\2^{53} - 1\\.
+- The maximum value for either of the bounds is $`2^{53} - 1`$.
 
 ## Details
 
@@ -69,15 +69,15 @@ which also provides combinatorial prime-counting methods. Neither
 function counts 1 as prime.
 
 At the heart of this algorithm is the traditional sieve of Eratosthenes
-(i.e. given a [prime](https://en.wikipedia.org/wiki/Prime_number) \\p\\,
-mark all multiples of \\p\\ as
+(i.e. given a [prime](https://en.wikipedia.org/wiki/Prime_number) $`p`$,
+mark all multiples of $`p`$ as
 [composite](https://en.wikipedia.org/wiki/Composite_number)), however
 instead of sieving the entire interval, we only consider small
 sub-intervals. The benefits of this method are two fold:
 
 1.  Reduction of the [space
-    complexity](https://en.wikipedia.org/wiki/DSPACE) from \\O(n)\\, for
-    the traditional sieve, to \\O(\sqrt n)\\
+    complexity](https://en.wikipedia.org/wiki/DSPACE) from $`O(n)`$, for
+    the traditional sieve, to $`O(\sqrt n)`$
 
 2.  Reduction of [cache
     misses](https://en.wikipedia.org/wiki/CPU_cache#Cache_miss)
@@ -95,13 +95,13 @@ is true, you have found a prime. With wheel factorization using the
 first four primes (i.e. 2, 3, 5, and 7) to construct your wheel (i.e.
 210 wheel), you only have to check indices of your logical vector that
 are coprime to 210 (i.e. the product of the first four primes). As an
-example, with \\n = 10000\\ and a 210 wheel, you only have to check 2285
+example, with $`n = 10000`$ and a 210 wheel, you only have to check 2285
 indices vs. 5000 with the classical implementation.
 
 ## Value
 
 When `countOnly = FALSE`, returns an integer vector if
-`max(bound1, bound2)` \\\< 2^{31}\\, or a numeric vector otherwise.
+`max(bound1, bound2)` $`< 2^{31}`$, or a numeric vector otherwise.
 
 When `countOnly = TRUE`, returns a single integer if the count is at
 most `.Machine$integer.max`, or a single numeric value otherwise. The
@@ -162,7 +162,7 @@ primeSieve(100, countOnly = TRUE)
 ## Primes up to one hundred million in no time
 system.time(primeSieve(10^8))
 #>    user  system elapsed 
-#>   0.069   0.017   0.086 
+#>   0.073   0.018   0.093 
 
 ## options(scipen = 50)
 ## Generate large primes over interval

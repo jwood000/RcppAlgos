@@ -68,7 +68,7 @@ comboGroupsSample(v, numGroups = NULL, grpSizes = NULL, retType = "matrix",
 
   Logical value indicating whether results should be generated in
   parallel. The default is `FALSE`. If `TRUE` and `nThreads = NULL`, up
-  to \\n - 1\\ threads are used, where \\n\\ is the number of threads
+  to $`n - 1`$ threads are used, where $`n`$ is the number of threads
   available on your system (both threads may be used on a two-thread
   system). This is also capped by the number of results requested
   (*e.g.* with 16 available threads and 5 results requested, up to 5
@@ -95,7 +95,7 @@ comboGroupsSample(v, numGroups = NULL, grpSizes = NULL, retType = "matrix",
 
 ## Details
 
-These algorithms rely on efficiently generating the \\n^{th}\\
+These algorithms rely on efficiently generating the $`n^{th}`$
 lexicographical result.
 
 ## Value

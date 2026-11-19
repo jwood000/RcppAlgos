@@ -49,7 +49,7 @@ permuteRank(..., v, repetition = FALSE, freqs = NULL, nThreads = NULL)
 
 ## Details
 
-These algorithms rely on efficiently ranking the \\n^{th}\\
+These algorithms rely on efficiently ranking the $`n^{th}`$
 lexicographical combination/permutation.
 
 ## Value

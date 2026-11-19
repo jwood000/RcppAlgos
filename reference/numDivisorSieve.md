@@ -3,7 +3,7 @@
 Sieve that generates the number of divisors for every number between
 `bound1` and `bound2` (if supplied) or all numbers up to `bound1`. This
 is equivalent to applying the divisor function (often written as
-\\\sigma(x)\\) to every number in a given range.
+$`\sigma(x)`$) to every number in a given range.
 
 ## Usage
 
@@ -58,7 +58,7 @@ Joseph Wood
 
 ## Note
 
-The maximum allowed value is \\2^{53} - 1\\.
+The maximum allowed value is $`2^{53} - 1`$.
 
 ## References
 
@@ -82,7 +82,7 @@ mySamp <- sample(10^6, 5*10^5)
 ## every number less than a million
 system.time(mySigmas <- numDivisorSieve(10^6))
 #>    user  system elapsed 
-#>   0.009   0.000   0.009 
+#>   0.008   0.000   0.007 
 
 ## Now use result in algorithm
 for (s in mySamp) {
@@ -94,7 +94,7 @@ for (s in mySamp) {
 ## number in a range is no problem
 system.time(sigmaRange <- numDivisorSieve(10^13, 10^13 + 10^6))
 #>    user  system elapsed 
-#>   0.024   0.002   0.026 
+#>   0.023   0.002   0.025 
 
 ## Returning a named vector
 numDivisorSieve(10, 20, namedVector = TRUE)

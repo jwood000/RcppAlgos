@@ -131,7 +131,7 @@ permuteSample(
 
   Logical value indicating whether combinations/permutations should be
   generated in parallel. The default is `FALSE`. If `TRUE` and
-  `nThreads = NULL`, up to \\n - 1\\ threads are used, where \\n\\ is
+  `nThreads = NULL`, up to $`n - 1`$ threads are used, where $`n`$ is
   the number of threads available on your system (both threads may be
   used on a two-thread system). This is also capped by the number of
   results requested (*e.g.* with 16 available threads and 5 results
@@ -163,13 +163,13 @@ permuteSample(
 
 ## Details
 
-These algorithms rely on efficiently generating the \\n^{th}\\
+These algorithms rely on efficiently generating the $`n^{th}`$
 lexicographical combination/permutation. This is the process of
 [unranking](https://rosettacode.org/wiki/Permutations/Rank_of_a_permutation).
 
 ## Value
 
-- In general, a matrix with \\m\\ or \\m + 1\\ columns, depending on the
+- In general, a matrix with $`m`$ or $`m + 1`$ columns, depending on the
   value of `keepResults`
 
 - If `FUN` is utilized and `FUN.VALUE = NULL`, a list is returned

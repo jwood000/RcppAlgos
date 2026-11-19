@@ -108,7 +108,7 @@ Once you initialize a new iterator, the following methods are available:
       microbenchmark(multi@nextNIter(1e3), serial@nextNIter(1e3), times = 20)
 
 - The maximum number of expandGrid that can be generated at one time is
-  \\2^{31} - 1\\.
+  $`2^{31} - 1`$.
 
 - If an error occurs while generating results, the iterator's internal
   state is not guaranteed to remain at its previous position. Call

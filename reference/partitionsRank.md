@@ -61,8 +61,12 @@ compositionsRank(..., v, repetition = FALSE, freqs = NULL,
 
 ## Details
 
-These algorithms rely on efficiently ranking the \\n^{th}\\
-lexicographical partition.
+These algorithms rely on efficiently ranking the $`n^{th}`$
+lexicographical partition. Supported multiset partitions can be ranked
+using `freqs`, including cases with GMP-sized ranks. General multiset
+compositions can be counted with
+[`compositionsCount`](https://jwood000.github.io/RcppAlgos/reference/partitionsCount.md),
+but are not supported by `compositionsRank`.
 
 ## Value
 
@@ -94,5 +98,13 @@ Joseph Wood
 mySamp = partitionsSample(30, 8, TRUE, n = 5, seed = 10, namedSample = TRUE)
 myRank = partitionsRank(mySamp, v = 30, repetition = TRUE)
 all.equal(as.integer(rownames(mySamp)), myRank)
+#> [1] TRUE
+
+## Recover the ranks of sampled multiset partitions
+indices <- c(1L, 4L)
+parts <- partitionsSample(1:5, 3, freqs = rep(2, 5), target = 9,
+                          sampleVec = indices)
+identical(partitionsRank(parts, v = 1:5, freqs = rep(2, 5), target = 9),
+          indices)
 #> [1] TRUE
 ```

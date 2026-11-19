@@ -663,8 +663,7 @@ CRAN release: 2020-03-24
 ### Enhancements:
 
 - Now able to interrupt general constraint problems (See [Interrupt
-  Execution with
-  Rcpp::checkUserInterrupt](https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-rcppcheckuserinterrupt))
+  Execution](https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-cpp11check_user_interrupt))
 
 ### Bug Fixes:
 

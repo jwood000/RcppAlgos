@@ -70,7 +70,7 @@ compositionsGeneral(
 
   Width of the partition. If `m = NULL`, the length will be determined
   by the partitioning case (*e.g.* When we are generating distinct
-  partitions of \\n\\, the width will be equal to the smallest \\m\\
+  partitions of $`n`$, the width will be equal to the smallest $`m`$
   such that `sum(1:m) >= n`).
 
 - ...:
@@ -129,7 +129,7 @@ compositionsGeneral(
   utilized when a constraint is applied on a numeric vector. The default
   value is 0 when it can be determined that whole values are being
   utilized, otherwise it is `sqrt(.Machine$double.eps)` which is
-  approximately \\1.5e-8\\. N.B. If the input vector is of type integer,
+  approximately $`1.5e-8`$. N.B. If the input vector is of type integer,
   this parameter will be ignored and strict equality will be enforced.
 
 ## Details
@@ -157,18 +157,18 @@ the zero-padding convention of non-weak compositions.
 
 ## Value
 
-A matrix is returned with each row containing a vector of length \\m\\.
+A matrix is returned with each row containing a vector of length $`m`$.
 
 ## Note
 
 - `nThreads` will be ignored in the following cases (i.e. Generating the
-  \\n^{th}\\ partition in these cases are currently unavailable):
+  $`n^{th}`$ partition in these cases are currently unavailable):
 
   - If the source vector is not isomorphic to `1:length(v)` (*e.g.*
     `v = c(1, 4, 6, 7, 8)`).
 
 - The maximum number of partitions/compositions that can be generated at
-  one time is \\2^{31} - 1\\. Utilizing `lower` and `upper` makes it
+  one time is $`2^{31} - 1`$. Utilizing `lower` and `upper` makes it
   possible to generate additional partitions/compositions.
 
 ## Author
@@ -977,10 +977,10 @@ partitionsGeneral(sample(1000, 20), 5, TRUE, target = 2500)
 
 system.time(one_thread  <- partitionsGeneral(80, 10, TRUE))
 #>    user  system elapsed 
-#>   0.005   0.010   0.016 
+#>   0.009   0.005   0.015 
 system.time(two_threads <- partitionsGeneral(80, 10, TRUE, nThreads = 2))
 #>    user  system elapsed 
-#>   0.010   0.007   0.009 
+#>   0.008   0.008   0.008 
 identical(one_thread, two_threads)
 #> [1] TRUE
 ```

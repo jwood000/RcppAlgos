@@ -62,7 +62,7 @@ expandGridSample(
 
 ## Details
 
-These algorithms rely on efficiently generating the \\n^{th}\\
+These algorithms rely on efficiently generating the $`n^{th}`$
 lexicographical result.
 
 ## Value

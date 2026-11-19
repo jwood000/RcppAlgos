@@ -17,7 +17,7 @@ expandGridCount(...)
 
 ## Value
 
-When the number of results exceeds \\2^{53} - 1\\, a number of class
+When the number of results exceeds $`2^{53} - 1`$, a number of class
 `bigz` is returned.
 
 ## Author

@@ -27,6 +27,7 @@ Walisch](https://github.com/kimwalisch).
   - `primeSieve` for generating primes
   - `primeCount` for counting primes with selectable Legendre, Meissel,
     and Lehmer methods
+  - `nthPrime` for finding the nth prime
   - `primeFactorize` for prime factorization
 
 RcppAlgos is designed to handle combinatorial problems ranging from
@@ -249,6 +250,10 @@ tail(p)
 primeCount(1e10)
 #> [1] 455052511
 
+## Find the millionth prime
+nthPrime(1e6)
+#> [1] 15485863
+
 ## Get the prime factorization
 set.seed(24028)
 primeFactorize(sample(1e15, 3), namedList = TRUE)
@@ -389,7 +394,7 @@ for possible improvements, please file an
   [`compositionsSample()`](https://jwood000.github.io/RcppAlgos/reference/partitionsSample.md)
   : Sample Partitions/Compositions
 - [`primeCount()`](https://jwood000.github.io/RcppAlgos/reference/primeCount.md)
-  : Prime Counting Function \\\pi(x)\\
+  : Prime Counting Function $`\pi(x)`$
 - [`primeFactorize()`](https://jwood000.github.io/RcppAlgos/reference/primeFactorize.md)
   : Vectorized Prime Factorization
 - [`primeFactorizeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeFactorizeSieve.md)

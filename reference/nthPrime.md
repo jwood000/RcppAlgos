@@ -26,13 +26,16 @@ nthPrime(n, nThreads = NULL)
 
 ## Details
 
-Let \\p_n\\ denote the \\n\\th prime. The result is the unique integer
-\\p_n\\ satisfying \$\$\pi(p_n - 1) = n - 1, \qquad \pi(p_n) = n,\$\$
-where \\\pi(x)\\ counts the primes less than or equal to \\x\\. For
+Let $`p_n`$ denote the $`n`$th prime. The result is the unique integer
+$`p_n`$ satisfying
+``` math
+\pi(p_n - 1) = n - 1, \qquad \pi(p_n) = n,
+```
+where $`\pi(x)`$ counts the primes less than or equal to $`x`$. For
 example, `nthPrime(25)` returns 97, whereas `primeCount(25)` returns 9.
 
 Small positions use a lookup table. Otherwise, the calculation starts
-with an approximation to \\p_n\\, obtains an exact prime count at that
+with an approximation to $`p_n`$, obtains an exact prime count at that
 location, and finishes with a segmented sieve. At most one additional
 whole-range prime count is used. Counts over nearby intervals may then
 refine the search location without recounting all preceding primes.
@@ -50,8 +53,8 @@ sieving. Interval counting and final selection reuse the same sieve as
 Requested threads apply to both counting and sieving, subject to the
 useful work available.
 
-The largest supported position is \\\pi(2^{53} - 1)\\, so the returned
-prime is at most \\2^{53} - 1\\ and is represented exactly. The table
+The largest supported position is $`\pi(2^{53} - 1)`$, so the returned
+prime is at most $`2^{53} - 1`$ and is represented exactly. The table
 memory grows with the square root of the search location. Near the upper
 limit, the dense prime-count table alone occupies about 362 MiB, in
 addition to the prime vector, shared Phi cache, and worker storage.

@@ -1,6 +1,6 @@
-# Prime Counting Function \\\pi(x)\\
+# Prime Counting Function $`\pi(x)`$
 
-Count the prime numbers less than or equal to \\n\\, using automatic
+Count the prime numbers less than or equal to $`n`$, using automatic
 selection or an explicitly selected Legendre, Meissel, or Lehmer method.
 
 ## Usage
@@ -13,7 +13,7 @@ primeCount(n, nThreads = NULL, method = "auto")
 
 - n:
 
-  A single positive whole number, at most \\2^{53} - 1\\.
+  A single positive whole number, at most $`2^{53} - 1`$.
 
 - nThreads:
 
@@ -58,30 +58,39 @@ meaning. All methods use serial execution when `nThreads = NULL`.
 
 ### Counting formulas
 
-Let \\p_a\\ be the \\a\\th prime, and let \\\Phi(n, a)\\ count the
-positive integers at most \\n\\ that are not divisible by any of the
-first \\a\\ primes. Its recurrence is \$\$\Phi(n, a) = \Phi(n, a - 1) -
-\Phi(\lfloor n / p_a \rfloor, a - 1)\$\$ with \\\Phi(n, 0) = n\\.
+Let $`p_a`$ be the $`a`$th prime, and let $`\Phi(n, a)`$ count the
+positive integers at most $`n`$ that are not divisible by any of the
+first $`a`$ primes. Its recurrence is
+``` math
+\Phi(n, a) = \Phi(n, a - 1) - \Phi(\lfloor n / p_a \rfloor, a - 1)
+```
+with $`\Phi(n, 0) = n`$.
 
-For \\k = 2\\ or \\3\\, let \\P_k(n, a)\\ count integers at most \\n\\
-with exactly \\k\\ prime factors, none among the first \\a\\ primes.
-Factors are counted with multiplicity: \\p^2\\ is included in \\P_2\\,
-and \\p^3\\ and \\p^2 q\\ are included in \\P_3\\ when their factors
+For $`k = 2`$ or $`3`$, let $`P_k(n, a)`$ count integers at most $`n`$
+with exactly $`k`$ prime factors, none among the first $`a`$ primes.
+Factors are counted with multiplicity: $`p^2`$ is included in $`P_2`$,
+and $`p^3`$ and $`p^2 q`$ are included in $`P_3`$ when their factors
 exceed the cutoff. Nondecreasing factor order counts each integer once.
-When \\a = 0\\, all primes are allowed.
+When $`a = 0`$, all primes are allowed.
 
 The methods use different cutoffs and correction terms:
 
-- Legendre uses \\a = \pi(\lfloor \sqrt n \rfloor)\\: \$\$\pi(n) =
-  \Phi(n, a) + a - 1.\$\$
+- Legendre uses $`a = \pi(\lfloor \sqrt n \rfloor)`$:
+  ``` math
+  \pi(n) = \Phi(n, a) + a - 1.
+  ```
 
-- Meissel uses \\a = \pi(\lfloor n^{1/3} \rfloor)\\: \$\$\pi(n) =
-  \Phi(n, a) + a - 1 - P_2(n, a).\$\$
+- Meissel uses $`a = \pi(\lfloor n^{1/3} \rfloor)`$:
+  ``` math
+  \pi(n) = \Phi(n, a) + a - 1 - P_2(n, a).
+  ```
 
-- Lehmer uses \\a = \pi(\lfloor n^{1/4} \rfloor)\\: \$\$\pi(n) =
-  \Phi(n, a) + a - 1 - P_2(n, a) - P_3(n, a).\$\$
+- Lehmer uses $`a = \pi(\lfloor n^{1/4} \rfloor)`$:
+  ``` math
+  \pi(n) = \Phi(n, a) + a - 1 - P_2(n, a) - P_3(n, a).
+  ```
 
-The Legendre implementation and shared \\\Phi\\ calculation build on Kim
+The Legendre implementation and shared $`\Phi`$ calculation build on Kim
 Walisch's work in
 [primecount](https://github.com/kimwalisch/primecount), including cached
 partial-sieve values, small-prime periodic tables, and prime-count
@@ -89,18 +98,18 @@ lookup shortcuts.
 
 ## Note
 
-The counting methods prepare tables with storage proportional to \\\sqrt
-n\\. At the maximum input \\2^{53} - 1\\, the dense prime-count table
-requires about 362 MiB and the prime-vector reservation requests about
-42 MiB, before caches and other overhead. These are calculated storage
-estimates, not measured peak memory. Workers within one call share the
-tables; concurrent calls prepare separate tables. The supported numeric
-range does not guarantee that every input is practical for available
-memory.
+The counting methods prepare tables with storage proportional to
+$`\sqrt n`$. At the maximum input $`2^{53} - 1`$, the dense prime-count
+table requires about 362 MiB and the prime-vector reservation requests
+about 42 MiB, before caches and other overhead. These are calculated
+storage estimates, not measured peak memory. Workers within one call
+share the tables; concurrent calls prepare separate tables. The
+supported numeric range does not guarantee that every input is practical
+for available memory.
 
 ## References
 
-- Tomás Oliveira e Silva, [Computing \\\pi(x)\\: the combinatorial
+- Tomás Oliveira e Silva, [Computing $`\pi(x)`$: the combinatorial
   method](https://sweet.ua.pt/tos/bib/5.4.pdf), Revista do DETUA, vol.
   4, no. 6, March 2006, p. 761.
 
@@ -110,7 +119,7 @@ memory.
 ## Value
 
 A single whole number giving the number of primes less than or equal to
-\\n\\. The result has type `integer` when it is at most
+$`n`$. The result has type `integer` when it is at most
 `.Machine$integer.max`, and type `double` otherwise. The count is exact
 throughout the supported range.
 
@@ -144,5 +153,5 @@ primeCount(10^6, method = "lehmer")
 ## Using nThreads
 system.time(primeCount(10^10, nThreads = 2, method = "lehmer"))
 #>    user  system elapsed 
-#>   0.012   0.000   0.006 
+#>   0.010   0.002   0.007 
 ```

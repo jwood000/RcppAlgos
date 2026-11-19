@@ -49,11 +49,11 @@ This algorithm benefits greatly from the fast integer division library
 ## Value
 
 Returns a named/unnamed list of integer vectors if `max(bound1, bound2)`
-\\\< 2^{31}\\, or a list of numeric vectors otherwise.
+$`< 2^{31}`$, or a list of numeric vectors otherwise.
 
 ## Note
 
-The maximum value for either of the bounds is \\2^{53} - 1\\.
+The maximum value for either of the bounds is $`2^{53} - 1`$.
 
 ## References
 
@@ -120,5 +120,5 @@ primeFactorizeSieve(27, 30, namedList = TRUE)
 ## Using nThreads
 system.time(primeFactorizeSieve(1e4, 5e4, nThreads = 2))
 #>    user  system elapsed 
-#>   0.007   0.000   0.006 
+#>   0.007   0.000   0.007 
 ```

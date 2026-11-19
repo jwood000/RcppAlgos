@@ -1,8 +1,8 @@
 # Count Integers Remaining After a Partial Prime Sieve
 
-Count the positive integers less than or equal to \\n\\ that are not
-divisible by any of the first \\a\\ primes. This is the partial-sieve
-function \\\Phi(n, a)\\ used in combinatorial prime counting, not
+Count the positive integers less than or equal to $`n`$ that are not
+divisible by any of the first $`a`$ primes. This is the partial-sieve
+function $`\Phi(n, a)`$ used in combinatorial prime counting, not
 Euler's totient function.
 
 ## Usage
@@ -15,11 +15,11 @@ primePhi(n, a, nThreads = NULL)
 
 - n:
 
-  A single nonnegative whole number, at most \\2^{53} - 1\\.
+  A single nonnegative whole number, at most $`2^{53} - 1`$.
 
 - a:
 
-  A single nonnegative whole number, at most \\2^{53} - 1\\. This is the
+  A single nonnegative whole number, at most $`2^{53} - 1`$. This is the
   number of initial primes to exclude, not a prime value or an upper
   bound on the excluded primes. For example, `a = 3` excludes multiples
   of 2, 3, and 5. With `a = 0`, no primes are excluded.
@@ -39,32 +39,40 @@ is not supported.
 
 ### Mathematical definition
 
-Write \\p_1 = 2, p_2 = 3, p_3 = 5, \ldots\\ for the increasing sequence
-of primes. Then \\\Phi(n, a)\\ counts integers \\m\\ with \\1 \le m \le
-n\\ for which none of \\p_1, \ldots, p_a\\ divides \\m\\. When \\a =
-0\\, the excluded set is empty. In particular, \$\$\Phi(n, 0) = n,
-\qquad \Phi(0, a) = 0.\$\$ For \\a \ge 1\\, removing multiples of the
-next prime gives \$\$\Phi(n, a) = \Phi(n, a - 1) - \Phi(\lfloor n / p_a
-\rfloor, a - 1).\$\$ The subtracted term counts the multiples of \\p_a\\
-that survived removal of the preceding primes.
+Write $`p_1 = 2, p_2 = 3, p_3 = 5, \ldots`$ for the increasing sequence
+of primes. Then $`\Phi(n, a)`$ counts integers $`m`$ with
+$`1 \le m \le n`$ for which none of $`p_1, \ldots, p_a`$ divides $`m`$.
+When $`a = 0`$, the excluded set is empty. In particular,
+``` math
+\Phi(n, 0) = n, \qquad \Phi(0, a) = 0.
+```
+For $`a \ge 1`$, removing multiples of the next prime gives
+``` math
+\Phi(n, a) = \Phi(n, a - 1) - \Phi(\lfloor n / p_a \rfloor, a - 1).
+```
+The subtracted term counts the multiples of $`p_a`$ that survived
+removal of the preceding primes.
 
-The integer 1 survives every partial sieve. Thus, when \\n \> 0\\, the
-answer is at least 1, and it is exactly 1 when \\a \ge \pi(n)\\, where
-\\\pi(n)\\ is the number of primes at most \\n\\. Composite numbers can
+The integer 1 survives every partial sieve. Thus, when $`n > 0`$, the
+answer is at least 1, and it is exactly 1 when $`a \ge \pi(n)`$, where
+$`\pi(n)`$ is the number of primes at most $`n`$. Composite numbers can
 also survive: for example, `primePhi(30, 2)` includes 25 because neither
 2 nor 3 divides it. This gives the ten survivors
 `1, 5, 7, 11, 13, 17, 19, 23, 25, 29`.
 
-Euler's totient \\\phi(n)\\ instead counts integers at most \\n\\ that
-are coprime to \\n\\ itself. For that function, see
+Euler's totient $`\phi(n)`$ instead counts integers at most $`n`$ that
+are coprime to $`n`$ itself. For that function, see
 [`eulerPhiSieve`](https://jwood000.github.io/RcppAlgos/reference/eulerPhiSieve.md).
 
 ### Relation to prime counting
 
-If \\a = \pi(\lfloor \sqrt n \rfloor)\\ and \\n \ge 1\\, every surviving
+If $`a = \pi(\lfloor \sqrt n \rfloor)`$ and $`n \ge 1`$, every surviving
 integer other than 1 is a prime larger than the excluded primes.
-Legendre's formula is therefore \$\$\pi(n) = \Phi(n, a) + a - 1.\$\$
-Smaller choices of \\a\\ leave composite survivors. Meissel and Lehmer
+Legendre's formula is therefore
+``` math
+\pi(n) = \Phi(n, a) + a - 1.
+```
+Smaller choices of $`a`$ leave composite survivors. Meissel and Lehmer
 prime counting account for these using the correction terms exposed by
 [`semiPrimeCount`](https://jwood000.github.io/RcppAlgos/reference/semiPrimeCount.md)
 and
@@ -76,13 +84,13 @@ for the corresponding formulas.
 ## Note
 
 The general calculation prepares prime and prime-count tables with
-storage proportional to \\\sqrt n\\. Cases with \\a \le 6\\ use small
+storage proportional to $`\sqrt n`$. Cases with $`a \le 6`$ use small
 periodic tables instead of a full square-root table. Large values of
-\\a\\ do not require preparing all of the first \\a\\ primes merely to
+$`a`$ do not require preparing all of the first $`a`$ primes merely to
 establish that the answer is 1.
 
 The largest supported table limit is 94,906,265. Its dense prime-count
-table alone requires \\4(L + 1)\\ bytes for limit \\L\\, about 362 MiB
+table alone requires $`4(L + 1)`$ bytes for limit $`L`$, about 362 MiB
 at that maximum. Prime vectors, the shared Phi cache, temporary storage,
 and allocation overhead require additional memory. Workers within one
 call share the prepared tables; separate calls prepare their own tables.
@@ -91,7 +99,7 @@ practical for the available resources.
 
 ## Value
 
-A single whole number giving \\\Phi(n, a)\\. The result has type
+A single whole number giving $`\Phi(n, a)`$. The result has type
 `integer` when it is at most `.Machine$integer.max`, and type `double`
 otherwise. The count is exact throughout the supported range.
 

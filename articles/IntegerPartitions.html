@@ -5,7 +5,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Integer Partitions in RcppAlgos • RcppAlgos</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -68,7 +74,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">2026-10-16</h4>
+            <h4 data-toc-skip class="date">2026-11-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/main/vignettes/IntegerPartitions.Rmd" class="external-link"><code>vignettes/IntegerPartitions.Rmd</code></a></small>
       <div class="d-none name"><code>IntegerPartitions.Rmd</code></div>
@@ -127,7 +133,7 @@ below).</p>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">90</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/packageDescription.html" class="external-link">packageVersion</a></span><span class="op">(</span><span class="st">"RcppAlgos"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] '2.10.2'</span></span>
+<span><span class="co">#&gt; [1] '2.10.3'</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/capture.output.html" class="external-link">capture.output</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/sessionInfo.html" class="external-link">sessionInfo</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; R version 4.6.1 (2026-06-24)</span></span>
@@ -281,9 +287,8 @@ the maximum width is 4 in this case.</p>
 <div class="section level5">
 <h5 id="eulers-theorem-in-action-odd-parts-and-distinct-parts">Euler’s Theorem in Action (Odd Parts and Distinct Parts)<a class="anchor" aria-label="anchor" href="#eulers-theorem-in-action-odd-parts-and-distinct-parts"></a>
 </h5>
-<p>Consider
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">N = 100</annotation></semantics></math>.
-The number of partitions with odd parts only is given by:</p>
+<p>Consider <span class="math inline">\(N = 100\)</span>. The number of
+partitions with odd parts only is given by:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/sum.html" class="external-link">sum</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">100</span>, <span class="kw">function</span><span class="op">(</span><span class="va">width</span><span class="op">)</span> <span class="op">{</span></span>
@@ -440,15 +445,15 @@ permutations of multisets thoroughly. This is not surprising, as these
 structures are well known in both academia and industry alike. The same
 can be said for standard and distinct partitions, which we covered
 above. To our knowledge, algorithms for generating partitions where each
-part,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>i</mi></msub><annotation encoding="application/x-tex">p_i</annotation></semantics></math>,
-may repeat up to
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>i</mi></msub><annotation encoding="application/x-tex">r_i</annotation></semantics></math>
-times are not readily available in combinatorics
-software/literature.</p>
+part, <span class="math inline">\(p_i\)</span>, may repeat up to <span class="math inline">\(r_i\)</span> times are not readily available in
+combinatorics software/literature.</p>
 <p>Put simply, finding all partitions of <em>N</em> under part-specific
 multiplicity constraints has proven elusive. In <code>RcppAlgos</code>,
 however, this is no problem.</p>
+<p>Supported multiset partitions also provide sampling
+(<code>partitionsSample</code>), ranking (<code>partitionsRank</code>),
+and iterator random access (<code>partitionsIter</code>), including
+GMP-sized ranks.</p>
 <div class="section level4">
 <h4 id="case-4-integer-partitions-of-n-into-parts-of-varying-multiplicity">Case 4: Integer Partitions of <em>N</em> into Parts of Varying
 Multiplicity<a class="anchor" aria-label="anchor" href="#case-4-integer-partitions-of-n-into-parts-of-varying-multiplicity"></a>
@@ -472,6 +477,40 @@ Multiplicity<a class="anchor" aria-label="anchor" href="#case-4-integer-partitio
 <span><span class="co">#&gt; [12,]    2    2    4    4</span></span>
 <span><span class="co">#&gt; [13,]    2    3    3    4</span></span></code></pre></div>
 </div>
+<div class="section level4">
+<h4 id="bounds-for-multiset-partitions">Bounds for multiset partitions<a class="anchor" aria-label="anchor" href="#bounds-for-multiset-partitions"></a>
+</h4>
+<p>For supported multiset partitions, <code>lower</code> and
+<code>upper</code> select rows of the matching partitions in
+lexicographical order. When matches exist, <code>lower = 1</code> gives
+the same prefix as omitting <code>lower</code>. With no matches,
+omitting both bounds returns an empty matrix; explicit positive bounds
+exceed the zero result count and raise an error. Equivalent
+<code>comboGeneral</code> calls with a sum/equality constraint use these
+same partition ranks.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">fr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">all_parts</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span>, freqs <span class="op">=</span> <span class="va">fr</span>, target <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">all_parts</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 74</span></span>
+<span></span>
+<span><span class="va">first_five</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span>, freqs <span class="op">=</span> <span class="va">fr</span>, target <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>                                lower <span class="op">=</span> <span class="fl">1</span>, upper <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">first_five</span>, <span class="va">all_parts</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">first_five</span>,</span>
+<span>          <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span>, freqs <span class="op">=</span> <span class="va">fr</span>, constraintFun <span class="op">=</span> <span class="st">"sum"</span>,</span>
+<span>                       comparisonFun <span class="op">=</span> <span class="st">"=="</span>, limitConstraints <span class="op">=</span> <span class="fl">25</span>,</span>
+<span>                       lower <span class="op">=</span> <span class="fl">1</span>, upper <span class="op">=</span> <span class="fl">5</span>, keepResults <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<p>There are only 74 matching partitions here, so
+<code>lower = 500</code> is invalid through either API. It does not mean
+to start filtering at the 500<sup>th</sup> unconstrained combination.
+Multiset partitions also support generation with
+<code>nThreads = 2</code> when enough rows are requested to use multiple
+threads.</p>
+</div>
 </div>
 <div class="section level3">
 <h3 id="using-the-table-s3-method">Using the <code>table</code> S3 Method<a class="anchor" aria-label="anchor" href="#using-the-table-s3-method"></a>
@@ -481,13 +520,8 @@ zeros, we can take advantage of the <code><a href="https://rdrr.io/r/base/table.
 is a natural fit for multisets, since problems are often framed in terms
 of multiplicities:</p>
 <blockquote>
-<p><em>Given the multiset
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">[</mo><msubsup><mi>p</mi><mn>0</mn><msub><mi>r</mi><mn>0</mn></msub></msubsup><mo>,</mo><msubsup><mi>p</mi><mn>1</mn><msub><mi>r</mi><mn>1</mn></msub></msubsup><mo>,</mo><mi>…</mi><mo>,</mo><msubsup><mi>p</mi><mi>k</mi><msub><mi>r</mi><mi>k</mi></msub></msubsup><mo stretchy="false" form="postfix">]</mo></mrow><annotation encoding="application/x-tex">[p_0^{r_0}, p_1^{r_1}, \ldots, p_k^{r_k}]</annotation></semantics></math>,
-where each
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>p</mi><mi>i</mi></msub><annotation encoding="application/x-tex">p_i</annotation></semantics></math>
-repeats
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>r</mi><mi>i</mi></msub><annotation encoding="application/x-tex">r_i</annotation></semantics></math>
-times, find …</em></p>
+<p><em>Given the multiset <span class="math inline">\([p_0^{r_0},
+p_1^{r_1}, \ldots, p_k^{r_k}]\)</span>, where each <span class="math inline">\(p_i\)</span> repeats <span class="math inline">\(r_i\)</span> times, find …</em></p>
 </blockquote>
 <p>Without a dedicated interface, setting up <code>v</code> and
 <code>freqs</code> can be cumbersome, often requiring some combination
@@ -496,7 +530,7 @@ and/or <code><a href="https://rdrr.io/r/base/rle.html" class="external-link">rle
 <p>As of version <code>2.8.3</code>, <code>RcppAlgos</code> provides an
 S3 method for <code><a href="https://rdrr.io/r/base/table.html" class="external-link">table()</a></code> objects, so a multiset can be passed
 directly.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ms</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="fl">5</span>,<span class="fl">5</span>,<span class="fl">6</span><span class="op">)</span></span>
 <span><span class="va">tab</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">ms</span><span class="op">)</span></span>
 <span><span class="va">tab</span></span>
@@ -549,7 +583,7 @@ which corresponds to the classical problem of partitioning <em>N</em>.
 However, <code>target</code> may be set independently of <code>v</code>,
 allowing for more general capped or restricted partition problems.</p>
 <p>Observe:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## Here we partition 30 using only distinct parts up to 10</span></span>
 <span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">5</span>, target <span class="op">=</span> <span class="fl">30</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       [,1] [,2] [,3] [,4] [,5]</span></span>
@@ -619,7 +653,7 @@ allowing for more general capped or restricted partition problems.</p>
 </h3>
 <p>Note, as of version <code>2.5.0</code>, one can generate partitions
 in parallel using the <code>nThreads</code> argument.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co">## partitions of 60</span></span>
 <span><span class="fu"><a href="../reference/partitionsCount.html">partitionsCount</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 966467</span></span>
@@ -627,12 +661,12 @@ in parallel using the <code>nThreads</code> argument.</p>
 <span><span class="co">## Single threaded</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.039   0.008   0.046</span></span>
+<span><span class="co">#&gt;   0.039   0.007   0.047</span></span>
 <span></span>
 <span><span class="co">## Using nThreads</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">60</span>, repetition <span class="op">=</span> <span class="cn">TRUE</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.025   0.018   0.012</span></span>
+<span><span class="co">#&gt;   0.025   0.016   0.011</span></span>
 <span></span>
 <span><span class="co">## partitions of 120 into distinct parts</span></span>
 <span><span class="fu"><a href="../reference/partitionsCount.html">partitionsCount</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">120</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">120</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
@@ -644,7 +678,7 @@ in parallel using the <code>nThreads</code> argument.</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">120</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">120</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">120</span><span class="op">)</span><span class="op">)</span>, nThreads <span class="op">=</span> <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.019   0.006   0.007</span></span>
+<span><span class="co">#&gt;   0.018   0.006   0.007</span></span>
 <span></span>
 <span><span class="co">## partitions of 100 into parts of 15 with specific multiplicity</span></span>
 <span><span class="fu"><a href="../reference/partitionsCount.html">partitionsCount</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4</span><span class="op">:</span><span class="fl">8</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
@@ -653,7 +687,7 @@ in parallel using the <code>nThreads</code> argument.</p>
 <span><span class="co">## Over 6 million almost instantly!</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/partitionsGeneral.html">partitionsGeneral</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">15</span>, freqs <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4</span><span class="op">:</span><span class="fl">8</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.107   0.012   0.118</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.104   0.012   0.115</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

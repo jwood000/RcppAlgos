@@ -52,7 +52,7 @@ comboGroupsIter(v, numGroups = NULL, grpSizes = NULL,
 
   Logical value indicating whether results should be generated in
   parallel. The default is `FALSE`. If `TRUE` and `nThreads = NULL`, up
-  to \\n - 1\\ threads are used, where \\n\\ is the number of threads
+  to $`n - 1`$ threads are used, where $`n`$ is the number of threads
   available on your system (both threads may be used on a two-thread
   system). If `nThreads` is not `NULL`, it will be given preference
   (*e.g.* with 8 available threads, `Parallel = TRUE` and
@@ -140,7 +140,7 @@ Once you initialize a new iterator, the following methods are available:
       microbenchmark(multi@nextNIter(1e3), serial@nextNIter(1e3), times = 20)
 
 - The maximum number of comboGroups that can be generated at one time is
-  \\2^{31} - 1\\.
+  $`2^{31} - 1`$.
 
 - If an error occurs while generating results, the iterator's internal
   state is not guaranteed to remain at its previous position. Call

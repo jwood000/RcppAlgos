@@ -209,7 +209,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE,
   is only applying `constraintFun`, `keepResults` will default to
   `TRUE`.
 
-  *E.g*. The following are equivalent and will produce a \\4^{th}\\
+  *E.g*. The following are equivalent and will produce a $`4^{th}`$
   column of row sums:
 
   - `comboGeneral(5, 3 constraintFun = "sum", keepResults = TRUE)`
@@ -225,7 +225,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE,
 
   Logical value indicating whether combinations/permutations should be
   generated in parallel. The default is `FALSE`. If `TRUE` and
-  `nThreads = NULL`, up to \\n - 1\\ threads are used, where \\n\\ is
+  `nThreads = NULL`, up to $`n - 1`$ threads are used, where $`n`$ is
   the number of threads available on your system (both threads may be
   used on a two-thread system). If `nThreads` is not `NULL`, it will be
   given preference (*e.g.* with 8 available threads, `Parallel = TRUE`
@@ -248,7 +248,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE,
   utilized when a constraint is applied on a numeric vector. The default
   value is 0 when it can be determined that whole values are being
   utilized, otherwise it is `sqrt(.Machine$double.eps)` which is
-  approximately \\1.5e-8\\. N.B. If the input vector is of type integer,
+  approximately $`1.5e-8`$. N.B. If the input vector is of type integer,
   this parameter will be ignored and strict equality will be enforced.
 
 - FUN.VALUE:
@@ -258,7 +258,7 @@ permuteGeneral(v, m = NULL, repetition = FALSE,
 
 ## Value
 
-- In general, a matrix with \\m\\ or \\m + 1\\ columns, depending on the
+- In general, a matrix with $`m`$ or $`m + 1`$ columns, depending on the
   value of `keepResults`
 
 - If `FUN` is utilized and `FUN.VALUE = NULL`, a list is returned
@@ -343,10 +343,10 @@ criteria. Throughout the documentation, this case is referred to as
   `NULL` –or– if the class of the vector passed is `logical`,
   `character`, `raw`, `factor`, or `complex`, the constraint check will
   not be carried out. This is equivalent to simply finding all
-  combinations/permutations of \\v\\ choose \\m\\.
+  combinations/permutations of $`v`$ choose $`m`$.
 
 - The maximum number of combinations/permutations that can be generated
-  at one time is \\2^{31} - 1\\. Utilizing `lower` and `upper` makes it
+  at one time is $`2^{31} - 1`$. Utilizing `lower` and `upper` makes it
   possible to generate additional combinations/permutations.
 
 - Factor vectors are accepted. Class and level attributes are preserved

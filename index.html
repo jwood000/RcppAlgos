@@ -5,7 +5,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>High Performance Tools for Combinatorics and Computational Mathematics • RcppAlgos</title>
-<script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -83,6 +89,8 @@
 <code>primeSieve</code> for generating primes</li>
 <li>
 <code>primeCount</code> for counting primes with selectable Legendre, Meissel, and Lehmer methods</li>
+<li>
+<code>nthPrime</code> for finding the nth prime</li>
 <li>
 <code>primeFactorize</code> for prime factorization</li>
 </ul>
@@ -296,6 +304,10 @@
 <span><span class="co">## Count prime numbers less than or equal to n</span></span>
 <span><span class="fu"><a href="reference/primeCount.html">primeCount</a></span><span class="op">(</span><span class="fl">1e10</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 455052511</span></span>
+<span></span>
+<span><span class="co">## Find the millionth prime</span></span>
+<span><span class="fu"><a href="reference/nthPrime.html">nthPrime</a></span><span class="op">(</span><span class="fl">1e6</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 15485863</span></span>
 <span></span>
 <span><span class="co">## Get the prime factorization</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">24028</span><span class="op">)</span></span>
