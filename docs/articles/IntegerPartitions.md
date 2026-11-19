@@ -55,7 +55,7 @@ library(RcppAlgos)
 options(width = 90)
 
 packageVersion("RcppAlgos")
-#> [1] '2.10.2'
+#> [1] '2.10.3'
 
 cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
 #> R version 4.6.1 (2026-06-24)
@@ -389,6 +389,10 @@ Put simply, finding all partitions of *N* under part-specific
 multiplicity constraints has proven elusive. In `RcppAlgos`, however,
 this is no problem.
 
+Supported multiset partitions also provide sampling
+(`partitionsSample`), ranking (`partitionsRank`), and iterator random
+access (`partitionsIter`), including GMP-sized ranks.
+
 #### Case 4: Integer Partitions of *N* into Parts of Varying Multiplicity
 
 ``` r
@@ -412,6 +416,41 @@ partitionsGeneral(12, 4, freqs = rep(2:3, 6))
 #> [13,]    2    3    3    4
 ```
 
+#### Bounds for multiset partitions
+
+For supported multiset partitions, `lower` and `upper` select rows of
+the matching partitions in lexicographical order. When matches exist,
+`lower = 1` gives the same prefix as omitting `lower`. With no matches,
+omitting both bounds returns an empty matrix; explicit positive bounds
+exceed the zero result count and raise an error. Equivalent
+`comboGeneral` calls with a sum/equality constraint use these same
+partition ranks.
+
+``` r
+
+fr <- rep(1:5, 2)
+all_parts <- partitionsGeneral(10, 5, freqs = fr, target = 25)
+nrow(all_parts)
+#> [1] 74
+
+first_five <- partitionsGeneral(10, 5, freqs = fr, target = 25,
+                                lower = 1, upper = 5)
+identical(first_five, all_parts[1:5, , drop = FALSE])
+#> [1] TRUE
+
+identical(first_five,
+          comboGeneral(10, 5, freqs = fr, constraintFun = "sum",
+                       comparisonFun = "==", limitConstraints = 25,
+                       lower = 1, upper = 5, keepResults = FALSE))
+#> [1] TRUE
+```
+
+There are only 74 matching partitions here, so `lower = 500` is invalid
+through either API. It does not mean to start filtering at the 500^(th)
+unconstrained combination. Multiset partitions also support generation
+with `nThreads = 2` when enough rows are requested to use multiple
+threads.
+
 ### Using the `table` S3 Method
 
 For both the multiset case and the distinct case with repeating zeros,
@@ -420,8 +459,9 @@ we can take advantage of the
 natural fit for multisets, since problems are often framed in terms of
 multiplicities:
 
-> *Given the multiset $`[p_0^{r_0}, p_1^{r_1}, \ldots, p_k^{r_k}]`$,
-> where each $`p_i`$ repeats $`r_i`$ times, find …*
+> *Given the multiset $`[p_0^{r_0},
+> p_1^{r_1}, \ldots, p_k^{r_k}]`$, where each $`p_i`$ repeats $`r_i`$
+> times, find …*
 
 Without a dedicated interface, setting up `v` and `freqs` can be
 cumbersome, often requiring some combination of
@@ -570,12 +610,12 @@ partitionsCount(0:60, repetition = TRUE)
 ## Single threaded
 system.time(partitionsGeneral(0:60, repetition = TRUE))
 #>    user  system elapsed 
-#>   0.039   0.008   0.046
+#>   0.039   0.007   0.047
 
 ## Using nThreads
 system.time(partitionsGeneral(0:60, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   0.025   0.018   0.012
+#>   0.025   0.016   0.011
 
 ## partitions of 120 into distinct parts
 partitionsCount(0:120, freqs = c(120, rep(1, 120)))
@@ -587,7 +627,7 @@ system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120))))
 
 system.time(partitionsGeneral(0:120, freqs = c(120, rep(1, 120)), nThreads = 4))
 #>    user  system elapsed 
-#>   0.019   0.006   0.007
+#>   0.018   0.006   0.007
 
 ## partitions of 100 into parts of 15 with specific multiplicity
 partitionsCount(100, 15, freqs = rep(4:8, 20))
@@ -596,5 +636,5 @@ partitionsCount(100, 15, freqs = rep(4:8, 20))
 ## Over 6 million almost instantly!
 system.time(partitionsGeneral(100, 15, freqs = rep(4:8, 20)))
 #>    user  system elapsed 
-#>   0.107   0.012   0.118
+#>   0.104   0.012   0.115
 ```

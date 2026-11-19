@@ -2,7 +2,7 @@
 
 ## Unsafe floating-point to integer conversions
 
-Status: Fix implemented and validated; pending maintainer review
+Status: Resolved; reviewed by the maintainer and merged into `main`
 Priority: High
 Discovered during: PartitionType refactoring
 
@@ -97,12 +97,13 @@ No cross-platform check or performance benchmark was run for this change.
 
 ### Decision
 
-Implementation and evidence are ready for maintainer review. This record has
-not been marked resolved, and no GitHub issue was opened or updated here.
+The maintainer reviewed the fix and validation evidence. The fix was merged
+into `main` in [PR #90](https://github.com/jwood000/RcppAlgos/pull/90), addressing
+[Issue #89](https://github.com/jwood000/RcppAlgos/issues/89).
 
 ## Zero-only repeated partitions can divide by zero during setup
 
-Status: Fix implemented and validated; pending maintainer review
+Status: Resolved; reviewed by the maintainer and merged into `main`
 Discovered during: Review of partition-mapping arithmetic, November 18, 2026
 
 `partitionsGeneral(0, 2, repetition = TRUE)` reaches integer division by zero.
@@ -136,11 +137,12 @@ hashes are under `/tmp/rcppalgos-zero-fix-1b0mpvpj`.
 Validation used macOS arm64, Apple Clang 17 / R 4.6.1. Full `R CMD check` and
 cross-platform checks were not rerun for this routing-only change. The local
 deferred records were checked for a duplicate; GitHub was not consulted and no
-issue was published. This record remains pending maintainer review.
+issue was published. The fix was reviewed by the maintainer and merged into
+`main` in [PR #90](https://github.com/jwood000/RcppAlgos/pull/90).
 
 ## Prime sieve worker and thread-launch exception handling
 
-Status: Fix implemented and validated in the working tree; pending maintainer review
+Status: Resolved; reviewed by the maintainer and merged into `main`
 Discovered during: Considering native prime-sieve reuse in nthPrime
 
 ### Observation
@@ -195,14 +197,14 @@ for commands and measurement details.
 
 ### Decision
 
-Implementation and evidence are ready for maintainer review; no GitHub issue
-has been opened or closed for this finding.
+The maintainer reviewed the fix and validation evidence; the fix is merged
+into `main`. No separate GitHub issue was opened for this finding.
 The known sieve issues listed below concern separate endpoint and coverage
 defects, not exception propagation.
 
 ## Package thread launchers and worker-side R errors
 
-Status: Fix implemented and validated; pending maintainer review
+Status: Resolved; reviewed by the maintainer and merged into `main`
 
 Sixteen raw launch regions could terminate R on worker or partial-launch
 failures. They now use `RcppAlgos::ThreadBatch`, declared after borrowed storage
@@ -229,8 +231,8 @@ Tracked in [GitHub issue #87](https://github.com/jwood000/RcppAlgos/issues/87).
 
 ## Prime sieve hardware-sizing arithmetic on high-core-count hosts
 
-Status: Narrow fix implemented with the approved PiPrime refactor; pending
-maintainer review. Ordinary hardware sizing is preserved.
+Status: Resolved; reviewed by the maintainer and merged into `main` with the
+PiPrime refactor. Ordinary hardware sizing is preserved.
 Discovered during: Production integration of the refined nthPrime cost model,
 November 13, 2026.
 
@@ -249,7 +251,7 @@ R's detected hardware limits. Ordinary ten-core validation does not exercise
 these values.
 The evidence here is the operand types and exact arithmetic, not a failed
 end-to-end run on high-core hardware. Wider intermediates and subsequent size
-and square calculations should be checked together before proposing a fix.
+and square calculations needed to be checked together when developing the fix.
 
 The deferred records and known sieve issues #82–#84 were checked. A GitHub
 issue search for `sieve overflow` returned only the separate bucket-boundary
@@ -270,12 +272,11 @@ segments; this remains synthetic validation, not a run on high-core hardware.
 
 ## Findings transferred to GitHub
 
-The following sieve findings have fixes and regression coverage in
-[PR #85](https://github.com/jwood000/RcppAlgos/pull/85). As of November 1, 2026,
-the PR and issues remain open; the fixes are implemented on
-`investigate-prime-sieve` and await merge. Follow GitHub for current review,
-merge, and issue-closure status. The issues preserve the original reproductions
-and sanitizer evidence.
+The following sieve fixes and regression coverage were reviewed by the
+maintainer and merged into `main` in
+[PR #85](https://github.com/jwood000/RcppAlgos/pull/85). The issues preserve the
+original reproductions and sanitizer evidence; follow GitHub for issue-closure
+status.
 
 - [Issue #82: Precomputed prime-table endpoint read](https://github.com/jwood000/RcppAlgos/issues/82).
   Commit [`204b6f9`](https://github.com/jwood000/RcppAlgos/commit/204b6f9)

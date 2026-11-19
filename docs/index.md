@@ -25,7 +25,9 @@ Walisch](https://github.com/kimwalisch).
 - Parallel computation support
 - Fast prime number utilities:
   - `primeSieve` for generating primes
-  - `primeCount` for counting primes using Legendre’s formula
+  - `primeCount` for counting primes with selectable Legendre, Meissel,
+    and Lehmer methods
+  - `nthPrime` for finding the nth prime
   - `primeFactorize` for prime factorization
 
 RcppAlgos is designed to handle combinatorial problems ranging from
@@ -244,9 +246,13 @@ tail(p)
 #> [4] 1000000099999919 1000000099999931 1000000099999963
 
 
-## Count prime numbers less than n
+## Count prime numbers less than or equal to n
 primeCount(1e10)
 #> [1] 455052511
+
+## Find the millionth prime
+nthPrime(1e6)
+#> [1] 15485863
 
 ## Get the prime factorization
 set.seed(24028)

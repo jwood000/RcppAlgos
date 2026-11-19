@@ -451,7 +451,7 @@
     }
     \subsection{Enhancements}{
         \itemize{
-            \item Now able to interrupt general constraint problems
+            \item Now able to interrupt general constraint problems (See \href{https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-cpp11check_user_interrupt}{Interrupt Execution})
         }
     }
     \subsection{Bug Fixes}{

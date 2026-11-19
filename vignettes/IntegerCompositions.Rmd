@@ -1,7 +1,7 @@
 ---
 title: "Integer Compositions in RcppAlgos"
 author: "Joseph Wood"
-date: "2026-10-16"
+date: "2026-11-18"
 output:
   prettydoc::html_pretty:
     theme: architect
@@ -25,11 +25,11 @@ Prior to version `2.10.0`, the composition engine in `RcppAlgos` supported only 
 
 Version `2.10.0` introduces complete support for compositions with repetition and adds full support for compositions with distinct parts.
 
-Planned future enhancements include comprehensive support for compositions of multisets.
+`compositionsCount` supports multiset compositions, including weak compositions and zero-padding. Dedicated generation, sampling, ranking, and iteration are not yet available for general multiset compositions.
 
-The output with `compositionGeneral` will be in lexicographical order. When we set `weak = TRUE` and zero is included, we will obtain ***weak compositions***, which allow for zeros to be a part of the sequence (E.g. `c(0, 0, 5), c(0, 5, 0), c(5, 0, 0)` are weak compositions of 5). As the Wikipedia article points out, we can increase the number of zeros indefinitely when `weak = TRUE`.
+The output with `compositionsGeneral` is in lexicographical order across all matching compositions. Its `lower` and `upper` index those matching rows. When matches exist, `lower = 1` gives the same prefix as omitting `lower`. With no matches, omitting both bounds returns an empty matrix; explicit positive bounds exceed the zero result count and raise an error. When `weak = TRUE` and zero is included, zeros are actual parts of the sequence: `c(0, 0, 5)`, `c(0, 5, 0)`, and `c(5, 0, 0)` are weak compositions of 5. Increasing the width permits additional zeros.
 
-For more general cases, we can make use of `permuteGeneral`, keeping in mind that the output will not be in lexicographical order. Another consideration with `permuteGeneral` is that when we include zero, we will always obtain weak compositions.
+For more general cases, we can use `permuteGeneral`. For supported sum/equality cases without `lower`, it uses partition-then-permute order, even when an equivalent composition algorithm exists. Supplying `lower` instead filters ordinary permutation ranks. The section below explains these contracts. In permutations, zero is an actual element that can occupy any position, subject to its multiplicity.
 
 With that in mind, generating compositions with `RcppAlgos` is easy, flexible, and quite efficient.
 
@@ -59,7 +59,7 @@ library(RcppAlgos)
 options(width = 90)
 
 packageVersion("RcppAlgos")
-#> [1] '2.10.2'
+#> [1] '2.10.3'
 
 cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
 #> R version 4.6.1 (2026-06-24)
@@ -255,10 +255,14 @@ identical(compositionsGeneral(0:40, 7), brute_lex)
 
 ### Case 4: Integer Compositions of *N* into Parts of Varying Multiplicity
 
-Currently, we must use `permuteGeneral`.
+We can count these compositions directly with `compositionsCount`. To generate this positive-valued multiset case, use `permuteGeneral`; `compositionsGeneral` does not yet have a corresponding generator.
 
 ``` r
-## Generates error
+## Count compositions with the specified multiplicities
+compositionsCount(5, 3, freqs = rep(2, 5))
+#> [1] 6
+
+## Generation is not yet supported for this case
 compositionsGeneral(5, 3, freqs = rep(2, 5))
 #> Error:
 #> ! Generation is not supported for this multiset composition. Consider using permuteGeneral() instead.
@@ -280,11 +284,42 @@ permuteGeneral(5, 3, freqs = rep(2, 5),
 
 ## Generating Compositions with `permuteGeneral()`
 
-As noted in the introduction, compositions can also be generated using `permuteGeneral()`. As with the other general combinatorial generators in `RcppAlgos`, the procedure first finds feasible combinations satisfying the constraint and then produces permutations of those combinations. In this setting, the combinations correspond to integer partitions of the target (`limitConstraints` in this case).
+For supported `constraintFun = "sum"` and `comparisonFun = "=="` calls without `lower`, `permuteGeneral` uses **partition-then-permute order**. It visits matching partitions in lexicographical order and emits all distinct permutations of each partition in lexicographical order before moving to the next. The combined output need not be globally sorted. These cases include integer-valued, evenly spaced source vectors and an integer target, with supported repetition, distinct, or multiset rules.
 
-This also implies that we always produce **weak compositions** when zero is included. Furthermore, since the results are not generated in lexicographical order, parameters such as `lower` and `upper` cannot be applied, as there is no well-defined notion of the *n<sup>th</sup>* result.
+The parameter `upper` alone caps matching rows in that order and may stop partway through a partition’s permutations. If `lower` is supplied, both bounds instead refer to ordinary permutation ranks before applying the constraint. The surviving rows are in lexicographical order. Omitting `upper` tests all candidates from `lower` onward.
 
-For example, the following generates all weak compositions of 3 using elements from `0:3` and NOT in lex-order:
+Consequently, `lower = 1` is not redundant. Requesting four matches with `upper` alone differs from testing permutation ranks 1 through 4. Neither interpretation makes these bounds composition ranks; use `compositionsGeneral` to index lexicographically ordered compositions.
+
+``` r
+## No lower: permute each matching partition before moving to the next.
+permuteGeneral(6, 3, repetition = TRUE, constraintFun = "sum",
+               comparisonFun = "==", limitConstraints = 6, upper = 4)
+#>      [,1] [,2] [,3]
+#> [1,]    1    1    4
+#> [2,]    1    4    1
+#> [3,]    4    1    1
+#> [4,]    1    2    3
+
+## Explicit lower: test ordinary permutation ranks 1 through 4.
+## Only (1, 1, 4) matches; upper is not a request for four matches.
+permuteGeneral(6, 3, repetition = TRUE, constraintFun = "sum",
+               comparisonFun = "==", limitConstraints = 6,
+               lower = 1, upper = 4)
+#>      [,1] [,2] [,3]
+#> [1,]    1    1    4
+
+## Compositions: return the first four matching rows in lexicographic order.
+compositionsGeneral(6, 3, repetition = TRUE, target = 6, upper = 4)
+#>      [,1] [,2] [,3]
+#> [1,]    1    1    4
+#> [2,]    1    2    3
+#> [3,]    1    3    2
+#> [4,]    1    4    1
+```
+
+Zero is an actual element in `permuteGeneral`, so it may occur anywhere in a result, subject to multiplicities. This differs from non-weak composition padding.
+
+The following calls omit `lower` and therefore retain partition-then-permute order:
 
 ``` r
 ## With repetition
@@ -422,13 +457,13 @@ ht(compositionsGeneral(table(c(rep(0L, 4), 1:8)), 6, target = 22))
 
 ## Efficiency Generating Partitions and Compositions
 
-With `compositionGeneral` we are able to take advantage of parallel computation. With `permuteGeneral`, the parallel options have no effect when generating compositions.
+Supported `compositionsGeneral` calls can use parallel generation. Partition-then-permute generation through `permuteGeneral` without `lower` is serial. Supplying `lower` allows parallel candidate filtering when the requested range is large enough; this scans ordinary permutations and can be expensive when matches are sparse.
 
 ``` r
 ## compositions of 25
 system.time(compositionsGeneral(0:25, repetition = TRUE))
 #>    user  system elapsed 
-#>   1.197   0.053   1.251
+#>   1.172   0.051   1.224
 
 compositionsCount(0:25, repetition = TRUE)
 #> [1] 16777216
@@ -437,14 +472,14 @@ compositionsCount(0:25, repetition = TRUE)
 ## over 16 million compositions instantly
 system.time(compositionsGeneral(0:25, repetition = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   1.373   0.060   0.379
+#>   1.372   0.058   0.379
 
 
 ## weak compositions of 12 using nThreads = 4
 system.time(weakComp12 <- compositionsGeneral(0:12, repetition = TRUE,
                                               weak = TRUE, nThreads = 4))
 #>    user  system elapsed 
-#>   0.009   0.004   0.003
+#>   0.008   0.003   0.004
 
 ## And using permuteGeneral
 system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
@@ -452,7 +487,7 @@ system.time(weakPerm12 <- permuteGeneral(0:12, 12, repetition = TRUE,
                                          comparisonFun = "==",
                                          limitConstraints = 12))
 #>    user  system elapsed 
-#>   0.010   0.002   0.012
+#>   0.009   0.002   0.011
 
 dim(weakPerm12)
 #> [1] 1352078      12
@@ -464,7 +499,7 @@ identical(weakPerm12[do.call(order, as.data.frame(weakPerm12)), ],
 ## Distinct Parts
 system.time(compositionsGeneral(55, 8))
 #>    user  system elapsed 
-#>   0.630   0.017   0.647
+#>   0.627   0.016   0.644
 
 compositionsCount(55, 8)
 #> [1] 14192640
@@ -472,7 +507,7 @@ compositionsCount(55, 8)
 ## Similar to above... using 4 threads gets us the result instantly
 system.time(compositionsGeneral(55, 8, nThreads = 4))
 #>    user  system elapsed 
-#>   0.660   0.017   0.192
+#>   0.712   0.016   0.201
 
 ## General compositions with varying multiplicities
 system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
@@ -480,7 +515,7 @@ system.time(comp25_gen <- permuteGeneral(25, 10, freqs = rep(4:8, 5),
                                          comparisonFun = "==",
                                          limitConstraints = 25))
 #>    user  system elapsed 
-#>   0.006   0.000   0.006
+#>   0.005   0.001   0.006
 
 dim(comp25_gen)
 #> [1] 946092     10

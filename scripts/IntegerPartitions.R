@@ -149,6 +149,8 @@ reprex::reprex({
     #'
     #' Put simply, finding all partitions of _N_ under part-specific multiplicity constraints has proven elusive. In `RcppAlgos`, however, this is no problem.
     #'
+    #' Supported multiset partitions also provide sampling (`partitionsSample`), ranking (`partitionsRank`), and iterator random access (`partitionsIter`), including GMP-sized ranks.
+    #'
     #' ### Case 4: Integer Partitions of _N_ into Parts of Varying Multiplicity
     #'
 
@@ -160,13 +162,7 @@ reprex::reprex({
     #'
     #' ### Bounds for multiset partitions
     #'
-    #' For supported multiset partitions, `lower` and `upper` select rows of the
-    #' matching partitions in lexicographical order. When matches exist,
-    #' `lower = 1` gives the same prefix as omitting `lower`. With no matches,
-    #' omitting both bounds returns an empty matrix; explicit positive
-    #' bounds exceed the zero result count and raise an error. Equivalent
-    #' `comboGeneral` calls with a sum/equality constraint use these same
-    #' partition ranks.
+    #' For supported multiset partitions, `lower` and `upper` select rows of the matching partitions in lexicographical order. When matches exist, `lower = 1` gives the same prefix as omitting `lower`. With no matches, omitting both bounds returns an empty matrix; explicit positive bounds exceed the zero result count and raise an error. Equivalent `comboGeneral` calls with a sum/equality constraint use these same partition ranks.
     #'
 
     fr <- rep(1:5, 2)
@@ -183,11 +179,7 @@ reprex::reprex({
                            lower = 1, upper = 5, keepResults = FALSE))
 
     #'
-    #' There are only 74 matching partitions here, so `lower = 500` is invalid
-    #' through either API. It does not mean to start filtering at the 500th
-    #' unconstrained combination. Multiset partitions also support generation
-    #' with `nThreads = 2` when enough rows are requested to use multiple
-    #' threads.
+    #' There are only 74 matching partitions here, so `lower = 500` is invalid through either API. It does not mean to start filtering at the 500<sup>th</sup> unconstrained combination. Multiset partitions also support generation with `nThreads = 2` when enough rows are requested to use multiple threads.
     #'
     #' ## Using the `table` S3 Method
     #'

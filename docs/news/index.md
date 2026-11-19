@@ -1,6 +1,157 @@
 # Changelog
 
+## RcppAlgos 2.10.3
+
+### New Features
+
+- Added `nthPrime(n, nThreads = NULL)` to find the prime at a one-based
+  position. The calculation uses at most two whole-range prime counts,
+  then reuses the optimized sieve for interval counting and bounded
+  final selection. Results are exact throughout the supported range;
+  requested threads apply to counting and sieving.
+- Added `countOnly = TRUE` to
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  for counting primes in an inclusive interval without constructing the
+  result vector. The default continues to generate primes, and existing
+  positional calls are unchanged.
+- Added
+  [`primePhi()`](https://jwood000.github.io/RcppAlgos/reference/primePhi.md),
+  [`semiPrimeCount()`](https://jwood000.github.io/RcppAlgos/reference/semiPrimeCount.md),
+  and
+  [`triPrimeCount()`](https://jwood000.github.io/RcppAlgos/reference/triPrimeCount.md)
+  for exploring the partial sieve functions used in prime counting. The
+  optional cutoff in the product counters excludes an initial set of
+  primes; repeated prime factors are included. Each function documents
+  its mathematical definition, supported inputs, and memory
+  requirements.
+- Added `method = "auto"`, `"legendre"`, `"meissel"`, and `"lehmer"` to
+  [`primeCount()`](https://jwood000.github.io/RcppAlgos/reference/primeCount.md).
+  Explicit choices use the named algorithm for all accepted inputs. The
+  new argument follows `nThreads`, preserving existing positional calls.
+  The `"auto"` policy uses lookup/sieve counting below 100000, Legendre
+  below 1e10, and Meissel for larger inputs, except that inputs of at
+  least 1e12 with at least six usable threads select Lehmer. Usable
+  threads are the requested count capped by the available hardware.
+- Added ranking, sampling, and iterator random access for supported
+  multiset partitions, including GMP support for large ranks.
+- Added parallel generation of supported multiset partitions. `lower`
+  and `upper` now index matching partitions in lexicographical order,
+  including equivalent sum/equality calls to
+  [`comboGeneral()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md).
+  Previously, supplying `lower` could select ordinary combination
+  candidates instead of matching partitions, so existing bounded calls
+  may return different results.
+
+### Bug Fixes
+
+- Fixed a division by zero when preparing repeated zero-only partitions
+  and compositions. The single all-zero result now retains the requested
+  width across generation, counting, sampling, ranking, and iteration.
+- Fixed unsafe floating-point-to-integer checks in combinatorial input
+  preparation and constraints. Non-finite numeric scalars now reach the
+  existing input validation, while large numeric vector elements and
+  scaled mean targets are checked without integer casts
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/89)
+  [\#89](https://github.com/jwood000/RcppAlgos/issues/89)).
+- Fixed rounded spacing and guarded integer overflow in partition
+  mapping. Preparation retains the native search and exact integer
+  spacing; cases outside a conservative native arithmetic bound,
+  overflowing mapping calculations, and unsupported mapped targets now
+  produce explicit range errors.
+- Fixed generic constrained searches with explicit `lower = 1` to use
+  candidate-range semantics consistently. Constrained
+  [`permuteGeneral()`](https://jwood000.github.io/RcppAlgos/reference/combinatoricsGeneral.md)
+  calls with `lower` supplied filter ordinary permutation ranks; `upper`
+  alone continues to cap matching results.
+- Fixed partial multiset permutations being treated as full permutations
+  when the requested width equals the number of distinct values rather
+  than the total multiplicity.
+- Fixed out-of-bounds writes when `upper` stops constrained
+  distinct-permutation generation within a partition’s permutation
+  block.
+- Unsupported composition generation and iteration now raise an error
+  instead of falling back to algorithms that do not preserve composition
+  semantics.
+- Fixed handling of empty constrained results, preserving matrix type
+  and the additional column requested by `keepResults`. Explicit
+  positive bounds for empty supported partition and composition result
+  sets now raise an error; constrained permutations retain
+  candidate-bound validation.
+- Fixed validation of zero-valued `bigz` ranks, bounds, and seeds where
+  positive values are required.
+- Fixed classification of certain multiset cases where the repeated
+  minimum value cannot occur in any result.
+- Fixed an out-of-bounds read in
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  when the upper bound equals the final precomputed prime, 31627
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/82)
+  [\#82](https://github.com/jwood000/RcppAlgos/issues/82)).
+- Fixed out-of-bounds bucket scheduling in
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  near segment boundaries for large intervals
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/83)
+  [\#83](https://github.com/jwood000/RcppAlgos/issues/83)).
+- Fixed insufficient base-prime preparation for extended sieve bounds,
+  which could cause
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  to hang or access memory out of bounds for intervals such as
+  `primeSieve(1.5e9, 1.5e9 + 1e5)`
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/84)
+  [\#84](https://github.com/jwood000/RcppAlgos/issues/84)).
+- Fixed potential R session termination when parallel workers encounter
+  errors or threads cannot be started. Failures are now safely reported
+  as R errors after active workers finish
+  ([Issue](https://github.com/jwood000/RcppAlgos/issues/87)
+  [\#87](https://github.com/jwood000/RcppAlgos/issues/87)).
+
+### Improvements
+
+- Corrected the
+  [`primeCount()`](https://jwood000.github.io/RcppAlgos/reference/primeCount.md)
+  help’s inclusive endpoint, Legendre cutoff, and Phi recurrence, and
+  documented the Meissel and Lehmer formulas, threading behavior, exact
+  result types, and memory requirements.
+- Documented that supported sum/equality permutation calls without
+  `lower` generate matching partitions followed by each partition’s
+  permutations. Supplying `lower` selects ordinary permutation
+  candidates instead. Supported partitions and compositions use
+  lexicographical matching-result order.
+- Clarified that zeros in permutations are actual elements, unlike
+  padding in non-weak compositions.
+
+### Performance
+
+- Reduced allocation overhead in multiset partition and composition
+  counting by reusing working storage.
+- Known-empty constrained permutation generation and iteration now avoid
+  unnecessary candidate searches, including GMP-sized search spaces.
+- Improved
+  [`primeSieve()`](https://jwood000.github.io/RcppAlgos/reference/primeSieve.md)
+  extraction with reusable buffers and avoided marking outside the
+  requested interval in the small, medium, and large sieve
+  implementations.
+- Reduced sieve setup allocation and copying overhead, and simplified
+  segment-offset updates by reusing the marking loop’s final offset.
+
+### Other
+
+- Retired the unused large-product chunking fallback and its constants
+  from native primality testing. Direct C++ calls to `IsPrime()` now
+  reject values above `INT_MAX`; R-facing primality and factorization
+  functions retain their existing GMP routing for large inputs.
+- Added `testthat` to `LinkingTo`, making it a dependency when building
+  the package from source.
+- Installed C++ partition/composition ranking and unranking signatures
+  now include a `Reps` argument. Direct C++ callers must update their
+  calls and function-pointer types and rebuild. The R function
+  signatures are unchanged.
+- Added a developer-only prime sieve inspector and reproducible
+  benchmark materials under `.github/development/`, excluded from
+  package distributions.
+
 ## RcppAlgos 2.10.2
+
+CRAN release: 2026-10-17
 
 ### New Features
 
@@ -512,8 +663,7 @@ CRAN release: 2020-03-24
 ### Enhancements:
 
 - Now able to interrupt general constraint problems (See [Interrupt
-  Execution with
-  Rcpp::checkUserInterrupt](https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-rcppcheckuserinterrupt))
+  Execution](https://jwood000.github.io/RcppAlgos/articles/CombPermConstraints.html#safely-interrupt-execution-with-cpp11check_user_interrupt))
 
 ### Bug Fixes:
 

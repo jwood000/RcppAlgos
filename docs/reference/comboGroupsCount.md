@@ -2,8 +2,8 @@
 
 Calculate the number of partitions of a vector into groups. See the
 related integer sequences A025035-A025042 at [OEIS](https://oeis.org)
-(E.g. [A025036](https://oeis.org/A025036) for Number of partitions of \\
-1, 2, ..., 4n \\ into sets of size 4.)
+(E.g. [A025036](https://oeis.org/A025036) for Number of partitions of
+$`1, 2, ..., 4n`$ into sets of size 4.)
 
 ## Usage
 
@@ -47,7 +47,7 @@ Joseph Wood
 
 ## Note
 
-When the number of results exceeds \\2^{53} - 1\\, a number of class
+When the number of results exceeds $`2^{53} - 1`$, a number of class
 `bigz` is returned.
 
 ## Examples

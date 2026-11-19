@@ -3,7 +3,7 @@
 Sieve that generates the number of divisors for every number between
 `bound1` and `bound2` (if supplied) or all numbers up to `bound1`. This
 is equivalent to applying the divisor function (often written as
-\\\sigma(x)\\) to every number in a given range.
+$`\sigma(x)`$) to every number in a given range.
 
 ## Usage
 
@@ -28,7 +28,10 @@ numDivisorSieve(bound1, bound2 = NULL, namedVector = FALSE, nThreads = NULL)
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 ## Details
 
@@ -55,7 +58,7 @@ Joseph Wood
 
 ## Note
 
-The maximum allowed value is \\2^{53} - 1\\.
+The maximum allowed value is $`2^{53} - 1`$.
 
 ## References
 
@@ -79,7 +82,7 @@ mySamp <- sample(10^6, 5*10^5)
 ## every number less than a million
 system.time(mySigmas <- numDivisorSieve(10^6))
 #>    user  system elapsed 
-#>   0.004   0.000   0.003 
+#>   0.003   0.000   0.003 
 
 ## Now use result in algorithm
 for (s in mySamp) {
@@ -91,7 +94,7 @@ for (s in mySamp) {
 ## number in a range is no problem
 system.time(sigmaRange <- numDivisorSieve(10^13, 10^13 + 10^6))
 #>    user  system elapsed 
-#>   0.011   0.000   0.010 
+#>   0.011   0.000   0.011 
 
 ## Returning a named vector
 numDivisorSieve(10, 20, namedVector = TRUE)
@@ -104,5 +107,5 @@ numDivisorSieve(10, namedVector = TRUE)
 ## Using nThreads
 system.time(numDivisorSieve(1e5, 2e5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.001   0.000   0.001 
+#>       0       0       0 
 ```

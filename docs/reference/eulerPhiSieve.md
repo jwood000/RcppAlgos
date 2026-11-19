@@ -3,7 +3,7 @@
 Sieve that generates the number of coprime elements for every number
 between `bound1` and `bound2` (if supplied) or all numbers up to
 `bound1`. This is equivalent to applying Euler's phi function (often
-written as \\\phi(x)\\) to every number in a given range.
+written as $`\phi(x)`$) to every number in a given range.
 
 ## Usage
 
@@ -28,16 +28,19 @@ eulerPhiSieve(bound1, bound2 = NULL, namedVector = FALSE, nThreads = NULL)
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 ## Details
 
 For the simple case (i.e. when `bound2 = NULL`), this algorithm first
-generates all primes up to \\n\\ via the sieve of Eratosthenes. We use
+generates all primes up to $`n`$ via the sieve of Eratosthenes. We use
 these primes to sieve over the sequence `1:n`, dividing each value by
-\\p\\, creating a temporary value that will be subtracted from the
+$`p`$, creating a temporary value that will be subtracted from the
 original value at each index (i.e. equivalent to multiply each index by
-\\(1 - 1/p)\\ but more efficient as we don't have to deal with floating
+$`(1 - 1/p)`$ but more efficient as we don't have to deal with floating
 point numbers). The case when `is.null(bound2) = FALSE` is more
 complicated but the basic ideas still hold.
 
@@ -56,8 +59,8 @@ This algorithm benefits greatly from the fast integer division library
 
 ## Value
 
-Returns a named/unnamed integer vector if `max(bound1, bound2)` \\\<
-2^{31}\\, or a numeric vector otherwise.
+Returns a named/unnamed integer vector if `max(bound1, bound2)`
+$`< 2^{31}`$, or a numeric vector otherwise.
 
 ## Author
 
@@ -65,7 +68,7 @@ Joseph Wood
 
 ## Note
 
-The maximum allowed value is \\2^{53} - 1\\.
+The maximum allowed value is $`2^{53} - 1`$.
 
 ## References
 
@@ -79,6 +82,12 @@ The maximum allowed value is \\2^{53} - 1\\.
 - [53-bit significand
   precision](https://en.wikipedia.org/wiki/Double-precision_floating-point_format)
 
+## See also
+
+[`primePhi`](https://jwood000.github.io/RcppAlgos/reference/primePhi.md)
+for the different partial-sieve function $`\Phi(n, a)`$ used in prime
+counting.
+
 ## Examples
 
 ``` r
@@ -89,7 +98,7 @@ mySamp <- sample(10^6, 5*10^5)
 ## Generate number of coprime elements for many numbers
 system.time(myPhis <- eulerPhiSieve(10^6))
 #>    user  system elapsed 
-#>   0.003   0.001   0.003 
+#>   0.003   0.000   0.003 
 
 ## Now use result in algorithm
 for (s in mySamp) {
@@ -100,13 +109,13 @@ for (s in mySamp) {
 ## See https://projecteuler.net
 system.time(which.max((1:10^6)/eulerPhiSieve(10^6)))
 #>    user  system elapsed 
-#>   0.006   0.001   0.008 
+#>   0.006   0.001   0.007 
 
 ## Generating number of coprime elements
 ## for every number in a range is no problem
 system.time(myPhiRange <- eulerPhiSieve(10^13, 10^13 + 10^6))
 #>    user  system elapsed 
-#>   0.014   0.001   0.015 
+#>   0.016   0.000   0.016 
 
 ## Returning a named vector
 eulerPhiSieve(10, 20, namedVector = TRUE)
@@ -119,5 +128,5 @@ eulerPhiSieve(10, namedVector = TRUE)
 ## Using nThreads
 system.time(eulerPhiSieve(1e5, 2e5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.001   0.000   0.001 
+#>       0       0       0 
 ```

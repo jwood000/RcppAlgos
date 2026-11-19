@@ -114,7 +114,7 @@ even_time <- system.time({
 })
 even_time
 #>    user  system elapsed 
-#>   0.002   0.001   0.002
+#>   0.002   0.000   0.002
 
 ht(genParts)
 #> head -->
@@ -140,7 +140,7 @@ system.time(genMultiParts <- partitionsGeneral(seq(121, 221, 5), 13,
                                                freqs = rep(1:7, 3),
                                                targe = 2613))
 #>    user  system elapsed 
-#>   0.001   0.001   0.002
+#>   0.002   0.001   0.002
 
 ht(genMultiParts)
 #> head -->
@@ -227,7 +227,7 @@ uneven_time <- system.time({
 })
 uneven_time    ## out of a possible 573 million in under a second
 #>    user  system elapsed 
-#>   0.025   0.002   0.027
+#>   0.025   0.001   0.027
 
 ht(genParts2)
 #> head -->
@@ -247,10 +247,10 @@ ht(genParts2)
 #> [118560,]  201  201  201  201  201  201  201  201  201   201   201   201   201
 ```
 
-Although the above was about 13 times slower than the first example
-dealing with 573 million combinations (0.027 milliseconds vs. 0.002
-milliseconds), we are still dealing in milliseconds!!! For reference,
-version `2.3.4` takes about 18 seconds to find all 118,560 solutions.
+Although the above was about 14 times slower than the first example
+dealing with 573 million combinations (0.027 seconds vs. 0.002 seconds),
+we are still dealing in milliseconds!!! For reference, version `2.3.4`
+takes about 18 seconds to find all 118,560 solutions.
 
 Here are some more exotic examples demonstrating the power of these
 algorithms.
@@ -268,7 +268,7 @@ sort(mySamp)
 system.time(exotic <- partitionsGeneral(mySamp, 8, freqs = rep(1:5, 10),
                                         target = 496))
 #>    user  system elapsed 
-#>   0.096   0.001   0.096
+#>   0.096   0.000   0.096
 
 dim(exotic)
 #> [1] 102241      8
@@ -281,7 +281,7 @@ prettyNum(comboCount(mySamp, 8, freqs = rep(1:5, 10)), big.mark = ",")
 system.time(partitionsGeneral(mySamp, 8, freqs = rep(1:5, 10),
                               target = 496, upper = 1e3))
 #>    user  system elapsed 
-#>   0.002   0.000   0.002
+#>   0.001   0.000   0.001
 ```
 
 The function `permuteGeneral` benefits from these optimized algorithms
@@ -320,7 +320,7 @@ prettyNum(comboCount(football_player_salaries, 6), big.mark = ",")
 system.time(exactly20 <- partitionsGeneral(football_player_salaries, 6,
                                            target = 2e7, tolerance = 0))
 #>    user  system elapsed 
-#>   0.938   0.003   0.941
+#>   0.940   0.002   0.942
 
 ## No results that equal exactly 2e7
 dim(exactly20)
@@ -343,7 +343,7 @@ system.time(almost20 <- comboGeneral(football_player_salaries, 6,
                                      limitConstraints = 2e7, tolerance = 1000,
                                      upper = 1000, keepResults = TRUE))
 #>    user  system elapsed 
-#>   0.043   0.000   0.043
+#>   0.044   0.000   0.045
 
 dim(almost20)
 #> [1] 1000    7
@@ -371,7 +371,7 @@ system.time(superClose20 <- comboGeneral(football_player_salaries, 6,
                                          limitConstraints = 2e7, tolerance = 10,
                                          upper = 1000, keepResults = TRUE))
 #>    user  system elapsed 
-#>   0.944   0.001   0.948
+#>   0.952   0.007   0.963
 
 ht(superClose20)
 #> head -->
@@ -412,9 +412,9 @@ microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod",
 #> Warning in microbenchmark(optimized = comboGeneral(25, 10, constraintFun = "prod", : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>       expr      min       lq    mean   median       uq      max neval
-#>  optimized  1.00000  1.00000  1.0000  1.00000  1.00000  1.00000    20
-#>      brute 25.44051 24.79632 24.1338 22.41582 22.33622 30.44435    20
+#>       expr      min       lq     mean   median       uq      max neval
+#>  optimized  1.00000  1.00000  1.00000  1.00000  1.00000  1.00000    20
+#>      brute 22.15277 19.73083 20.67291 19.77427 19.49789 27.55221    20
 
 ## What about cases when brute force isn't feasible
 set.seed(101)
@@ -428,7 +428,7 @@ system.time(prodAlmost100 <- comboGeneral(v, 100, constraintFun = "prod",
                                           limitConstraints = 100,
                                           tolerance = 0.0001, upper = 20))
 #>    user  system elapsed 
-#>   0.012   0.000   0.012
+#>   0.012   0.000   0.011
 
 dim(prodAlmost100)
 #> [1]  20 100
@@ -444,7 +444,7 @@ system.time(meanAlmost1.5 <- comboGeneral(v, 100, constraintFun = "mean",
                                           limitConstraints = 1.5,
                                           tolerance = 0.0001, upper = 20))
 #>    user  system elapsed 
-#>   0.001   0.000   0.000
+#>       0       0       0
 
 dim(meanAlmost1.5)
 #> [1]  20 100
@@ -459,7 +459,7 @@ rowMeans(meanAlmost1.5)
 
 As of version `2.5.0` all of the above cases can be attacked with
 iterators (See [Combinatorial Iterators in
-RcppAlgos](https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html#iterating-over-constrained-combinations/permutations)).
+RcppAlgos](https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html#iterating-over-constrained-combinationspermutations)).
 As mentioned in the suggested reading, iterators are very flexible and
 just as efficient as their “general” counterparts. They have the added
 benefit of allowing one to save the current state, allowing one to
@@ -482,7 +482,7 @@ salary <- partitionsIter(football_player_salaries, 6,
 
 system.time(almost20withIter <- salary@nextNIter(1e3))
 #>    user  system elapsed 
-#>   0.042   0.000   0.042
+#>   0.042   0.000   0.043
 
 ## almost20 was generated above with comboGeneral
 all.equal(almost20[, 1:6], almost20withIter)
@@ -493,7 +493,7 @@ all.equal(almost20[, 1:6], almost20withIter)
 ## generate the first 1000 along with the next 1000
 system.time(nextAlmost20withIter <- salary@nextNIter(1e3))
 #>    user  system elapsed 
-#>   0.040   0.000   0.041
+#>    0.04    0.00    0.04
 
 ht(nextAlmost20withIter)
 #> head -->
@@ -542,7 +542,7 @@ all.equal(prodAlmost100, prodAlmost100WithIter)
 ## where we left off
 system.time(nextAlmost100WithIter <- prodIter@nextNIter(20))
 #>    user  system elapsed 
-#>   0.007   0.000   0.007
+#>   0.008   0.000   0.008
 
 dim(nextAlmost100WithIter)
 #> [1]  20 100

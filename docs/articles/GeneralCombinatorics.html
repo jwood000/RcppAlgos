@@ -6,7 +6,13 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Combination and Permutation Basics • RcppAlgos</title>
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- mathjax math --><script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script><script>
+  window.MathJax = {
+    chtml: {
+      fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
+    }
+  };
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -20,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,7 +75,7 @@
                         <h4 data-toc-skip class="author">Joseph
 Wood</h4>
             
-            <h4 data-toc-skip class="date">2026-10-16</h4>
+            <h4 data-toc-skip class="date">2026-11-18</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/jwood000/RcppAlgos/blob/HEAD/vignettes/GeneralCombinatorics.Rmd" class="external-link"><code>vignettes/GeneralCombinatorics.Rmd</code></a></small>
       <div class="d-none name"><code>GeneralCombinatorics.Rmd</code></div>
@@ -170,7 +176,7 @@ integer <em>n</em> and it will be converted to the sequence
 <span><span class="co">## They are very efficient...</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.046   0.007   0.054</span></span>
+<span><span class="co">#&gt;   0.046   0.007   0.053</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsCount.html">comboCount</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">12</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 5200300</span></span>
@@ -195,7 +201,7 @@ integer <em>n</em> and it will be converted to the sequence
 <span><span class="co">## And for permutations... over 8 million instantly</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">7</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.018   0.008   0.026</span></span>
+<span><span class="co">#&gt;   0.017   0.008   0.025</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsCount.html">permuteCount</a></span><span class="op">(</span><span class="fl">13</span>, <span class="fl">7</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 8648640</span></span>
@@ -342,7 +348,7 @@ Observe:</p>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">test</span> <span class="op">&lt;-</span> <span class="fu">getPermsWithSpecificRepetition</span><span class="op">(</span><span class="va">a</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.041   0.004   0.045</span></span></code></pre></div>
+<span><span class="co">#&gt;   0.041   0.003   0.045</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="enter-freqs">Enter <code>freqs</code><a class="anchor" aria-label="anchor" href="#enter-freqs"></a>
 </h3>
@@ -353,7 +359,7 @@ repeated and Voila!</p>
 <code class="sourceCode R"><span><span class="co">## Using the S3 method for class 'table'</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html" class="external-link">system.time</a></span><span class="op">(</span><span class="va">test2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">permuteGeneral</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;   0.000   0.000   0.001</span></span>
+<span><span class="co">#&gt;       0       0       0</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical</a></span><span class="op">(</span><span class="va">test</span>, <span class="va">test2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
@@ -412,10 +418,10 @@ we can generate combinations/permutations with greater efficiency.</p>
 <span><span class="co">#&gt; Warning in microbenchmark(combn = combn(26, 13), serAlgos = comboGeneral(26, : less</span></span>
 <span><span class="co">#&gt; accurate nanosecond times to avoid potential integer overflows</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;      expr        min         lq       mean    median        uq       max neval</span></span>
-<span><span class="co">#&gt;     combn 155.623147 153.613251 115.606034 142.95779 86.566910 84.914130    10</span></span>
-<span><span class="co">#&gt;  serAlgos   3.167804   3.158121   2.566542   2.98952  2.193876  2.194353    10</span></span>
-<span><span class="co">#&gt;  parAlgos   1.000000   1.000000   1.000000   1.00000  1.000000  1.000000    10</span></span>
+<span><span class="co">#&gt;      expr        min         lq       mean     median        uq       max neval</span></span>
+<span><span class="co">#&gt;     combn 148.967091 149.510129 112.629019 141.558913 83.734350 84.100671    10</span></span>
+<span><span class="co">#&gt;  serAlgos   3.178061   3.178255   2.707246   3.324717  2.251064  2.287895    10</span></span>
+<span><span class="co">#&gt;  parAlgos   1.000000   1.000000   1.000000   1.000000  1.000000  1.000000    10</span></span>
 <span></span>
 <span><span class="co">## Using 7 cores w/ Parallel = TRUE</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html" class="external-link">microbenchmark</a></span><span class="op">(</span></span>
@@ -424,9 +430,9 @@ we can generate combinations/permutations with greater efficiency.</p>
 <span>    unit <span class="op">=</span> <span class="st">"relative"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
-<span><span class="co">#&gt;      expr      min       lq     mean   median      uq      max neval</span></span>
-<span><span class="co">#&gt;    serial 3.478031 3.359026 3.058748 2.771335 2.85077 3.762908   100</span></span>
-<span><span class="co">#&gt;  parallel 1.000000 1.000000 1.000000 1.000000 1.00000 1.000000   100</span></span></code></pre></div>
+<span><span class="co">#&gt;      expr     min       lq     mean   median       uq      max neval</span></span>
+<span><span class="co">#&gt;    serial 3.41302 3.354193 3.018305 2.937722 2.886236 3.334796   100</span></span>
+<span><span class="co">#&gt;  parallel 1.00000 1.000000 1.000000 1.000000 1.000000 1.000000   100</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="using-arguments-lower-and-upper">Using arguments <code>lower</code> and <code>upper</code><a class="anchor" aria-label="anchor" href="#using-arguments-lower-and-upper"></a>
 </h3>
@@ -482,7 +488,7 @@ post</a> for a real use case). Observe:</p>
 <span>     <span class="va">x</span></span>
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  22.490   6.326  28.831</span></span>
+<span><span class="co">#&gt;  22.536   5.819  28.367</span></span>
 <span></span>
 <span><span class="co">## Enter parallel</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span></span>
@@ -492,7 +498,7 @@ post</a> for a real use case). Observe:</p>
 <span>     <span class="va">x</span></span>
 <span><span class="op">}</span>, mc.cores <span class="op">=</span> <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    user  system elapsed </span></span>
-<span><span class="co">#&gt;  24.447   9.631   7.078</span></span></code></pre></div>
+<span><span class="co">#&gt;  14.744   5.406   6.905</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -547,7 +553,7 @@ no effect when <code>FUN</code> is employed).</p>
 <span>               f2 <span class="op">=</span> <span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, FUN <span class="op">=</span> <span class="va">cumprod</span><span class="op">)</span>, unit <span class="op">=</span> <span class="st">"relative"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Unit: relative</span></span>
 <span><span class="co">#&gt;  expr      min      lq     mean   median       uq      max neval</span></span>
-<span><span class="co">#&gt;    f1 5.237589 5.25893 5.168972 5.162497 5.201461 3.842287   100</span></span>
+<span><span class="co">#&gt;    f1 5.361036 5.29817 5.169643 5.277775 5.148283 2.921143   100</span></span>
 <span><span class="co">#&gt;    f2 1.000000 1.00000 1.000000 1.000000 1.000000 1.000000   100</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/combinatoricsGeneral.html">comboGeneral</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">8</span>, FUN <span class="op">=</span> <span class="va">cumprod</span>, upper <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>

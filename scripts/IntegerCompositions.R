@@ -12,28 +12,16 @@ reprex::reprex({
     #'
     #' Version `2.10.0` introduces complete support for compositions with repetition and adds full support for compositions with distinct parts.
     #'
-    #' Planned future enhancements include comprehensive support for compositions of multisets.
+    #' `compositionsCount` supports multiset compositions, including weak compositions and zero-padding. Dedicated generation, sampling, ranking, and iteration are not yet available for general multiset compositions.
     #'
-    #' The output with `compositionsGeneral` is in lexicographical order across
-    #' all matching compositions. Its `lower` and `upper` index those matching
-    #' rows. When matches exist, `lower = 1` gives the same prefix as
-    #' omitting `lower`. With no matches, omitting both bounds returns an
-    #' empty matrix; explicit positive bounds exceed the zero result count
-    #' and raise an error.
-    #' When `weak = TRUE` and zero is included, zeros are actual parts of the
-    #' sequence: `c(0, 0, 5)`, `c(0, 5, 0)`, and `c(5, 0, 0)` are weak
-    #' compositions of 5. Increasing the width permits additional zeros.
+    #' The output with `compositionsGeneral` is in lexicographical order across all matching compositions. Its `lower` and `upper` index those matching rows. When matches exist, `lower = 1` gives the same prefix as omitting `lower`. With no matches, omitting both bounds returns an empty matrix; explicit positive bounds exceed the zero result count and raise an error. When `weak = TRUE` and zero is included, zeros are actual parts of the sequence: `c(0, 0, 5)`, `c(0, 5, 0)`, and `c(5, 0, 0)` are weak compositions of 5. Increasing the width permits additional zeros.
     #'
-    #' For more general cases, we can use `permuteGeneral`. For supported
-    #' sum/equality cases without `lower`, it uses partition-then-permute order,
-    #' even when an equivalent composition algorithm exists. Supplying `lower`
-    #' instead filters ordinary permutation ranks. The section below explains
-    #' these contracts. In permutations, zero is an actual element that can
-    #' occupy any position, subject to its multiplicity.
+    #' For more general cases, we can use `permuteGeneral`. For supported sum/equality cases without `lower`, it uses partition-then-permute order, even when an equivalent composition algorithm exists. Supplying `lower` instead filters ordinary permutation ranks. The section below explains these contracts. In permutations, zero is an actual element that can occupy any position, subject to its multiplicity.
     #'
     #' With that in mind, generating compositions with `RcppAlgos` is easy, flexible, and quite efficient.
     #'
     #' We continue to use the `ht` function defined in the [Combination and Permutation Basics](<https://jwood000.github.io/RcppAlgos/articles/GeneralCombinatorics.html>) vignette):
+    #'
 
     ht <- function(d, m = 5, n = m) {
         ## print the head and tail together
@@ -140,10 +128,13 @@ reprex::reprex({
     #'
     #' ### Case 4: Integer Compositions of _N_ into Parts of Varying Multiplicity
     #'
-    #' Currently, we must use `permuteGeneral`.
+    #' We can count these compositions directly with `compositionsCount`. To generate this positive-valued multiset case, use `permuteGeneral`; `compositionsGeneral` does not yet have a corresponding generator.
     #'
 
-    ## Generates error
+    ## Count compositions with the specified multiplicities
+    compositionsCount(5, 3, freqs = rep(2, 5))
+
+    ## Generation is not yet supported for this case
     compositionsGeneral(5, 3, freqs = rep(2, 5))
 
     ## compositions of 5 into 3 parts where each part can
@@ -156,24 +147,11 @@ reprex::reprex({
     #'
     #' ## Generating Compositions with `permuteGeneral()`
     #'
-    #' For supported `constraintFun = "sum"` and `comparisonFun = "=="` calls
-    #' without `lower`, `permuteGeneral` uses **partition-then-permute order**.
-    #' It visits matching partitions in lexicographical order and emits all
-    #' distinct permutations of each partition in lexicographical order before
-    #' moving to the next. The combined output need not be globally sorted.
-    #' These cases include integer-valued, evenly spaced source vectors and an
-    #' integer target, with supported repetition, distinct, or multiset rules.
+    #' For supported `constraintFun = "sum"` and `comparisonFun = "=="` calls without `lower`, `permuteGeneral` uses **partition-then-permute order**. It visits matching partitions in lexicographical order and emits all distinct permutations of each partition in lexicographical order before moving to the next. The combined output need not be globally sorted. These cases include integer-valued, evenly spaced source vectors and an integer target, with supported repetition, distinct, or multiset rules.
     #'
-    #' `upper` alone caps matching rows in that order and may stop partway
-    #' through a partition's permutations. If `lower` is supplied, both bounds
-    #' instead refer to ordinary permutation ranks before applying the
-    #' constraint. The surviving rows are in lexicographical order. Omitting
-    #' `upper` tests all candidates from `lower` onward.
+    #' The parameter `upper` alone caps matching rows in that order and may stop partway through a partition's permutations. If `lower` is supplied, both bounds instead refer to ordinary permutation ranks before applying the constraint. The surviving rows are in lexicographical order. Omitting `upper` tests all candidates from `lower` onward.
     #'
-    #' Consequently, `lower = 1` is not redundant. Requesting four matches
-    #' with `upper` alone differs from testing permutation ranks 1 through 4.
-    #' Neither interpretation makes these bounds composition ranks; use
-    #' `compositionsGeneral` to index lexicographically ordered compositions.
+    #' Consequently, `lower = 1` is not redundant. Requesting four matches with `upper` alone differs from testing permutation ranks 1 through 4. Neither interpretation makes these bounds composition ranks; use `compositionsGeneral` to index lexicographically ordered compositions.
     #'
 
     ## No lower: permute each matching partition before moving to the next.
@@ -190,12 +168,9 @@ reprex::reprex({
     compositionsGeneral(6, 3, repetition = TRUE, target = 6, upper = 4)
 
     #'
-    #' Zero is an actual element in `permuteGeneral`, so it may occur anywhere
-    #' in a result, subject to multiplicities. This differs from non-weak
-    #' composition padding.
+    #' Zero is an actual element in `permuteGeneral`, so it may occur anywhere in a result, subject to multiplicities. This differs from non-weak composition padding.
     #'
-    #' The following calls omit `lower` and therefore retain
-    #' partition-then-permute order:
+    #' The following calls omit `lower` and therefore retain partition-then-permute order:
     #'
 
     ## With repetition
@@ -243,11 +218,7 @@ reprex::reprex({
     #'
     #' ## Efficiency Generating Partitions and Compositions
     #'
-    #' Supported `compositionsGeneral` calls can use parallel generation.
-    #' Partition-then-permute generation through `permuteGeneral` without
-    #' `lower` is serial. Supplying `lower` allows parallel candidate filtering
-    #' when the requested range is large enough; this scans ordinary
-    #' permutations and can be expensive when matches are sparse.
+    #' Supported `compositionsGeneral` calls can use parallel generation. Partition-then-permute generation through `permuteGeneral` without `lower` is serial. Supplying `lower` allows parallel candidate filtering when the requested range is large enough; this scans ordinary permutations and can be expensive when matches are sparse.
     #'
 
     ## compositions of 25

@@ -1,7 +1,7 @@
 ---
 title: "Combinatorial Sampling and Ranking"
 author: "Joseph Wood"
-date: "2026-10-16"
+date: "2026-11-18"
 output:
   prettydoc::html_pretty:
     theme: architect
@@ -206,11 +206,11 @@ The algorithms are incredibly efficient and offer tremendous gains over the naiv
 ## the function "naive" is defined above
 system.time(naive(25, 10, 5, 15))
 #>    user  system elapsed 
-#>   1.178   0.012   1.190
+#>   1.198   0.014   1.213
 
 system.time(comboSample(25, 10, n = 5, seed = 15))
 #>    user  system elapsed 
-#>   0.000   0.000   0.001
+#>   0.000   0.001   0.000
 ```
 
 Even when dealing with extremely large numbers, these algorithms are very fast. And using the parallel options have even greater effects than we saw with the general counterparts (typically around \~2-3 times faster with the general functions, whereas with the last example below with sampling we see a nearly 5x improvement).
@@ -228,12 +228,12 @@ gmp::log10.bigz(comboCount(2500, 100))
 ## Still fast with larger samples
 system.time(comboSample(2500, 100, n = 1e4, seed = 157))
 #>    user  system elapsed 
-#>   0.401   0.001   0.403
+#>   0.410   0.002   0.412
 
 ## Using Parallel/nThreads in these cases has an even greater effect
 system.time(comboSample(2500, 100, n = 1e4, seed = 157, nThreads = 8))
 #>    user  system elapsed 
-#>   0.599   0.002   0.087
+#>   0.597   0.001   0.082
 ```
 
 ### User Defined Functions
@@ -302,13 +302,13 @@ partitionsCount(2500, 10)
 system.time(serial <- partitionsSample(2500, 10, n = 1e3,
                                        seed = 8128))
 #>    user  system elapsed 
-#>   2.329   0.004   2.334
+#>   2.380   0.013   2.401
 
 ## Use nThreads for greater efficiency
 system.time(multi <- partitionsSample(2500, 10, n = 1e3,
                                       seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   3.358   0.014   0.433
+#>   3.384   0.012   0.439
 
 identical(multi, serial)
 #> [1] TRUE
@@ -322,7 +322,7 @@ partitionsSample(17 + (1:10) * 3, 10, TRUE,
 #> [3,]   20   23   23   26   26   35   38   41   44    44
 ```
 
-There are sampling algorithms available for most partition cases, but some cases are not covered. For example, with standard multisets, we are currently unable to *efficiently* generate the *n<sup>th</sup>* lexicographical result. Another example is when the source vector is not uniform (*e.g.* when the distance between each element is irregular).
+Supported multiset partitions can now be sampled, including by lexicographical position through `sampleVec` and with GMP-sized ranks. Sampling still requires an integer-valued, evenly spaced source vector and an integer target.
 
 Observe the following:
 
@@ -332,13 +332,13 @@ partitionsSample(c(1, 4, 6, 7, 10, seq(11, 100, 7)), 10, n = 1, target = 340)
 #> Error:
 #> ! Sampling not available for this case.
 
-## As stated above, the standard multiset case doesn't work either
-partitionsSample(0:50, 6, freqs = rep(1:3, 17), n = 2)
-#> Error:
-#> ! Sampling not available for this case.
+## Sample multiset partitions with a reproducible seed
+partitionsSample(0:50, 6, freqs = rep(1:3, 17), n = 2, seed = 42)
+#>      [,1] [,2] [,3] [,4] [,5] [,6]
+#> [1,]    1    1    9   10   14   15
+#> [2,]    2    2    4    6   15   21
 
-## If we use freqs to indicate that zeros can repeat,
-## then we can obtain random samples
+## Repeated zeros are also supported
 partitionsSample(0:50, 6, freqs = c(50, rep(1, 50)), n = 3, seed = 222)
 #>      [,1] [,2] [,3] [,4] [,5] [,6]
 #> [1,]    0    0    1    4    9   36
@@ -354,11 +354,9 @@ partitionsSample(0:50, 6, freqs = c(50, rep(1, 50)),
 #> [3,]    4    7   17   19   22   31
 ```
 
-There is ongoing research in this area and our goal is to eventually be able to cover the standard multiset case.
-
 ## `compositionsSample`
 
-The `compositionsSample` function allows one to draw a random sample of compositions of a number. Many of the features present in `comboSample` and `permuteSample` are available in `compositionsSample`.
+The `compositionsSample` function allows one to draw a random sample of compositions of a number. Many of the features present in `comboSample` and `permuteSample` are available in `compositionsSample`. General multiset composition sampling is not yet supported.
 
 ``` r
 ## Use the seed parameter to obtain reproducible results
@@ -392,13 +390,13 @@ compositionsCount(2500, 10, TRUE)
 system.time(serial <- compositionsSample(2500, 10, TRUE,
                                          n = 1e4, seed = 8128))
 #>    user  system elapsed 
-#>   0.202   0.000   0.203
+#>   0.200   0.000   0.201
 
 ## Use nThreads for greater efficiency
 system.time(multi <- compositionsSample(2500, 10, TRUE, n = 1e4,
                                         seed = 8128, nThreads = 8))
 #>    user  system elapsed 
-#>   0.293   0.002   0.043
+#>   0.300   0.001   0.042
 
 identical(multi, serial)
 #> [1] TRUE
@@ -435,7 +433,7 @@ compositionsSample(50, 8, TRUE, target = 100,
 system.time(compositionsSample(1500, 10, TRUE, target = 2500,
                                n = 1e4, seed = 28, nThreads = 8))
 #>    user  system elapsed 
-#>   1.678   0.004   0.233
+#>   1.838   0.020   0.267
 ```
 
 ### `compositionSample` with Distinct Parts
@@ -469,7 +467,7 @@ compositionsCount(150, 10, target = 300)
 system.time(compositionsSample(150, 10, target = 300, n = 1e3,
                                seed = 496, nThreads = 8))
 #>    user  system elapsed 
-#>   4.871   0.019   0.638
+#>   4.875   0.019   0.640
 ```
 
 ## Sampling Partitions of Groups with `comboGroupsSample`
@@ -582,7 +580,7 @@ comb = comboSample(25, 12, sampleVec = 2e6)[1, ]
 system.time(print(naive_rank(25, 12, comb)))
 #> [1] 2000000
 #>    user  system elapsed 
-#>   4.847   0.040   4.889
+#>   4.784   0.060   4.855
 ```
 
 ## RcppAlgos Solutions
@@ -666,6 +664,8 @@ permuteRank(p5 = perms_len_5, p8 = perms_len_8,
 
 ## `partitionsRank`
 
+Ranking also supports multiset partitions. Supply the same `v`, `freqs`, and `target` used to generate or sample the results.
+
 ``` r
 parts = partitionsSample(50, 8, target = 100, repetition = TRUE,
                          n = 3, seed = 42, namedSample = TRUE)
@@ -677,6 +677,13 @@ parts
 
 partitionsRank(parts, v = 50, target = 100, repetition = TRUE)
 #> [1]  61413  54425 623844
+
+## Retrieve and rank specific multiset partitions
+fr <- rep(1:5, 2)
+multiset_parts <- partitionsSample(10, 5, freqs = fr, target = 25,
+                                  sampleVec = c(1, 5, 10))
+partitionsRank(multiset_parts, v = 10, freqs = fr, target = 25)
+#> [1]  1  5 10
 ```
 
 ## `compositionsRank`

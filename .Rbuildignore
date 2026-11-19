@@ -6,7 +6,7 @@ remove_whitespace.sh
 ^\.github$
 ^AGENTS\.md$
 ^docs$
-^vignettes/*.html
+^vignettes/.*\.html$
 scripts/*
 create_md.R
 SO_Answers/*

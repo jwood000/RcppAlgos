@@ -67,20 +67,25 @@ comboGroupsSample(v, numGroups = NULL, grpSizes = NULL, retType = "matrix",
 - Parallel:
 
   Logical value indicating whether results should be generated in
-  parallel. The default is `FALSE`. If `TRUE` and `nThreads = NULL`, the
-  number of threads used is equal to the minimum of one minus the number
-  of threads available on your system and the number of results
-  requested (*e.g.* if user has 16 threads and only needs 5 results, 5
-  threads will be used (*i.e.* `min(16 - 1, 5) = 5`)). If `nThreads` is
-  not `NULL`, it will be given preference (*e.g.* if user has 8 threads
-  with `Parallel = TRUE` and `nThreads = 4`, only 4 threads will be
-  spawned). If your system is single-threaded, the arguments `Parallel`
-  and `nThreads` are ignored.
+  parallel. The default is `FALSE`. If `TRUE` and `nThreads = NULL`, up
+  to $`n - 1`$ threads are used, where $`n`$ is the number of threads
+  available on your system (both threads may be used on a two-thread
+  system). This is also capped by the number of results requested
+  (*e.g.* with 16 available threads and 5 results requested, up to 5
+  threads may be used, since `min(16 - 1, 5) = 5`). If `nThreads` is not
+  `NULL`, it will be given preference (*e.g.* with 8 available threads,
+  `Parallel = TRUE` and `nThreads = 4`, up to 4 threads may be used). In
+  either case, the actual number of threads depends on the useful work
+  in the calculation; small or simple cases may use fewer threads. If
+  your system is single-threaded, the arguments `Parallel` and
+  `nThreads` are ignored.
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`. See
-  `Parallel`.
+  Requested number of threads. The default is `NULL` for serial
+  execution unless `Parallel = TRUE`. Requests are capped by the
+  available hardware and the useful work in the calculation. Small or
+  simple cases may use fewer threads. See `Parallel`.
 
 - namedSample:
 
@@ -90,7 +95,7 @@ comboGroupsSample(v, numGroups = NULL, grpSizes = NULL, retType = "matrix",
 
 ## Details
 
-These algorithms rely on efficiently generating the \\n^{th}\\
+These algorithms rely on efficiently generating the $`n^{th}`$
 lexicographical result.
 
 ## Value

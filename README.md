@@ -26,6 +26,7 @@ The package also implements specialized algorithms for problems rarely supported
 - Fast prime number utilities:
   - `primeSieve` for generating primes
   - `primeCount` for counting primes with selectable Legendre, Meissel, and Lehmer methods
+  - `nthPrime` for finding the nth prime
   - `primeFactorize` for prime factorization
   
 RcppAlgos is designed to handle combinatorial problems ranging from small enumerations to extremely large search spaces where generating all results at once would be impractical.
@@ -234,6 +235,10 @@ tail(p)
 ## Count prime numbers less than or equal to n
 primeCount(1e10)
 #> [1] 455052511
+
+## Find the millionth prime
+nthPrime(1e6)
+#> [1] 15485863
 
 ## Get the prime factorization
 set.seed(24028)

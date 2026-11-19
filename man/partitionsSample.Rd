@@ -11,7 +11,7 @@ Sample Partitions/Compositions
 \description{
     \itemize{
         \item Generate a specific (lexicographically) or random sample of partitions/compositions of a number.
-        \item Produce results in parallel using the \code{Parallel} or \code{nThreads} arguments.
+        \item Produce results in parallel using the \code{nThreads} argument.
         \item GMP support allows for exploration of cases where the number of partitions/compositions is large.
     }
 }
@@ -73,12 +73,9 @@ Joseph Wood
 }
 \note{
     \itemize{
-        \item{\code{partitionsSample} is not available for the following cases:
-            \itemize{
-                \item With standard multisets. If zero is the only element with a non-trivial multiplicity, sampling is allowed (\emph{e.g.} \code{partitionsSample(0:100, freqs = c(100, rep(1, 100)), n = 2)})
-                \item If the source vector is not isomorphic to \code{1:length(v)} (\emph{e.g.} \code{v = c(1, 4, 6, 7, 8)}).
-            }
-        }
+        \item Supported multiset partitions can be sampled using \code{freqs}, including explicit ranks through \code{sampleVec} and GMP-sized result spaces.
+        \item Sampling requires an integer-valued, evenly spaced source vector and an integer target. Irregular source vectors such as \code{v = c(1, 4, 6, 7, 8)} are not supported.
+        \item General multiset compositions can be counted with \code{\link{compositionsCount}}, but are not supported by \code{compositionsSample}.
         \item \code{n} and \code{sampleVec} cannot both be \code{NULL}.
     }
 }
@@ -92,6 +89,10 @@ partitionsCount(100, 10, TRUE, target = 500)
 ## [1] 175591757896
 partitionsSample(100, 10, TRUE, target = 500,
                  sampleVec = c(1, 1000, 175591757896))
+
+## Retrieve specific multiset partitions
+partitionsSample(1:5, 3, freqs = rep(2, 5), target = 9,
+                 sampleVec = c(1, 4))
 }
 \keyword{random}
 \keyword{sample}

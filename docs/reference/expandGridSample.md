@@ -44,7 +44,10 @@ expandGridSample(
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 - namedSample:
 
@@ -59,7 +62,7 @@ expandGridSample(
 
 ## Details
 
-These algorithms rely on efficiently generating the \\n^{th}\\
+These algorithms rely on efficiently generating the $`n^{th}`$
 lexicographical result.
 
 ## Value

@@ -19,7 +19,7 @@ This checklist is optimized for small patch releases and CRAN pretests
 
 - [ ] Bump version in `DESCRIPTION` (e.g., `2.9.4` → `2.9.5`).
 - [ ] Update `NEWS.md` with a new top entry.
-- [ ] Update `man/NEWS.Rd` (if shipped) to match `NEWS.md`.
+- [ ] Update `inst/NEWS.Rd` to match `NEWS.md`.
 
 ---
 
@@ -56,7 +56,7 @@ This checklist is optimized for small patch releases and CRAN pretests
 - [ ] Ensure non-package files are excluded in `.Rbuildignore`, at minimum:
   - [ ] `^docs$` (pkgdown output)
   - [ ] `^_pkgdown\.yml$`
-  - [ ] `^CRAN_RELEASE_CHECKLIST\.md$`
+  - [ ] `^dev$` (development files, including `dev/CRAN_RELEASE_CHECKLIST.md`)
   - [ ] Any local tooling directories (e.g., `^ai_git_helpers$`)
 - [ ] Confirm `R CMD build` tarball does not include website/config extras.
 
@@ -84,7 +84,8 @@ Verify:
 If maintaining the site for each release:
 
 - [ ] Update `_pkgdown.yml` as needed (bootstrap, url).
-- [ ] `R -q -e "pkgdown::build_site()"`
+- [ ] Run the site build through `dev/build_site.R` (see quick commands below).
+- [ ] Confirm no generated `AGENTS` pages or search/sitemap entries remain.
 - [ ] Commit site output under `docs/` (if that is the repo policy).
 - [ ] If pkgdown warns about missing alt text, consider fixing in README/vignettes.
 
@@ -150,8 +151,14 @@ urlchecker::url_check()
 ### pkgdown
 
 ```r
-pkgdown::build_site()
+source("dev/build_site.R")
+with_pkgdown_sources(pkgdown::build_site())
 ```
+
+The helper temporarily sets `AGENTS.md` aside and restores it when the build
+finishes or fails. It also removes stale generated AGENTS pages before pkgdown
+rebuilds the search index and sitemap. A plain `pkgdown::build_site()` includes
+root Markdown files even when `.Rbuildignore` excludes them from the package.
 
 ## Docker UBSan (r-devel-ubsan-clang) sanity check (recommended for C++ changes)
 

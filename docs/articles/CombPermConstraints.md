@@ -38,7 +38,7 @@ library(RcppAlgos)
 options(width = 90)
 
 packageVersion("RcppAlgos")
-#> [1] '2.10.2'
+#> [1] '2.10.3'
 
 cat(paste(capture.output(sessionInfo())[1:3], collapse = "\n"))
 #> R version 4.6.1 (2026-06-24)
@@ -74,10 +74,10 @@ microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"),
 #> Warning in microbenchmark(serial = comboGeneral(20, 10, constraintFun = "sum"), : less
 #> accurate nanosecond times to avoid potential integer overflows
 #> Unit: relative
-#>      expr        min        lq       mean     median         uq       max neval
-#>    serial   3.553696   3.53826   2.380518   3.376396   3.231047 0.2241168   100
-#>  parallel   1.000000   1.00000   1.000000   1.000000   1.000000 1.0000000   100
-#>  combnSum 179.385784 166.98372 107.478717 156.157469 145.623739 5.2626977   100
+#>      expr        min         lq       mean     median         uq       max neval
+#>    serial   3.607002   3.375352   2.962785   3.219318   3.042854  2.029336   100
+#>  parallel   1.000000   1.000000   1.000000   1.000000   1.000000  1.000000   100
+#>  combnSum 172.865302 151.989019 133.406977 143.990664 136.275861 88.094053   100
 ```
 
 ### Faster than `rowSums` and `rowMeans`
@@ -97,9 +97,9 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "sum"),
               rowsums = rowSums(combs), unit = "relative")
 #> Unit: relative
 #>      expr      min       lq     mean   median       uq      max neval
-#>    serial 3.199242 3.256680 3.103672 3.038256 2.953369 4.166331   100
+#>    serial 3.209338 3.263483 3.062705 3.078841 3.001418 1.855496   100
 #>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
-#>   rowsums 1.937897 1.865647 1.777153 1.713324 1.663387 1.755051   100
+#>   rowsums 1.924158 1.857400 1.740365 1.729305 1.683055 0.746824   100
 
 all.equal(rowSums(combs),
           comboGeneral(25, 10,
@@ -112,10 +112,10 @@ microbenchmark(serial = comboGeneral(25, 10, constraintFun = "mean"),
              parallel = comboGeneral(25, 10, constraintFun = "mean", Parallel = TRUE),
              rowmeans = rowMeans(combs), unit = "relative")
 #> Unit: relative
-#>      expr      min       lq     mean   median       uq      max neval
-#>    serial 2.179622 2.052607 2.083628 2.038001 2.015864 3.108075   100
-#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000   100
-#>  rowmeans 1.450018 1.333029 1.318941 1.315303 1.298094 1.289494   100
+#>      expr      min       lq     mean   median       uq       max neval
+#>    serial 2.023427 2.011975 2.006793 2.005144 1.998356 1.4792665   100
+#>  parallel 1.000000 1.000000 1.000000 1.000000 1.000000 1.0000000   100
+#>  rowmeans 1.360293 1.333271 1.306581 1.319539 1.311027 0.6128386   100
 
 all.equal(rowMeans(combs),
           comboGeneral(25, 10,
@@ -351,12 +351,24 @@ comboGeneral(c(21, 31, 51, 71), 3, T,
 
 ### Output Order with `permuteGeneral`
 
-Typically, when we call `permuteGeneral`, the output is in
-lexicographical order, however when we apply a constraint, the
-underlying algorithm checks against combinations only, as this is more
-efficient. If a particular combination meets a constraint, then all
-permutations of that vector also meet that constraint, so there is no
-need to check them. For this reason, the output isn’t in order. Observe:
+Unconstrained `permuteGeneral` output is in lexicographical order.
+Constrained calls with an explicit `lower`, including `lower = 1`, test
+ordinary permutation ranks from `lower` through `upper` and return only
+matches, retaining that order. With no `upper`, testing continues
+through all remaining candidates.
+
+Without `lower`, supported sum/equality cases use partition-then-permute
+order: visit matching partitions in lexicographical order and emit each
+partition’s distinct permutations in lexicographical order before moving
+to the next partition. `upper` alone caps matching rows in this order.
+An equivalent composition algorithm does not change this choice;
+`compositionsGeneral` provides lexicographic ordering across all
+matches.
+
+Other constraints can also work by testing combinations and then
+permuting each match, as in the example below. Special constraints such
+as products involving negative values instead test ordinary candidates.
+Do not assume all constrained calls without `lower` have the same order.
 
 ``` r
 
@@ -460,7 +472,7 @@ iter = comboIter(s, 20, TRUE, constraintFun = "mean",
 ## Test one iteration to see if we need to relax the tolerance
 system.time(iter@nextIter())
 #>    user  system elapsed 
-#>   2.365   0.004   2.369
+#>   2.328   0.002   2.330
 
 ## That's a bit much per iteration... Let's loosen things a little by
 ## increasing the tolerance from sqrt(.Machine$double.eps) ~= 1.49e-8

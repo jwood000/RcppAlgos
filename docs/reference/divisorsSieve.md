@@ -26,7 +26,10 @@ divisorsSieve(bound1, bound2 = NULL, namedList = FALSE, nThreads = NULL)
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 ## Details
 
@@ -46,7 +49,7 @@ This algorithm benefits greatly from the fast integer division library
 ## Value
 
 Returns a named/unnamed list of integer vectors if `max(bound1, bound2)`
-\\\< 2^{31}\\, or a list of numeric vectors otherwise.
+$`< 2^{31}`$, or a list of numeric vectors otherwise.
 
 ## Author
 
@@ -54,7 +57,7 @@ Joseph Wood
 
 ## Note
 
-The maximum value for either of the bounds is \\2^{53} - 1\\.
+The maximum value for either of the bounds is $`2^{53} - 1`$.
 
 ## References
 
@@ -83,7 +86,7 @@ mySamp <- sample(10^5, 5*10^4)
 ## to 10^5 (max element from mySamp)
 system.time(allFacs <- divisorsSieve(10^5))
 #>    user  system elapsed 
-#>   0.017   0.004   0.021 
+#>   0.018   0.004   0.022 
 
 ## Use generated complete factorization for further
 ## analysis by accessing the index of allFacs
@@ -96,12 +99,12 @@ for (s in mySamp) {
 ## a range is efficient as well
 system.time(divisorsSieve(10^12, 10^12 + 10^5))
 #>    user  system elapsed 
-#>   0.032   0.006   0.037 
+#>   0.033   0.006   0.039 
 
 ## Use nThreads for improved efficiency
 system.time(divisorsSieve(10^12, 10^12 + 10^5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.042   0.005   0.035 
+#>   0.042   0.006   0.035 
 
 ## Set 'namedList' to TRUE to return a named list
 divisorsSieve(27, 30, namedList = TRUE)
@@ -121,5 +124,5 @@ divisorsSieve(27, 30, namedList = TRUE)
 ## Using nThreads
 system.time(divisorsSieve(1e5, 2e5, nThreads = 2))
 #>    user  system elapsed 
-#>   0.018   0.004   0.020 
+#>   0.019   0.004   0.021 
 ```

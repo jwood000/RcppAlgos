@@ -1,8 +1,9 @@
 # Number of Partitions/Compositions
 
-Calculate the number of partitions/compositions of a vector chosen \\m\\
-at a time with or without replacement. Additionally, these functions can
-calculate the number of partitions of multisets.
+Calculate the number of partitions/compositions of a vector chosen $`m`$
+at a time with or without replacement. These functions also count
+supported partitions and compositions of multisets, including weak
+compositions and non-weak compositions with zero padding.
 
 ## Usage
 
@@ -35,7 +36,7 @@ compositionsCount(v, m = NULL, target = NULL, weak = FALSE, ...)
 
   Width of the partition. If `m = NULL`, the length will be determined
   by the partitioning case (*e.g.* When we are generating distinct
-  partitions of \\n\\, the width will be equal to the smallest \\m\\
+  partitions of $`n`$, the width will be equal to the smallest $`m`$
   such that `sum(1:m) >= n`).
 
 - ...:
@@ -71,8 +72,11 @@ partitions/compositions.
 
 ## Note
 
-When the number of results exceeds \\2^{53} - 1\\, a number of class
+When the number of results exceeds $`2^{53} - 1`$, a number of class
 `bigz` is returned.
+
+Counting a general multiset composition does not imply support for
+generating, iterating, sampling, or ranking those compositions.
 
 ## See also
 
@@ -91,6 +95,11 @@ partitionsCount(15, 7, TRUE)
 #> [1] 21
 partitionsCount(25, 5, freqs = rep(2, 25))
 #> [1] 148
+
+## Count multiset compositions
+compositionsCount(1:3, 3, freqs = rep(2, 3), target = 6)
+#> [1] 6
+## [1] 6
 
 ## Return object of class 'bigz'
 partitionsCount(2500, 15, TRUE)

@@ -38,7 +38,9 @@ jobs:
           needs: website
 
       - name: Build site
-        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+        run: |
+          source("dev/build_site.R")
+          with_pkgdown_sources(pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE))
         shell: Rscript {0}
 
       - name: Deploy to GitHub pages 🚀

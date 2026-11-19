@@ -24,7 +24,10 @@ primeFactorize(v, namedList = FALSE, nThreads = NULL)
 
 - nThreads:
 
-  Specific number of threads to be used. The default is `NULL`.
+  Requested number of threads. The default is `NULL` for serial
+  execution. Requests are capped by the available hardware and the
+  useful work in the calculation. Small or simple cases may use fewer
+  threads.
 
 ## Details
 
@@ -45,11 +48,11 @@ For more details, see the documentation for
 ## Value
 
 - Returns an unnamed vector if `length(v) == 1` regardless of the value
-  of `namedList`. If \\v \< 2^{31}\\, the class of the returned vector
+  of `namedList`. If $`v < 2^{31}`$, the class of the returned vector
   will be integer, otherwise the class will be numeric.
 
 - If `length(v) > 1`, a named/unnamed list of vectors will be returned.
-  If `max(bound1, bound2)` \\\< 2^{31}\\, the class of each vector will
+  If `max(bound1, bound2)` $`< 2^{31}`$, the class of each vector will
   be integer, otherwise the class will be numeric.
 
 ## References
@@ -72,7 +75,7 @@ Joseph Wood
 
 ## Note
 
-The maximum value for each element in \\v\\ is \\2^{53} - 1\\.
+The maximum value for each element in $`v`$ is $`2^{53} - 1`$.
 
 ## See also
 
@@ -91,7 +94,7 @@ set.seed(29)
 myVec <- sample(-1000000:1000000, 1000)
 system.time(pFacs <- primeFactorize(myVec))
 #>    user  system elapsed 
-#>   0.000   0.000   0.001 
+#>   0.001   0.000   0.000 
 
 ## Return named list
 pFacsWithNames <- primeFactorize(myVec, namedList = TRUE)
@@ -99,5 +102,5 @@ pFacsWithNames <- primeFactorize(myVec, namedList = TRUE)
 ## Using nThreads
 system.time(primeFactorize(myVec, nThreads = 2))
 #>    user  system elapsed 
-#>       0       0       0 
+#>   0.001   0.000   0.001 
 ```

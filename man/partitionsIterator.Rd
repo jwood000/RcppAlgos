@@ -83,12 +83,10 @@ library(microbenchmark)
 microbenchmark(multi@nextNIter(1e6), serial@nextNIter(1e6))
 microbenchmark(multi@nextNIter(1e3), serial@nextNIter(1e3))}
         }
-        \item{\code{nThreads} will be ignored in the following cases (i.e. Generating the \eqn{n^{th}}{nth} partition in these cases are currently unavailable):
-            \itemize{
-                \item{With standard multisets. If zero is the only element with a non-trivial multiplicity, multithreading is possible.}
-                \item{If the source vector is not isomorphic to \code{1:length(v)}}
-            }
-        }
+        \item Supported multiset partitions allow random access through \code{[[}, including GMP-sized indices. For general multiset partitions, \code{nextNIter} and \code{nextRemaining} currently run serially; random access with a vector of indices can use \code{nThreads}.
+        \item Random access and multithreading are unavailable for irregular source vectors that do not form an integer-valued arithmetic progression.
+        \item General multiset compositions can be counted with \code{\link{compositionsCount}}, but are not supported by \code{compositionsIter}.
+        \item Backward traversal through the \code{prevIter} methods is not available.
         \item{The maximum number of partitions/compositions that can be generated at one time is \eqn{2^{31} - 1}{2^31 - 1}.}
         \item If an error occurs while generating results, the iterator's internal state is not guaranteed to remain at its previous position. Call \code{startOver()} before continuing to use the iterator.
     }
@@ -120,13 +118,14 @@ a@summary()
 a[[c(1, 17, 3)]]
 a@summary()
 
-## Multisets... no random access
+## Multiset partitions with random access
 b = partitionsIter(40, 5, freqs = rep(1:4, 10), target = 80)
 b@nextIter()
 b@nextNIter(10)
 b@summary()
 b@nextIter()
 b@currIter()
+b[[c(1, 5, 10)]]
 }
 \keyword{integer}
 \keyword{iterator}

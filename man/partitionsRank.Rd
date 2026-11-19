@@ -31,6 +31,9 @@ compositionsRank(..., v, repetition = FALSE, freqs = NULL,
  }
 \details{
 These algorithms rely on efficiently ranking the \eqn{n^{th}}{nth} lexicographical partition.
+Supported multiset partitions can be ranked using \code{freqs}, including
+cases with GMP-sized ranks. General multiset compositions can be counted with
+\code{\link{compositionsCount}}, but are not supported by \code{compositionsRank}.
 }
 \value{A vector of class \code{integer}, \code{numeric}, or \code{bigz} determined by the total number of partitions/compositions}
 \references{
@@ -50,6 +53,13 @@ Joseph Wood
 mySamp = partitionsSample(30, 8, TRUE, n = 5, seed = 10, namedSample = TRUE)
 myRank = partitionsRank(mySamp, v = 30, repetition = TRUE)
 all.equal(as.integer(rownames(mySamp)), myRank)
+
+## Recover the ranks of sampled multiset partitions
+indices <- c(1L, 4L)
+parts <- partitionsSample(1:5, 3, freqs = rep(2, 5), target = 9,
+                          sampleVec = indices)
+identical(partitionsRank(parts, v = 1:5, freqs = rep(2, 5), target = 9),
+          indices)
 }
 \keyword{random}
 \keyword{sample}
