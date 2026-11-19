@@ -405,7 +405,7 @@ rowMeans(meanAlmost1.5)
 
 ## Using Iterators
 
-As of version `2.5.0` all of the above cases can be attacked with iterators (See [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html#iterating-over-constrained-combinations/permutations>)). As mentioned in the suggested reading, iterators are very flexible and just as efficient as their “general” counterparts. They have the added benefit of allowing one to save the current state, allowing one to generate *n* results at a time.
+As of version `2.5.0` all of the above cases can be attacked with iterators (See [Combinatorial Iterators in RcppAlgos](<https://jwood000.github.io/RcppAlgos/articles/CombinatoricsIterators.html#iterating-over-constrained-combinationspermutations>)). As mentioned in the suggested reading, iterators are very flexible and just as efficient as their “general” counterparts. They have the added benefit of allowing one to save the current state, allowing one to generate *n* results at a time.
 
 Below are a few demonstrations using some of the examples in earlier sections.
 
