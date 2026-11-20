@@ -977,10 +977,10 @@ partitionsGeneral(sample(1000, 20), 5, TRUE, target = 2500)
 
 system.time(one_thread  <- partitionsGeneral(80, 10, TRUE))
 #>    user  system elapsed 
-#>   0.003   0.001   0.004 
+#>   0.002   0.001   0.004 
 system.time(two_threads <- partitionsGeneral(80, 10, TRUE, nThreads = 2))
 #>    user  system elapsed 
-#>   0.003   0.001   0.002 
+#>   0.003   0.002   0.002 
 identical(one_thread, two_threads)
 #> [1] TRUE
 ```
