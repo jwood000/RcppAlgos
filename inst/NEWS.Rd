@@ -1,7 +1,20 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.10.3}{
+\section{Changes in RcppAlgos version 2.10.4}{
+
+    Includes the changes listed under unreleased version 2.10.3, with further reductions in package build and check overhead.
+
+    \subsection{Other}{
+        \itemize{
+          \item Reduced test overhead by batching exhaustive multiset comparisons and reducing repeated iterator sampling and oversized test workloads, while retaining parallel-dispatch and iterator-state checks.
+          \item Removed the Catch-based C++ test harness from package builds and removed \code{testthat} from \code{LinkingTo}. R tests continue to use \code{testthat} through \code{Suggests}; direct native regression checks are retained as optional development fixtures excluded from package distributions.
+          \item Moved \code{xml2} from \code{Suggests} to website-only dependencies and removed its explicit installation from coverage CI.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.10.3 (Release date: Never Released)}{
 
     \subsection{New Features}{
         \itemize{
