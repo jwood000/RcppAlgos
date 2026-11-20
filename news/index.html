@@ -13,7 +13,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">RcppAlgos</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.10.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,17 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="2.10.3" id="rcppalgos-2103">RcppAlgos 2.10.3<a class="anchor" aria-label="anchor" href="#rcppalgos-2103"></a></h2>
+<h2 class="pkg-version" data-toc-text="2.10.4" id="rcppalgos-2104">RcppAlgos 2.10.4<a class="anchor" aria-label="anchor" href="#rcppalgos-2104"></a></h2>
+<p>Includes the changes listed under unreleased version 2.10.3, with further reductions in package build and check overhead.</p>
+<div class="section level3">
+<h3 id="other-2-10-4">Other<a class="anchor" aria-label="anchor" href="#other-2-10-4"></a></h3>
+<ul><li>Reduced test overhead by batching exhaustive multiset comparisons and reducing repeated iterator sampling and oversized test workloads, while retaining parallel-dispatch and iterator-state checks.</li>
+<li>Removed the Catch-based C++ test harness from package builds and removed <code>testthat</code> from <code>LinkingTo</code>. R tests continue to use <code>testthat</code> through <code>Suggests</code>; direct native regression checks are retained as optional development fixtures excluded from package distributions.</li>
+<li>Moved <code>xml2</code> from <code>Suggests</code> to website-only dependencies and removed its explicit installation from coverage CI.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.10.3" id="rcppalgos-2103-unreleased">RcppAlgos 2.10.3 (unreleased)<a class="anchor" aria-label="anchor" href="#rcppalgos-2103-unreleased"></a></h2>
 <div class="section level3">
 <h3 id="new-features-2-10-3">New Features<a class="anchor" aria-label="anchor" href="#new-features-2-10-3"></a></h3>
 <ul><li>Added <code>nthPrime(n, nThreads = NULL)</code> to find the prime at a one-based position. The calculation uses at most two whole-range prime counts, then reuses the optimized sieve for interval counting and bounded final selection. Results are exact throughout the supported range; requested threads apply to counting and sieving.</li>

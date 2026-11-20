@@ -86,7 +86,7 @@ set.seed(29)
 myVec <- sample(-1000000:1000000, 1000)
 system.time(myFacs <- divisorsRcpp(myVec))
 #>    user  system elapsed 
-#>   0.000   0.000   0.001 
+#>   0.001   0.000   0.001 
 
 ## Return named list
 myFacsWithNames <- divisorsRcpp(myVec, namedList = TRUE)

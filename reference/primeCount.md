@@ -153,5 +153,5 @@ primeCount(10^6, method = "lehmer")
 ## Using nThreads
 system.time(primeCount(10^10, nThreads = 2, method = "lehmer"))
 #>    user  system elapsed 
-#>   0.011   0.000   0.006 
+#>   0.013   0.000   0.007 
 ```

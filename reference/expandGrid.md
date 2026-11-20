@@ -109,5 +109,5 @@ lst = Map(function(x, y) x:y, 8:14, 15:21)
 ## Use multiple threads for greater efficiency
 system.time(expandGrid(lst, nThreads = 2))
 #>    user  system elapsed 
-#>   0.015   0.018   0.016 
+#>   0.020   0.013   0.017 
 ```
