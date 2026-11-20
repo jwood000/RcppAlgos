@@ -985,11 +985,9 @@ test_that("partitionsIter produces correct results", {
                                   requiresWidthRebuild = TRUE))
 
     ##******** BIG TESTS *********##
-    # Exercise the same GMP-sized domains near both ends. Thirty-two rows
-    # retain consecutive traversal, three uneven batches, and exhaustion;
-    # generating thousands of adjacent rows adds no representation boundary.
+    # Exercise traversal and exhaustion near both ends of GMP-sized domains.
     partitionClassBigZTest <- function(v_pass, m_pass = NULL, rep = FALSE,
-                                       fr = NULL, tar = NULL, lenCheck = 32L,
+                                       fr = NULL, tar = NULL, lenCheck = 5000,
                                        IsComposition = FALSE, IsWeak = FALSE) {
 
         start_time <- Sys.time()
@@ -1210,68 +1208,68 @@ test_that("partitionsIter produces correct results", {
     # Lots of results: weak compositions with repetition
     expect_true(partitionClassBigZTest(
         0:250, 20, rep = TRUE, IsWeak = TRUE,
-        IsComposition = TRUE, lenCheck = 32L)
+        IsComposition = TRUE, lenCheck = 5000)
     )
 
     # Same, mapped (slope big); target = 40 * 98765431
     expect_true(partitionClassBigZTest((0:250) * 98765431, 20, rep = TRUE,
                                        IsComposition = TRUE, IsWeak = TRUE,
-                                       lenCheck = 32L))
+                                       lenCheck = 5000))
 
     # Distinct weak comps with 0 included (lots of results)
     expect_true(partitionClassBigZTest(0:200, 13, rep = FALSE, IsWeak = TRUE,
-                                       IsComposition = TRUE, lenCheck = 32L))
+                                       IsComposition = TRUE, lenCheck = 5000))
 
     # Mapped distinct weak comps (0 included)
     # slope=13, shift=7; choose tar divisible-ish
     expect_true(partitionClassBigZTest((0:200) * 1319, 13, IsWeak = TRUE,
                                        IsComposition = TRUE,
-                                       lenCheck = 32L))
+                                       lenCheck = 5000))
 
     # Distinct partitions, no zero, fixed width, nontrivial target
-    expect_true(partitionClassBigZTest(400, 13, tar = 1000, lenCheck = 32L))
+    expect_true(partitionClassBigZTest(400, 13, tar = 1000, lenCheck = 5000))
 
     # Mapped distinct partitions, no zero
     expect_true(partitionClassBigZTest(19 + (1:400) * 3, 13,
                                        tar = 19 * 13 + 3 * 1000,
-                                       lenCheck = 32L))
+                                       lenCheck = 5000))
 
     expect_true(partitionClassBigZTest(
-        220, 25, rep = TRUE, tar = 440, lenCheck = 32L
+        220, 25, rep = TRUE, tar = 440, lenCheck = 5000
     ))
     expect_true(partitionClassBigZTest(
-        300, 26, rep = TRUE, tar = 600, lenCheck = 32L
+        300, 26, rep = TRUE, tar = 600, lenCheck = 5000
     ))
 
     expect_true(partitionClassBigZTest(
-        0:280, 15, rep = TRUE, tar = 600, lenCheck = 32L
+        0:280, 15, rep = TRUE, tar = 600, lenCheck = 5000
     ))
 
     # tar = shift*m + slope*baseTar
     # baseTar = 240, m=12, slope=7, shift=5  => tar = 5*25 + 7*440 = 1740
     expect_true(partitionClassBigZTest(
-        5 + (0:220) * 7, 25, rep = TRUE, tar = 3205, lenCheck = 32L
+        5 + (0:220) * 7, 25, rep = TRUE, tar = 3205, lenCheck = 5000
     ))
 
     # No-zero mapped (start at 1)
     # baseTar = 240, m=12, slope=5, shift=9 => tar = 9*26 + 5*600 = 3234
     expect_true(partitionClassBigZTest(
-        9 + (1:300) * 5, 26, rep = TRUE, tar = 3234, lenCheck = 32L)
+        9 + (1:300) * 5, 26, rep = TRUE, tar = 3234, lenCheck = 5000)
     )
 
     expect_true(partitionClassBigZTest(
-        220, 25, rep = FALSE, tar = 840, lenCheck = 32L)
+        220, 25, rep = FALSE, tar = 840, lenCheck = 5000)
     )
     expect_true(partitionClassBigZTest(
-        300, 13, rep = FALSE, tar = 999, lenCheck = 32L)
+        300, 13, rep = FALSE, tar = 999, lenCheck = 5000)
     )
 
-    expect_true(partitionClassBigZTest(0:220, 25, tar = 840, lenCheck = 32L))
-    expect_true(partitionClassBigZTest(0:300, 13, tar = 999, lenCheck = 32L))
+    expect_true(partitionClassBigZTest(0:220, 25, tar = 840, lenCheck = 5000))
+    expect_true(partitionClassBigZTest(0:300, 13, tar = 999, lenCheck = 5000))
 
     expect_true(
         partitionClassBigZTest(0:25, 15, IsComposition = TRUE, IsWeak = FALSE,
-                               tar = 200, lenCheck = 32L)
+                               tar = 200, lenCheck = 5000)
     )
 
     # No zero compositions (start at 1)
@@ -1289,18 +1287,18 @@ test_that("partitionsIter produces correct results", {
     # baseTar=360, m=10, slope=7, shift=6 => tar = 6*10 + 7*360 = 2580
     expect_true(partitionClassBigZTest(6 + (0:80) * 7, 10,
                                        IsComposition = TRUE, IsWeak = FALSE,
-                                       tar = 2580, lenCheck = 32L))
+                                       tar = 2580, lenCheck = 5000))
 
     # Weak mapped
     # baseTar=300, m=10, slope=5 => tar = 5*300 = 1500
     expect_true(partitionClassBigZTest((0:100) * 5, 10,
                                        IsComposition = TRUE, IsWeak = TRUE,
-                                       tar = 1500, lenCheck = 32L))
+                                       tar = 1500, lenCheck = 5000))
 
     expect_true(partitionClassBigZTest(0:200, 15, fr = c(9, rep(1, 200)),
-                                       tar = 700, lenCheck = 32L))
+                                       tar = 700, lenCheck = 5000))
 
-    expect_true(partitionClassBigZTest(0:800, 15, lenCheck = 32L))
+    expect_true(partitionClassBigZTest(0:800, 15, lenCheck = 5000))
     expect_true(partitionClassBigZTest(0:800, 15, fr = c(8, rep(1, 800))))
     expect_true(partitionClassBigZTest(0:600, fr = c(600, rep(1, 600))))
     expect_true(partitionClassBigZTest(0:600, 15, rep = TRUE))

@@ -104,7 +104,8 @@ Keep expensive checks tied to the behavior they exercise. The exhaustive
 multiset oracle retains every frequency, width, target, and rank, but compares
 named batches to reduce testthat overhead. Partition iterator fixtures retain
 full native traversal and state checks, with bounded endpoint/interior random
-access and short windows at both ends of GMP-sized result spaces. Parallel
+access and 5,000-row traversal windows at both ends of GMP-sized result spaces
+(the small multiset fixture retains its original 12-row window). Parallel
 iterator batches must still reach the production worker thresholds: 20,000
 rows generally and 40,000 for the uncapped partition/composition fixtures in
 `testParallelIterators.R`. Capped partition paths elsewhere can require 150,000;
@@ -129,6 +130,11 @@ These are local test timings, not Windows measurements or an overall
 The partition iterator timing combines reduced random-access sampling, shorter
 GMP traversal windows, and removal of forced garbage collections; it does not
 isolate the benefit of shortening sequential traversal.
+
+On November 20, the original `lenCheck = 5000` traversal lengths were restored
+while keeping the bounded sampling and removal of forced garbage collections.
+The table above describes the earlier reduced fixtures, not the current suite;
+there was no isolated measurement supporting the `lenCheck` reduction.
 
 A separate covr/gcov comparison ran both complete suites in fresh processes
 against one instrumented build, resetting native counters between runs. Both
