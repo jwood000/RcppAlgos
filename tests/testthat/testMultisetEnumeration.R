@@ -25,41 +25,56 @@ test_that("multiset counts, samples and ranks match exhaustive enumeration", {
         for (case in seq_len(nrow(frequencies))) {
             freqs <- as.integer(frequencies[case, ])
             # The public API caps m at the total available multiplicity.
-            for (width in seq_len(min(6L, sum(freqs)))) {
+            widths <- seq_len(min(6L, sum(freqs)))
+            expected_counts <- actual_counts <-
+                expected_samples <- actual_samples <-
+                expected_ranks <- actual_ranks <-
+                setNames(vector("list", length(widths)), paste0("width=", widths))
+
+            for (width in widths) {
                 rows <- enumerate_multiset_parts(freqs, width)
                 sums <- rowSums(rows)
                 targets <- seq.int(width, cap * width)
-                expected_counts <- vapply(targets, function(target) {
+                counts <- vapply(targets, function(target) {
                     sum(sums == target)
                 }, integer(1))
-                actual_counts <- vapply(targets, function(target) {
+                expected_counts[[width]] <- counts
+                actual_counts[[width]] <- vapply(targets, function(target) {
                     as.numeric(partitionsCount(
                         seq_len(cap), width, freqs = freqs, target = target
                     ))
                 }, numeric(1))
-                inputs <- paste0("freqs=", paste(freqs, collapse = ","),
-                                 "; width=", width)
-                expect_equal(actual_counts, expected_counts, info = inputs)
 
-                for (target in targets[expected_counts > 0L]) {
-                    expected <- rows[sums == target, , drop = FALSE]
-                    actual <- partitionsSample(
+                nonempty <- targets[counts > 0L]
+                names(nonempty) <- paste0("target=", nonempty)
+                expected_samples[[width]] <- lapply(nonempty, function(target) {
+                    rows[sums == target, , drop = FALSE]
+                })
+                actual_samples[[width]] <- lapply(nonempty, function(target) {
+                    partitionsSample(
                         seq_len(cap), width, freqs = freqs, target = target,
-                        sampleVec = seq_len(nrow(expected)), nThreads = 1L
+                        sampleVec = seq_len(counts[target - width + 1L]),
+                        nThreads = 1L
                     )
-                    expect_identical(
-                        actual, expected,
-                        info = paste0(inputs, "; target=", target)
+                })
+                expected_ranks[[width]] <- lapply(expected_samples[[width]], function(rows) {
+                    seq_len(nrow(rows))
+                })
+                actual_ranks[[width]] <- lapply(nonempty, function(target) {
+                    partitionsRank(
+                        rows[sums == target, , drop = FALSE], v = seq_len(cap),
+                        freqs = freqs, target = target, nThreads = 1L
                     )
-                    expect_identical(
-                        partitionsRank(expected, v = seq_len(cap),
-                                       freqs = freqs, target = target,
-                                       nThreads = 1L),
-                        seq_len(nrow(expected)),
-                        info = paste0(inputs, "; target=", target)
-                    )
-                }
+                })
             }
+
+            # Check every original width, target and rank, while avoiding tens
+            # of thousands of individual testthat expectations. Named list
+            # entries retain the width/target context if a comparison fails.
+            inputs <- paste0("freqs=", paste(freqs, collapse = ","))
+            expect_equal(actual_counts, expected_counts, info = inputs)
+            expect_identical(actual_samples, expected_samples, info = inputs)
+            expect_identical(actual_ranks, expected_ranks, info = inputs)
         }
     }
 })

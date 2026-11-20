@@ -47,7 +47,7 @@ registered <- getDLLRegisteredRoutines("RcppAlgos")$.Call
 stopifnot(registered$`_RcppAlgos_PrimeCountCpp`$numParameters == 4L,
           registered$`_RcppAlgos_PrimeSieveCpp`$numParameters == 6L,
           registered$`_RcppAlgos_NthPrimeCpp`$numParameters == 4L,
-          registered$run_testthat_tests$numParameters == 1L)
+          !"run_testthat_tests" %in% names(registered))
 for (name in c("primeCount", "primePhi", "semiPrimeCount", "triPrimeCount",
                "primeSieve", "nthPrime")) {
     stopifnot(length(tools::checkRd(file.path(package_source, "man",
@@ -71,6 +71,132 @@ These focused tests do not constitute a full `R CMD check` or cross-platform
 validation. Run broader package checks when the change's scope warrants them;
 record their actual results separately. Examples and `codoc` check interface and
 documentation consistency, not performance or race freedom.
+
+## Full-suite timing and CRAN test workloads
+
+Use the isolated library above to time the complete test suite. For test-only
+changes, the same compiled package can serve both runs; pass the original and
+modified source directories separately. Run each in a fresh R process, with no
+other builds or benchmarks running, and keep the seed and reporter consistent.
+
+```sh
+Rscript --vanilla - "$package_library" "$package_source" <<'RS'
+args <- commandArgs(TRUE)
+package_library <- normalizePath(args[1])
+.libPaths(c(package_library, .libPaths()))
+library(RcppAlgos)
+stopifnot(startsWith(normalizePath(getLoadedDLLs()[["RcppAlgos"]][["path"]]),
+                    paste0(package_library, "/")))
+set.seed(104729)
+elapsed <- system.time(results <- testthat::test_dir(
+    file.path(args[2], "tests/testthat"), reporter = "silent",
+    package = "RcppAlgos", load_package = "installed", stop_on_failure = TRUE
+))
+results <- as.data.frame(results)
+timings <- aggregate(real ~ file, results, sum)
+print(timings[order(-timings$real), ], row.names = FALSE)
+print(elapsed)
+print(colSums(results[c("failed", "error", "warning", "skipped")]))
+RS
+```
+
+Keep expensive checks tied to the behavior they exercise. The exhaustive
+multiset oracle retains every frequency, width, target, and rank, but compares
+named batches to reduce testthat overhead. Partition iterator fixtures retain
+full native traversal and state checks, with bounded endpoint/interior random
+access and short windows at both ends of GMP-sized result spaces. Parallel
+iterator batches must still reach the production worker thresholds: 20,000
+rows generally and 40,000 for the uncapped partition/composition fixtures in
+`testParallelIterators.R`. Capped partition paths elsewhere can require 150,000;
+verify the dispatch before reducing their sizes. Small data alone does not
+establish parallel coverage.
+
+On November 19, 2026, the test-only reductions were measured against
+`f2359a5d`, using the same isolated optimized build on macOS arm64 / R 4.6.1.
+Fresh processes used seed 104729 and the same ListReporter timing harness:
+
+| Workload | Original | Reduced |
+| --- | ---: | ---: |
+| Complete suite, wall time | 115.39 s | 59.70 s |
+| Partition iterator tests | 45.60 s | 12.51 s |
+| Exhaustive multiset oracle | 19.91 s | 0.97 s |
+| Parallel iterator tests | 3.23 s | 0.16 s |
+
+Both full runs exercised the same 247 test blocks in 42 files, with no failures
+or warnings and one existing multiset-composition specification skip.
+These are local test timings, not Windows measurements or an overall
+`R CMD check` time.
+The partition iterator timing combines reduced random-access sampling, shorter
+GMP traversal windows, and removal of forced garbage collections; it does not
+isolate the benefit of shortening sequential traversal.
+
+A separate covr/gcov comparison ran both complete suites in fresh processes
+against one instrumented build, resetting native counters between runs. Both
+exercised exactly the same 18,995 of 19,847 instrumented production lines:
+17,466 C++ lines, 900 header lines, and 629 R lines. Generated registration and
+native test sources were excluded from those totals. No previously covered
+lines were lost, and both instrumented runs passed. Line coverage complements
+the fixture/dispatch review; it does not establish identical branch coverage
+or constitute a correctness proof. Instrumented runtimes are not used in the
+timing comparison above.
+
+That coverage comparison predates moving the direct native regressions out of
+the package on November 20. Those internal checks now run separately using the
+optional development workflow below; an ordinary package check does not run
+them.
+
+## Optional native regressions outside the package build
+
+The direct C++ regressions live in
+[native-regressions/](native-regressions/README.md), excluded from package
+archives by `.Rbuildignore`. They preserve the raw GMP conversion, poisoned
+buffer/storage reuse, forced-GMP counting/ranking, and native primality guard
+checks. Run them explicitly when changing these internals and before release:
+
+```sh
+Rscript --vanilla .github/development/native-regressions/run.R
+```
+
+The runner compiles a fresh temporary bridge from the current production
+sources using cpp11 and GMP, and retains its source hashes and results. It uses
+ordinary exceptions for assertions, with no Catch/testthat C++ dependency.
+Normal package installation no longer compiles these direct native regressions
+or Catch, or exports `run_testthat_tests`; `testthat` remains in `Suggests` for
+the R tests. `xml2` is no longer needed for native test report parsing or
+coverage CI. It is declared under `Config/Needs/website` for `dev/build_site.R`.
+
+On November 20, a clean `R CMD INSTALL --preclean --no-multiarch --install-tests`
+comparison on the same macOS/R setup with `MAKEFLAGS=-j4` took 23.43 s before
+this removal and 19.04 s after. The installed shared library decreased from
+2,788,736 to 2,143,184 bytes. These single-run measurements include package
+compilation, linking, and installation checks, with dependencies already
+installed; they do not measure dependency provisioning or CRAN's total check
+time. The development bridge separately passed all seven retained checks.
+
+## Package archive and broader check
+
+From the temporary validation directory, build the selected source snapshot
+with rendered vignettes, then check the resulting archive:
+
+```sh
+MAKEFLAGS=-j4 R CMD build --no-manual "$package_source"
+MAKEFLAGS=-j4 R CMD check --no-manual RcppAlgos_2.10.3.tar.gz
+```
+
+Use the filename printed by `R CMD build` when the version changes. These
+commands require Pandoc for the R Markdown vignettes. On this macOS host it is
+bundled with RStudio; command-line R can find it with the temporary setting
+`RSTUDIO_PANDOC=/Applications/RStudio.app/Contents/Resources/app/quarto/bin/tools/aarch64`.
+Skipping vignette creation produces missing-`inst/doc` warnings, so that
+shortcut cannot establish a clean archive check. `--no-manual` omits the PDF
+reference manual; it does not omit the R tests, examples, or vignette rebuilds.
+
+On November 20, the final archive passed `R CMD check --no-manual` with
+`Status: OK`, including examples and vignette rebuilding. The R suite reported
+5,669 passing expectations, no failures or warnings, and its one existing skip.
+Remote CRAN/Bioconductor index lookups were unavailable in the sandbox;
+dependency checks against the installed libraries passed. The PDF manual and
+Windows checks were not run.
 
 ## Native correctness and sanitizer checks
 
@@ -97,7 +223,7 @@ args <- commandArgs(TRUE)
 library(RcppAlgos, lib.loc = args[1])
 stopifnot(startsWith(normalizePath(getLoadedDLLs()[["RcppAlgos"]][["path"]]),
                     paste0(normalizePath(args[1]), "/")))
-files <- c("test-cpp.R", "testNumericConstraints.R", "testZeroPartitions.R",
+files <- c("testGmpConvert.R", "testNumericConstraints.R", "testZeroPartitions.R",
            "testIsPrimeRcpp.R", "testPrimeFactorize.R", "testDivisorsRcpp.R",
            "testPartitionsDesign.R", "testPartitionTypeRefactor.R")
 for (file in files) {
@@ -130,9 +256,10 @@ and random access. They also check the constrained combination/permutation
 routes and nearby frequency-based and positive-target cases.
 
 The primality and factorization regressions cover the native/GMP dispatch
-boundaries in serial and with two requested workers. Native tests in
-`src/test-primality.cpp` also exercise the `IsPrime()` upper-bound guard directly;
-R-facing calls route large inputs to GMP before reaching that guard. Native
+boundaries in serial and with two requested workers. The optional
+`native-regressions/primality.cpp` checks also exercise the `IsPrime()`
+upper-bound guard directly; R-facing calls route large inputs to GMP before
+reaching that guard. Native
 modular products rely on nonnegative residues below a modulus at most `INT_MAX`,
 so their product is below `2^62` and needs no floating-point chunking fallback.
 
@@ -323,8 +450,8 @@ package's existing GMP build dependency.
 ## Native registration
 
 When a registered signature changes, run `cpp11::cpp_register()` on an isolated
-source copy. Review and retain the generated `src/cpp11.cpp`, including existing
-entries such as `run_testthat_tests`. The generator also creates `R/cpp11.R`;
+source copy. Review and retain the generated `src/cpp11.cpp`. The generator also
+creates `R/cpp11.R`;
 this package uses handwritten R wrappers and intentionally does not track that
 file. Preserve any pre-existing local file or edits instead of deleting them
 blindly. Update the handwritten wrapper, help, exports and arity checks together.
