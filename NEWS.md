@@ -1,4 +1,14 @@
-# RcppAlgos 2.10.3
+# RcppAlgos 2.10.4
+
+Includes the changes listed under unreleased version 2.10.3, with further reductions in package build and check overhead.
+
+## Other
+
+* Reduced test overhead by batching exhaustive multiset comparisons and reducing repeated iterator sampling and oversized test workloads, while retaining parallel-dispatch and iterator-state checks.
+* Removed the Catch-based C++ test harness from package builds and removed `testthat` from `LinkingTo`. R tests continue to use `testthat` through `Suggests`; direct native regression checks are retained as optional development fixtures excluded from package distributions.
+* Moved `xml2` from `Suggests` to website-only dependencies and removed its explicit installation from coverage CI.
+
+# RcppAlgos 2.10.3 (unreleased)
 
 ## New Features
 

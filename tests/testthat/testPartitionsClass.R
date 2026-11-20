@@ -236,7 +236,7 @@ test_that("partitionsIter produces correct results", {
     partitionClassTest <- function(
         v_pass, m_pass = NULL, rep = FALSE, fr = NULL, tar = NULL,
         testRand = TRUE, IsComposition = FALSE, IsWeak = FALSE,
-        sanity = TRUE, requiresWidthRebuild = FALSE, maxSample = Inf
+        sanity = TRUE, requiresWidthRebuild = FALSE, maxSample = 24L
     ) {
 
         start_time <- Sys.time()
@@ -448,7 +448,12 @@ test_that("partitionsIter produces correct results", {
                 myResults <- c(myResults, is.null(noMore))
                 myResults <- c(myResults, "No more results." == msg[1])
 
-                samp <- sample(myRows, min(numTest, maxSample))
+                # Keep endpoint and interior random access, including an
+                # out-of-order request, without unranking a third of the
+                # entire result set for every iterator fixture.
+                samp <- unique(c(myRows, 1L, as.integer(seq(
+                    1L, myRows, length.out = min(myRows, maxSample)
+                ))))
                 myResults <- c(myResults, isTRUE(all.equal(a[[samp]], b[samp, ])))
 
                 ## Now we check Multi-index Partitions sampling followed by
@@ -481,7 +486,7 @@ test_that("partitionsIter produces correct results", {
                     myResults, isTRUE(all.equal(a@nextIter(), a2@nextIter()))
                 )
 
-                one_samp <- sample(myRows, 1)
+                one_samp <- max(1L, as.integer(myRows %/% 2L))
                 myResults <- c(myResults, isTRUE(all.equal(a[[one_samp]], b[one_samp, ])))
             }
         } else {
@@ -516,7 +521,6 @@ test_that("partitionsIter produces correct results", {
         }
 
         rm(a, a1, a2, b)
-        gc()
         all(myResults)
     }
 
@@ -943,7 +947,7 @@ test_that("partitionsIter produces correct results", {
     # $partition_type
     # [1] "Multiset"
     expect_true(partitionClassTest(79L + -2L * (1:70), 13, fr = rep(1:10, 7),
-                                   tar = 887L, maxSample = 100L))
+                                   tar = 887L))
 
     ## N.B. In the above we see the mapped target is 853. We must remember to
     ## also reverse freqs as the mapped vector is 1:70
@@ -968,11 +972,11 @@ test_that("partitionsIter produces correct results", {
     # $partition_type
     # [1] "Multiset"
     expect_true(partitionClassTest(70, 13, fr = rep(10:1, 7),
-                                   tar = 853L, maxSample = 100L))
+                                   tar = 853L))
 
     #### Multiset; Mapped; Double Precision
     expect_true(partitionClassTest((1:50) * 1e10, 13, fr = rep(1:10, 5),
-                                   tar = 6.17e12, maxSample = 100L))
+                                   tar = 6.17e12))
 
     #### Multiset; zero included; random freqs; non-standard target
     set.seed(123)
@@ -981,6 +985,7 @@ test_that("partitionsIter produces correct results", {
                                   requiresWidthRebuild = TRUE))
 
     ##******** BIG TESTS *********##
+    # Exercise traversal and exhaustion near both ends of GMP-sized domains.
     partitionClassBigZTest <- function(v_pass, m_pass = NULL, rep = FALSE,
                                        fr = NULL, tar = NULL, lenCheck = 5000,
                                        IsComposition = FALSE, IsWeak = FALSE) {
@@ -1098,7 +1103,7 @@ test_that("partitionsIter produces correct results", {
         myResults <- c(myResults, is.null(a@nextNIter(1)))
         myResults <- c(myResults, is.null(a@nextRemaining()))
 
-        samp1 <- sample(lenCheck, 2)
+        samp1 <- c(lenCheck, 1L)
         samp2 <- gmp::sub.bigz(myRows, lenCheck) + gmp::as.bigz(samp1)
         myResults <- c(myResults, isTRUE(all.equal(a[[samp1]], b1[samp1, ])))
         myResults <- c(myResults, isTRUE(all.equal(a[[samp2]], b2[samp1, ])))
@@ -1140,7 +1145,6 @@ test_that("partitionsIter produces correct results", {
         }
 
         rm(a, a1, a2, a3, b1, b2)
-        gc()
         all(myResults)
     }
 

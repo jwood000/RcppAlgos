@@ -18,8 +18,11 @@ This checklist is optimized for small patch releases and CRAN pretests
 ## 1) Versioning + changelog
 
 - [ ] Bump version in `DESCRIPTION` (e.g., `2.9.4` → `2.9.5`).
+- [ ] Match the version constant in `src/version.cpp` to `DESCRIPTION` and
+      rebuild: package loading checks that the DLL and package versions agree.
 - [ ] Update `NEWS.md` with a new top entry.
 - [ ] Update `inst/NEWS.Rd` to match `NEWS.md`.
+- [ ] Keep unreleased-version markers consistent between both NEWS files.
 
 ---
 
@@ -68,6 +71,10 @@ Run checks from a clean state.
 
 - [ ] `R CMD build .`
 - [ ] `R CMD check RcppAlgos_<version>.tar.gz --as-cran`
+- [ ] Run the optional native regressions, which are excluded from package checks:
+      `Rscript --vanilla .github/development/native-regressions/run.R`.
+- [ ] Review reverse-dependency results against the last published CRAN version;
+      include changes inherited from any intervening unreleased version.
 
 Verify:
 - [ ] No ERRORs or WARNINGs.
@@ -97,6 +104,8 @@ If maintaining the site for each release:
   - [ ] devel
   - [ ] release
   - [ ] oldrelease
+  - [ ] Review overall check time, including installation and compilation,
+        against any timing feedback from CRAN; test timings alone are insufficient.
 - [ ] (Recommended) CI matrix / GitHub Actions:
   - [ ] at least Linux + macOS
   - [ ] include r-devel somewhere if practical
@@ -122,8 +131,14 @@ If maintaining the site for each release:
 - [ ] Prepare `cran-comments.md` (if used), include:
   - [ ] Summary of changes
   - [ ] Any NOTE explanations (if any remain)
-  - [ ] Mention that CITATION/URL issues from incoming pretests were corrected
+  - [ ] Explain how each issue from the previous submission was addressed,
+        including timing changes and new platform measurements when relevant
 - [ ] Submit via `devtools::submit_cran()` or CRAN web form.
+- [ ] For resubmissions, put the response to CRAN's feedback in the web form's
+      optional comment field and accept the confirmation email.
+
+See the [CRAN submission and resubmission policy](https://cran.r-project.org/web/packages/policies.html#Submission)
+for the tarball, R-devel check, reverse-dependency, and submission requirements.
 
 ---
 

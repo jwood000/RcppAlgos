@@ -1,10 +1,14 @@
 test_that("check parallel iterators", {
 
-    check_iterators = function(a, b) {
+    check_iterators = function(a, b, parallel_limit = 20000L) {
         a@startOver()
         nr = as.integer(nrow(b))
         res = vector(mode = "logical", length = 3L)
         gap = as.integer(round(nr / 3))
+        # Keep every forward batch above the production worker cutoff, even
+        # though these fixtures enumerate much smaller spaces than before.
+        expect_gte(gap, parallel_limit)
+        expect_gte(nr - 2L * gap, parallel_limit)
         a1 = a@nextNIter(n = gap)
         res[1L] = identical(a1, b[1:gap, ])
         a1 = a@nextNIter(n = gap)
@@ -66,122 +70,113 @@ test_that("check parallel iterators", {
     ###### ************************ Combinations ************************ ######
 
     ## Combinations Distinct
-    a = comboIter(22, 10, nThreads = 2)
-    b = comboGeneral(22, 10)
+    a = comboIter(19, 9, nThreads = 2)
+    b = comboGeneral(19, 9)
     expect_true(check_iterators(a, b))
 
     ### Serial
-    a = comboIter(22, 10)
+    a = comboIter(19, 9)
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ## Combinations w/ Reps
-    a = comboIter(17, 8, TRUE, nThreads = 2)
-    b = comboGeneral(17, 8, TRUE)
+    a = comboIter(12, 8, TRUE, nThreads = 2)
+    b = comboGeneral(12, 8, TRUE)
     expect_true(check_iterators(a, b))
 
     ### Serial
-    a = comboIter(17, 8, TRUE)
+    a = comboIter(12, 8, TRUE)
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ## Combinations of Multisets
-    a = comboIter(18, 8, freqs = rep(1:6, 3), nThreads = 2)
-    b = comboGeneral(18, 8, freqs = rep(1:6, 3))
+    a = comboIter(14, 8, freqs = rep(1:4, length.out = 14), nThreads = 2)
+    b = comboGeneral(14, 8, freqs = rep(1:4, length.out = 14))
     expect_true(check_iterators(a, b))
 
     ### Serial
-    a = comboIter(18, 8, freqs = rep(1:6, 3))
+    a = comboIter(14, 8, freqs = rep(1:4, length.out = 14))
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ###### ************************ Permutations ************************ ######
 
     ## Permutations Distinct
-    a = permuteIter(12, 6, nThreads = 2)
-    b = permuteGeneral(12, 6)
+    a = permuteIter(12, 5, nThreads = 2)
+    b = permuteGeneral(12, 5)
     expect_true(check_iterators(a, b))
 
     ### Serial
-    a = permuteIter(12, 6)
+    a = permuteIter(12, 5)
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ## Permutations w/ Rep
-    a = permuteIter(10, 6, TRUE, nThreads = 2)
-    b = permuteGeneral(10, 6, TRUE)
+    a = permuteIter(10, 5, TRUE, nThreads = 2)
+    b = permuteGeneral(10, 5, TRUE)
     expect_true(check_iterators(a, b))
 
     ### Serial
-    a = permuteIter(10, 6, TRUE)
+    a = permuteIter(10, 5, TRUE)
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ## Permutations of Multisets
-    a = permuteIter(10, 6, freqs = c(1:5, 1:5), nThreads = 2)
-    b = permuteGeneral(10, 6, freqs = c(1:5, 1:5))
+    a = permuteIter(10, 5, freqs = c(1:5, 1:5), nThreads = 2)
+    b = permuteGeneral(10, 5, freqs = c(1:5, 1:5))
     expect_true(check_iterators(a, b))
 
     ### Serial
-    a = permuteIter(10, 6, freqs = c(1:5, 1:5))
+    a = permuteIter(10, 5, freqs = c(1:5, 1:5))
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ###### ************************ ComboGroups ************************* ######
 
     ## comboGroups Same Grp Size
-    a = comboGroupsIter(15, 5, nThreads = 2)
-    b = comboGroups(15, 5)
+    a = comboGroupsIter(15, 3, nThreads = 2)
+    b = comboGroups(15, 3)
     expect_true(check_iterators(a, b))
 
     ### Serial
-    a = comboGroupsIter(15, 5)
+    a = comboGroupsIter(15, 3)
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ## comboGroups Distinct Grp Size
-    a = comboGroupsIter(14, grpSizes = c(2, 3, 4, 5), nThreads = 2)
-    b = comboGroups(14, grpSizes = c(2, 3, 4, 5))
+    a = comboGroupsIter(13, grpSizes = c(3, 4, 6), nThreads = 2)
+    b = comboGroups(13, grpSizes = c(3, 4, 6))
     expect_true(check_iterators(a, b))
 
     ### Serial
-    a = comboGroupsIter(14, grpSizes = c(2, 3, 4, 5))
+    a = comboGroupsIter(13, grpSizes = c(3, 4, 6))
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ## comboGroups General Grp Sizes
-    a = comboGroupsIter(14, grpSizes = c(3, 3, 3, 5), nThreads = 2)
-    b = comboGroups(14, grpSizes = c(3, 3, 3, 5))
+    a = comboGroupsIter(15, grpSizes = c(2, 2, 2, 9), nThreads = 2)
+    b = comboGroups(15, grpSizes = c(2, 2, 2, 9))
     expect_true(check_iterators(a, b))
 
     ### Serial
-    a = comboGroupsIter(14, grpSizes = c(3, 3, 3, 5))
+    a = comboGroupsIter(15, grpSizes = c(2, 2, 2, 9))
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ###### ************************* Cartesian ************************** ######
 
     ## Cartesian Product
     set.seed(12345678)
-    v = rep(list(sample(1e6, 45)), 4)
+    v = rep(list(sample(1e6, 16)), 4)
     a = expandGridIter(v, nThreads = 2)
     b = expandGrid(v)
     expect_true(check_iterators(a, b))
@@ -191,54 +186,50 @@ test_that("check parallel iterators", {
     expect_true(check_iterators(a, b))
 
     rm(a, b)
-    gc()
 
     ###### ********************* Integer Partitions ********************* ######
 
     ## Partitions w/ Rep
-    a = partitionsIter(v = 100, m = 10, repetition = TRUE, nThreads = 2)
-    b = partitionsGeneral(v = 100, m = 10, repetition = TRUE)
-    expect_true(check_iterators(a, b))
+    a = partitionsIter(v = 70, m = 10, repetition = TRUE, nThreads = 2)
+    b = partitionsGeneral(v = 70, m = 10, repetition = TRUE)
+    expect_true(check_iterators(a, b, parallel_limit = 40000L))
 
     ### Serial
-    a = partitionsIter(v = 100, m = 10, repetition = TRUE)
-    expect_true(check_iterators(a, b))
+    a = partitionsIter(v = 70, m = 10, repetition = TRUE)
+    expect_true(check_iterators(a, b, parallel_limit = 40000L))
 
     rm(a, b)
-    gc()
 
     ## Partitions Distinct
-    a = partitionsIter(v = 130, m = 7, nThreads = 2)
-    b = partitionsGeneral(v = 130, m = 7)
-    expect_true(check_iterators(a, b))
+    a = partitionsIter(v = 102, m = 7, nThreads = 2)
+    b = partitionsGeneral(v = 102, m = 7)
+    expect_true(check_iterators(a, b, parallel_limit = 40000L))
 
     ### Serial
-    a = partitionsIter(v = 130, m = 7)
-    expect_true(check_iterators(a, b))
+    a = partitionsIter(v = 102, m = 7)
+    expect_true(check_iterators(a, b, parallel_limit = 40000L))
 
     rm(a, b)
-    gc()
 
     ###### ******************** Integer Compositions ******************** ######
 
     ## Compositions w/ Rep
-    a = compositionsIter(v = 40, m = 7, repetition = TRUE, nThreads = 2)
-    b = compositionsGeneral(v = 40, m = 7, repetition = TRUE)
-    expect_true(check_iterators(a, b))
+    a = compositionsIter(v = 31, m = 6, repetition = TRUE, nThreads = 2)
+    b = compositionsGeneral(v = 31, m = 6, repetition = TRUE)
+    expect_true(check_iterators(a, b, parallel_limit = 40000L))
 
     ### Serial
-    a = compositionsIter(v = 40, m = 7, repetition = TRUE)
-    expect_true(check_iterators(a, b))
+    a = compositionsIter(v = 31, m = 6, repetition = TRUE)
+    expect_true(check_iterators(a, b, parallel_limit = 40000L))
 
     rm(a, b)
-    gc()
 
     ## Compositions Distinct
-    a = compositionsIter(v = 60, m = 5, nThreads = 2)
-    b = compositionsGeneral(v = 60, m = 5)
-    expect_true(check_iterators(a, b))
+    a = compositionsIter(v = 49, m = 5, nThreads = 2)
+    b = compositionsGeneral(v = 49, m = 5)
+    expect_true(check_iterators(a, b, parallel_limit = 40000L))
 
     ### Serial
-    a = compositionsIter(v = 60, m = 5)
-    expect_true(check_iterators(a, b))
+    a = compositionsIter(v = 49, m = 5)
+    expect_true(check_iterators(a, b, parallel_limit = 40000L))
 })

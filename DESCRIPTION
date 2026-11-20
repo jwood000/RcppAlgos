@@ -1,5 +1,5 @@
 Package: RcppAlgos
-Version: 2.10.3
+Version: 2.10.4
 Title: High Performance Tools for Combinatorics and Computational Mathematics
 Description: Provides optimized functions and flexible iterators implemented in
     C++ for solving problems in combinatorics and computational mathematics.
@@ -29,7 +29,7 @@ URL: https://jwood000.github.io/RcppAlgos/,
         https://github.com/kimwalisch/primecount, https://ridiculousfish.com/,
         https://sweet.ua.pt/tos/software/prime_sieve.html
 BugReports: https://github.com/jwood000/RcppAlgos/issues
-LinkingTo: cpp11, testthat
+LinkingTo: cpp11
 Imports: gmp, methods
 Suggests:
     testthat,
@@ -39,10 +39,10 @@ Suggests:
     RcppBigIntAlgos,
     rmarkdown,
     prettydoc,
-    covr,
-    xml2
+    covr
 Config/Needs/website:
-    pkgdown
+    pkgdown,
+    xml2
 License: GPL (>=2)
 SystemRequirements: gmp (>= 4.2.3)
 VignetteBuilder: knitr
