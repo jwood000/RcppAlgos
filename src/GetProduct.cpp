@@ -346,7 +346,12 @@ SEXP GetProduct(
             }
         }
 
-        DataFrame.attr("row.names") = {NA_INTEGER, -nRows};
+        if (nRows == 0) {
+            DataFrame.attr("row.names") = cpp11::writable::integers();
+        } else {
+            DataFrame.attr("row.names") = {NA_INTEGER, -nRows};
+        }
+
         DataFrame.names() = RList.names();
         DataFrame.attr("class") = "data.frame";
         return DataFrame;

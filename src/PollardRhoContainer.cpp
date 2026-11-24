@@ -197,14 +197,29 @@ SEXP PollardRhoContainer(SEXP Rv, SEXP RNamed,
         CppConvert::convertVector(Rv, myNums, VecType::Numeric, "v");
     }
 
-    double myMax = *std::max_element(myNums.cbegin(), myNums.cend());
-    double myMin = *std::min_element(myNums.cbegin(), myNums.cend());
-    if (std::abs(myMin) > myMax) myMax = std::abs(myMin);
-
     if (!Rf_isNull(RNumThreads)) {
         CppConvert::convertPrimitive(
             RNumThreads, nThreads, VecType::Integer, "nThreads"
         );
+    }
+
+    if (myNums.empty()) {
+        cpp11::sexp result = Rf_allocVector(
+            (bPrimeFacs || bAllFacs) ? VECSXP : LGLSXP, 0
+        );
+
+        if (IsNamed) {
+            CppConvert::SetNames(result, myNums);
+        }
+
+        return result;
+    }
+
+    double myMax = *std::max_element(myNums.cbegin(), myNums.cend());
+    double myMin = *std::min_element(myNums.cbegin(), myNums.cend());
+
+    if (std::abs(myMin) > myMax) {
+        myMax = std::abs(myMin);
     }
 
     if (myMax > std::numeric_limits<int>::max()) {

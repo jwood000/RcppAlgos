@@ -374,6 +374,10 @@ SEXP CartesianClass::randomAccess(SEXP RindexVec) {
 
 SEXP CartesianClass::front() {
 
+    if (CheckEqSi(IsGmp, computedRowsMpz, computedRows, 0)) {
+        return R_NilValue;
+    }
+
     if (IsGmp) {
         mpzIndex = 1;
         mpzTemp  = 0;
@@ -387,6 +391,10 @@ SEXP CartesianClass::front() {
 }
 
 SEXP CartesianClass::back() {
+
+    if (CheckEqSi(IsGmp, computedRowsMpz, computedRows, 0)) {
+        return R_NilValue;
+    }
 
     if (IsGmp) {
         mpzIndex = computedRowsMpz;

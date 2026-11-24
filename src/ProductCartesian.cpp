@@ -102,7 +102,10 @@ SEXP ExpandGridCpp(
                myType, nThreads, RNumThreads, limit);
 
     std::vector<int> startZ;
-    GetStartProd(lenGrps, startZ, lowerMpz, lower, 0, IsGmp);
+
+    if (numResults > 0) {
+        GetStartProd(lenGrps, startZ, lowerMpz, lower, 0, IsGmp);
+    }
 
     const int maxLen = *std::max_element(lenGrps.begin(), lenGrps.end());
     std::vector<int> mat_idx(maxLen * nCols);

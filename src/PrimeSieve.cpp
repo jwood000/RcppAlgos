@@ -100,9 +100,11 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
             }
 
             cpp11::sexp res = Rf_allocVector(REALSXP, numPrimes);
+            if (numPrimes == 0) return res;
             double* primes = REAL(res);
 
             for (std::size_t i = 0; i < numSects; ++i) {
+                if (primeList[i].empty()) continue;
                 std::copy(primeList[i].cbegin(), primeList[i].cend(),
                           primes + runningCount[i]);
             }
@@ -110,7 +112,10 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
             return res;
         } else {
             cpp11::sexp primes = Rf_allocVector(REALSXP, tempPrimes.size());
-            std::copy(tempPrimes.cbegin(), tempPrimes.cend(), REAL(primes));
+            // Empty R vectors can have a sentinel data pointer (0x1).
+            if (!tempPrimes.empty()) {
+                std::copy(tempPrimes.cbegin(), tempPrimes.cend(), REAL(primes));
+            }
             return primes;
         }
     } else {
@@ -129,9 +134,11 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
             }
 
             cpp11::sexp res = Rf_allocVector(INTSXP, numPrimes);
+            if (numPrimes == 0) return res;
             int* primes = INTEGER(res);
 
             for (std::size_t i = 0; i < numSects; ++i) {
+                if (primeList[i].empty()) continue;
                 std::copy(primeList[i].cbegin(), primeList[i].cend(),
                           primes + runningCount[i]);
             }
@@ -139,7 +146,10 @@ SEXP PrimeSieveCpp(SEXP Rb1, SEXP Rb2, SEXP RNumThreads,
             return res;
         } else {
             cpp11::sexp primes = Rf_allocVector(INTSXP, tempPrimes.size());
-            std::move(tempPrimes.cbegin(), tempPrimes.cend(), INTEGER(primes));
+            // Do not pass the empty-vector sentinel to the copy machinery.
+            if (!tempPrimes.empty()) {
+                std::move(tempPrimes.cbegin(), tempPrimes.cend(), INTEGER(primes));
+            }
             return primes;
         }
     }

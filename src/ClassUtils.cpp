@@ -6,33 +6,23 @@
 void SetIndexVec(SEXP RindexVec, std::vector<double> &mySample,
                  std::size_t &sampSize, bool IsGmp, double computedRows) {
 
-    if (IsGmp) {
-        switch (TYPEOF(RindexVec)) {
-            case RAWSXP: {
-                const char* raw = reinterpret_cast<const char*>(RAW(RindexVec));
-                sampSize = ((int*) raw)[0];
-                break;
-            } default: {
-                sampSize = LENGTH(RindexVec);
-            }
-        }
-    } else {
-        CppConvert::convertVector(RindexVec, mySample, VecType::Numeric,
-                                  "indexVec", false);
-        sampSize = mySample.size();
+    sampSize = GetIndexVecSize(RindexVec, "indexVec");
 
-        double myMax = *std::max_element(mySample.cbegin(), mySample.cend());
+    if (!IsGmp) {
+        CppConvert::convertVector(
+            RindexVec, mySample, VecType::Numeric, "indexVec", false
+        );
+
+        const double myMax =
+            *std::max_element(mySample.cbegin(), mySample.cend());
 
         if (myMax > computedRows) {
-            cpp11::stop("One or more of the requested values exceeds"
-                     " the maximum number of possible results");
+            cpp11::stop(
+                "One or more of the requested values exceeds"
+                " the maximum number of possible results"
+            );
         }
 
-        if (sampSize > std::numeric_limits<int>::max()) {
-            cpp11::stop("The number of rows cannot exceed 2^31 - 1");
-        }
-
-        // Get zero base index
         for (auto &s: mySample) {
             --s;
         }
