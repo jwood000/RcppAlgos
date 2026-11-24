@@ -1,5 +1,30 @@
 # Deferred Investigations
 
+## Distinct-combination offsets for long matrices
+
+Status: Open; static finding, not reproduced end to end
+Discovered during: Distinct-combination performance exploration, November 21, 2026
+
+The raw-pointer and character overloads in
+`inst/include/Combinations/CombinationsDistinct.h` calculate
+`count + j * nRows` entirely in signed `int`. `SetNumResults()` in
+`src/SetUpUtils.cpp` limits the row count to `INT_MAX`, but not the total
+matrix length; `GetCombPerms()` in `src/GetCombPerm.cpp` allocates the matrix
+with those row and column dimensions. For example, full enumeration at
+`n = 30, m = 15` has 155,117,520 rows, and the final column's starting offset
+is 2,171,645,280, exceeding a 32-bit signed `int`.
+
+This is arithmetic/source evidence, not a completed large-allocation or
+sanitizer reproduction. The parallel `RMatrix` accessor uses `std::size_t`
+offsets. Investigate the serial indexing and a bounded regression approach
+separately from performance work; no fix is included here.
+
+The deferred records and GitHub issues were searched for `overflow`.
+[Closed issue #38](https://github.com/jwood000/RcppAlgos/issues/38) records
+the analogous character-permutation failure. This note concerns the current
+distinct-combination overloads; it does not change that issue's status.
+No new GitHub issue was opened.
+
 ## Unsafe floating-point to integer conversions
 
 Status: Resolved; reviewed by the maintainer and merged into `main`
