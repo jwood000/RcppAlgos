@@ -208,10 +208,11 @@ Windows checks were not run.
 
 ### Package floating-conversion and mapping checks
 
-The numeric regressions in `tests/testthat/testNumericConstraints.R` should also
-run against a package built with UBSan, including `float-cast-overflow`. Ordinary
-R output does not expose an unsafe cast or signed overflow reliably. Use the
-isolated source snapshot and library described above; preserve any existing user
+Run the numeric regressions and the prime-sieve R boundary tests against a
+package built with UBSan, including `float-cast-overflow`. Ordinary R results
+can remain correct despite undefined behavior, and passing testthat assertions
+do not establish that a run had no sanitizer diagnostics. Use the isolated
+source snapshot and library described above; preserve any existing user
 Makevars settings in the temporary file before appending these flags:
 
 ```make
@@ -230,8 +231,9 @@ library(RcppAlgos, lib.loc = args[1])
 stopifnot(startsWith(normalizePath(getLoadedDLLs()[["RcppAlgos"]][["path"]]),
                     paste0(normalizePath(args[1]), "/")))
 files <- c("testGmpConvert.R", "testNumericConstraints.R", "testZeroPartitions.R",
-           "testIsPrimeRcpp.R", "testPrimeFactorize.R", "testDivisorsRcpp.R",
-           "testPartitionsDesign.R", "testPartitionTypeRefactor.R")
+           "testPrimeSieve.R", "testIsPrimeRcpp.R", "testPrimeFactorize.R",
+           "testDivisorsRcpp.R", "testPartitionsDesign.R",
+           "testPartitionTypeRefactor.R")
 for (file in files) {
     testthat::test_file(file.path(args[2], "tests/testthat", file),
                        reporter = "summary", stop_on_failure = TRUE,
@@ -240,10 +242,56 @@ for (file in files) {
 RS
 ```
 
-This configuration was verified with Apple Clang 17 and R 4.6.1 on macOS arm64.
-The sanitizer runtime linked and loaded without preloading. Do not substitute
-an ordinary installed package for the instrumented library. Changes to shared
-input preparation also warrant the full package test suite.
+The original configuration was verified with Apple Clang 17 and R 4.6.1 on
+macOS arm64; its focused file list did not include `testPrimeSieve.R`. The
+sanitizer runtime linked and loaded without preloading. Do not substitute an
+ordinary installed package for the instrumented library.
+
+Before release, and after changes to shared input preparation, run the complete
+R suite against that instrumented library in a fresh process:
+
+```sh
+UBSAN_OPTIONS=halt_on_error=1 Rscript --vanilla - \
+    "$package_library" "$package_source" <<'RS'
+args <- commandArgs(TRUE)
+package_library <- normalizePath(args[1])
+.libPaths(c(package_library, .libPaths()))
+library(RcppAlgos)
+stopifnot(startsWith(normalizePath(getLoadedDLLs()[["RcppAlgos"]][["path"]]),
+                    paste0(package_library, "/")))
+set.seed(104729)
+testthat::test_dir(file.path(args[2], "tests/testthat"), reporter = "summary",
+                   package = "RcppAlgos", load_package = "installed",
+                   stop_on_failure = TRUE)
+RS
+```
+
+Retain the install and test output, including stderr, with the tested source
+revision or hashes, R version, architecture, compiler version, standard library
+and sanitizer flags. Inspect the actual compilation commands to verify that
+the intended compiler and flags were used. A clean run establishes evidence
+for that configuration: when investigating a CRAN sanitizer report, also use
+the reported compiler and standard-library combination, or the closest
+available newer Clang/libc++ pair, and record any remaining differences.
+
+The November 23 CRAN report illustrates why the standard library matters.
+The serial prime-sieve wrapper passed the data pointer of a zero-length R
+vector to `std::copy` or `std::move`. On this R 4.6.1 host, both `INTEGER()`
+and `REAL()` returned the sentinel address `0x1` for those empty vectors;
+that address is not aligned for either element type. The local Apple libc++
+implementation skipped its memory operation when the element count was zero.
+The inspected LLVM 23 libc++ implementation instead reaches
+`__builtin_memmove` for that case, exposing the pointer to UBSan checks even
+though no elements need copying. Empty results must return before obtaining
+and passing the data pointer; empty parallel sections must also skip copying.
+An ordinary result assertion can pass on both implementations.
+
+Keep the empty integer and double generation cases in `testPrimeSieve.R` in
+the package sanitizer run. The standalone sieve fixtures use native vectors
+and do not execute the R allocation and result-copy boundary. A newer Clang
+executable alone does not select newer libc++ headers or libraries: check all
+three when reproducing this report. Matching a local newer Clang/libc++ pair
+still does not reproduce CRAN's Linux architecture and R-devel build exactly.
 
 The numeric regressions cover native mapping and its range errors, including
 widths 1024/1025 with source values below `2^53`, `INT64_MIN` source values,
@@ -268,6 +316,159 @@ upper-bound guard directly; R-facing calls route large inputs to GMP before
 reaching that guard. Native
 modular products rely on nonnegative residues below a modulus at most `INT_MAX`,
 so their product is below `2^62` and needs no floating-point chunking fallback.
+
+#### Reproducing the empty-result report with newer libc++
+
+The November 23 reproduction used Homebrew LLVM 23.1.5, libc++ version 230105,
+R 4.6.1 and macOS arm64. These commands assume that LLVM installation and do
+not change the default toolchain. In the temporary Makevars file, retain
+required local include/library settings, then use the following compiler and
+sanitizer settings instead of the generic flags above:
+
+```make
+LLVM_ROOT = /opt/homebrew/opt/llvm
+CXX = $(LLVM_ROOT)/bin/clang++ -arch arm64 -std=gnu++20 -stdlib=libc++ -nostdinc++ -isystem $(LLVM_ROOT)/include/c++/v1 -D_LIBCPP_DISABLE_AVAILABILITY
+CXXFLAGS = -O1 -g -Wall -pedantic
+PKG_CXXFLAGS += -fsanitize=undefined,float-cast-overflow -fno-sanitize-recover=all -fno-omit-frame-pointer
+PKG_LIBS += -fsanitize=undefined,float-cast-overflow -fno-sanitize-recover=all -L$(LLVM_ROOT)/lib/c++ -Wl,-rpath,$(LLVM_ROOT)/lib/c++
+```
+
+This example matches that host's `R CMD config CXX`, including its selected
+GNU++20 mode; it does not change the package's required C++ standard. Adapt the
+compiler variable, architecture and paths to the actual R configuration.
+`-nostdinc++` plus the explicit include path selects the newer headers, and the
+linker path/rpath selects the accompanying library. The availability define
+permits this independently supplied libc++ on macOS. Use the isolated install
+command above, then inspect the installed library's dependencies:
+
+```sh
+/opt/homebrew/opt/llvm/bin/clang++ --version
+R CMD config CXX
+otool -L "$package_library/RcppAlgos/libs/RcppAlgos.so"
+```
+
+The recorded build linked `/opt/homebrew/opt/llvm/lib/c++/libc++.1.dylib` and
+LLVM 23's UBSan runtime. Run each empty-result probe in its own R process so
+one expected baseline abort does not hide the other cases:
+
+```sh
+for probe in \
+    'primeSieve(14, 16, nThreads = 1L)' \
+    'primeSieve(2147483648, 2147483649, nThreads = 1L)' \
+    'primeSieve(31625, 31626, nThreads = 1L)' \
+    'primeSieve(4295098368, 4295098389, nThreads = 1L)'
+do
+    if UBSAN_OPTIONS=halt_on_error=1 Rscript --vanilla - \
+        "$package_library" "$probe" <<'RS'
+args <- commandArgs(TRUE)
+package_library <- normalizePath(args[1])
+library(RcppAlgos, lib.loc = package_library)
+stopifnot(startsWith(normalizePath(getLoadedDLLs()[["RcppAlgos"]][["path"]]),
+                    paste0(package_library, "/")))
+print(eval(parse(text = args[2])))
+RS
+    then
+        printf 'Completed: %s\n' "$probe"
+    else
+        printf 'Failed (inspect the diagnostic): %s\n' "$probe"
+    fi
+done
+```
+
+All four probes with the unpatched `PrimeSieve.cpp` from `bb357654` reproduced
+the CRAN diagnostic and terminated with SIGABRT: libc++'s
+`constexpr_c_functions.h:227:25` reported a store to misaligned address `0x1`
+for `int *` or `double *`. The latter two probes also occur in the existing
+prime-sieve tests. With the empty-result guards, all four probes exited
+successfully without sanitizer diagnostics. The source snapshots share the
+new regression tests; only the baseline production source is unchanged from
+`bb357654`. Logs, source hashes, the temporary Makevars and `toolchain.json`
+are under `/tmp/rcppalgos-empty-copy-clang23-JxRVtW`.
+
+The complete fixed UBSan R suite finished in 135.86 seconds with 5,673 passing
+expectations, no failures, errors, warnings or sanitizer diagnostics, and the
+one existing unsupported-multiset-composition skip. The reporting script
+subsequently failed while exporting a list column to CSV, after printing the
+test summary. The complete text log is retained; the exporter was corrected
+to omit list columns. This is a completed test suite, not a clean exit of that
+original reporting command.
+
+Both builds emitted the same GMP-header literal-operator deprecation warnings
+and a constant integer-to-double conversion warning in `SetUpUtils.cpp`.
+The R runtime and dependencies were not rebuilt with sanitizers. This was not
+a full `R CMD check` or a run on CRAN's Linux/R-devel configuration.
+
+#### Repeating the comparison with Docker
+
+[R-hub's `clang-ubsan` image](https://r-hub.github.io/containers/) supplies
+R-devel, Clang, libc++ and UBSan configuration. Its `latest` tag changes;
+retain the image digest and inspect `R CMD config CXX` for the actual compiler,
+`-stdlib=libc++` and sanitizer flags. On Apple Silicon, use `linux/amd64` for
+the x86_64 comparison; emulation is slower than the native macOS run above.
+These instructions follow the [R-hub local workflow](https://r-hub.github.io/containers/local.html).
+They were syntax-checked, but this Docker run has not been executed locally.
+
+With Docker Desktop running, prepare two source copies from the repository
+root. Both use the same baseline; the second receives the wrapper fix and its
+regressions from the working tree. No checkout or installed host package changes:
+
+```sh
+docker_checks=$(mktemp -d /tmp/rcppalgos-docker-XXXXXX)
+mkdir "$docker_checks/baseline" "$docker_checks/fixed"
+git archive bb357654 | tar -xf - -C "$docker_checks/baseline"
+cp -R "$docker_checks/baseline/." "$docker_checks/fixed/"
+cp src/PrimeSieve.cpp "$docker_checks/fixed/src/PrimeSieve.cpp"
+cp tests/testthat/testPrimeSieve.R "$docker_checks/fixed/tests/testthat/testPrimeSieve.R"
+docker pull --platform linux/amd64 ghcr.io/r-hub/containers/clang-ubsan:latest
+docker image inspect --format '{{json .RepoDigests}}' \
+    ghcr.io/r-hub/containers/clang-ubsan:latest > "$docker_checks/image-digest.txt"
+docker run --rm -it --platform linux/amd64 --cpus=2 \
+    --mount "type=bind,source=$docker_checks,target=/check" \
+    ghcr.io/r-hub/containers/clang-ubsan:latest bash
+```
+
+Inside the container, install dependencies, build the unpatched package, and
+run the two empty-result cases in separate R processes. Each should report
+the misaligned `0x1` diagnostic; inspect the logs rather than treating an
+arbitrary nonzero exit as reproduction. The interactive shell stays open:
+
+```sh
+R --version > /check/R-version.txt
+R CMD config --all > /check/R-config.txt
+R CMD config CXX
+R -q -e 'pak::pkg_install("deps::/check/fixed", dependencies = TRUE, ask = FALSE)'
+mkdir /check/lib-baseline /check/lib-fixed
+export UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1
+MAKEFLAGS=-j2 R CMD INSTALL --preclean --no-multiarch \
+    --library=/check/lib-baseline /check/baseline > /check/baseline-build.log 2>&1
+Rscript --vanilla -e 'library(RcppAlgos, lib.loc="/check/lib-baseline"); primeSieve(14, 16, nThreads=1L)' \
+    > /check/baseline-integer.log 2>&1
+Rscript --vanilla -e 'library(RcppAlgos, lib.loc="/check/lib-baseline"); primeSieve(2147483648, 2147483649, nThreads=1L)' \
+    > /check/baseline-double.log 2>&1
+```
+
+Then build the fixed source and run the full R suite, including the four new
+empty/neighboring-result assertions. The following command must succeed and
+the log must contain no sanitizer diagnostics:
+
+```sh
+MAKEFLAGS=-j2 R CMD INSTALL --preclean --no-multiarch \
+    --library=/check/lib-fixed /check/fixed > /check/fixed-build.log 2>&1
+Rscript --vanilla - > /check/fixed-tests.log 2>&1 <<'RS'
+.libPaths(c("/check/lib-fixed", .libPaths()))
+library(RcppAlgos)
+stopifnot(startsWith(normalizePath(getLoadedDLLs()[["RcppAlgos"]][["path"]]),
+                    "/check/lib-fixed/"))
+set.seed(104729)
+testthat::test_dir("/check/fixed/tests/testthat", reporter = "summary",
+                   package = "RcppAlgos", load_package = "installed",
+                   stop_on_failure = TRUE)
+RS
+```
+
+All logs remain in the host directory printed by `echo "$docker_checks"`
+after leaving the container. A clean result here validates this image's
+configuration; it does not establish an exact match to CRAN's Fedora build.
 
 ### Standalone native fixtures
 
