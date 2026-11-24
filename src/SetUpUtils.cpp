@@ -236,9 +236,14 @@ void SetBasic(SEXP Rv, SEXP RFreqs, std::vector<double> &vNum,
         vNum[0] = REAL(Rv)[0];
         n = 1;
     } else if (myType == VecType::Logical) {
-        int* intVec = INTEGER(Rv);
         n = Rf_length(Rv);
-        vInt.assign(intVec, intVec + n);
+
+        if (n > 0) {
+            const int* intVec = LOGICAL(Rv);
+            vInt.assign(intVec, intVec + n);
+        } else {
+            vInt.clear();
+        }
     } else if (!Rf_isNull(RFreqs) &&
                Rf_length(Rv) == 1 &&
                Rf_length(RFreqs) == 1) {
@@ -590,6 +595,44 @@ void SetStartZ(const std::vector<int> &myReps,
     }
 }
 
+int GetIndexVecSize(SEXP input, const char* name) {
+    R_xlen_t size = Rf_xlength(input);
+
+    if (TYPEOF(input) == RAWSXP) {
+        int count = 0;
+        const R_xlen_t wordBytes = sizeof(count);
+
+        if (size < wordBytes) {
+            cpp11::stop("%s has an invalid bigz header", name);
+        }
+
+        std::memcpy(&count, RAW(input), sizeof(count));
+
+        if (count < 0) {
+            cpp11::stop("%s has an invalid bigz header", name);
+        }
+
+        // Every encoded element requires at least its word-count integer.
+        const R_xlen_t remainingBytes = size - wordBytes;
+
+        if (static_cast<R_xlen_t>(count) > remainingBytes / wordBytes) {
+            cpp11::stop("%s has an invalid bigz payload", name);
+        }
+
+        size = count;
+    }
+
+    if (size == 0) {
+        cpp11::stop("%s must contain at least one index", name);
+    }
+
+    if (size > std::numeric_limits<int>::max()) {
+        cpp11::stop("The number of rows cannot exceed 2^31 - 1");
+    }
+
+    return static_cast<int>(size);
+}
+
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      bool IsGmp, double computedRows,
                      std::vector<double> &mySample,
@@ -633,34 +676,22 @@ void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
             }
         }
     } else {
-        if (IsGmp) {
-            switch (TYPEOF(RindexVec)) {
-                case RAWSXP: {
-                    const char* raw = reinterpret_cast<const char*>(
-                        RAW(RindexVec)
-                    );
-                    sampSize = ((int*) raw)[0];
-                    break;
-                } default: {
-                    sampSize = LENGTH(RindexVec);
-                }
-            }
-        } else {
-            CppConvert::convertVector(RindexVec, mySample,
-                                      VecType::Numeric,
-                                      "sampleVec", false);
-            sampSize = mySample.size();
-            const double myMax = *std::max_element(mySample.cbegin(),
-                                                   mySample.cend());
+        sampSize = GetIndexVecSize(RindexVec, "sampleVec");
+
+        if (!IsGmp) {
+            CppConvert::convertVector(
+                RindexVec, mySample, VecType::Numeric, "sampleVec", false
+            );
+
+            const double myMax =
+                *std::max_element(mySample.cbegin(), mySample.cend());
 
             if (myMax > computedRows) {
-                cpp11::stop("One or more of the requested values in sampleVec "
-                         "exceeds the maximum number of possible results");
+                cpp11::stop(
+                    "One or more of the requested values in sampleVec "
+                    "exceeds the maximum number of possible results"
+                );
             }
-        }
-
-        if (sampSize > std::numeric_limits<int>::max()) {
-            cpp11::stop("The number of rows cannot exceed 2^31 - 1");
         }
     }
 

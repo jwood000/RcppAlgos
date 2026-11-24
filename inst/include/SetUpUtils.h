@@ -57,6 +57,8 @@ void PermuteSpecific(int &phaseOne, bool &generalRet, int n, int m,
                      int nRows, bool IsMult, bool IsCharacter,
                      bool IsComb, bool bLower, bool IsRep);
 
+int GetIndexVecSize(SEXP input, const char* name);
+
 void SetRandomSample(SEXP RindexVec, SEXP RNumSamp, int &sampSize,
                      bool IsGmp, double computedRows,
                      std::vector<double> &mySample,
