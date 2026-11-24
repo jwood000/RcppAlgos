@@ -1,7 +1,20 @@
 \name{NEWS}
 \title{News for Package \pkg{RcppAlgos}}
 
-\section{Changes in RcppAlgos version 2.10.4}{
+\section{Changes in RcppAlgos version 2.10.5}{
+
+    \subsection{Bug Fixes}{
+        \itemize{
+          \item Fixed undefined behavior in \code{primeSieve()} for intervals containing no primes (\href{https://github.com/jwood000/RcppAlgos/issues/93}{Issue #93}).
+          \item Fixed empty-input handling in \code{primeFactorize()}, \code{divisorsRcpp()}, \code{isPrimeRcpp()}, \code{expandGrid()}, and \code{expandGridIter()}.
+          \item Empty sampling and iterator index vectors now produce clear errors.
+          \item Fixed validation of combination and permutation widths for empty logical inputs.
+          \item Fixed \code{bigz} decoding and prevented unsafe memory access from malformed inputs.
+        }
+    }
+}
+
+\section{Changes in RcppAlgos version 2.10.4 (Release date: 2026-11-23)}{
 
     Includes the changes listed under unreleased version 2.10.3, with further reductions in package build and check overhead.
 
