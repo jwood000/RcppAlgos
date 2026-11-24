@@ -5,6 +5,67 @@
 
 namespace CppConvert {
 
+    void RawDecoder(const char* raw, R_xlen_t byteLength, R_xlen_t &pos,
+                    const std::string &nameOfObject,
+                    const std::string &label,
+                    mpz_class &result, bool negPoss) {
+
+        const R_xlen_t wordBytes = sizeof(int);
+
+        // Read one metadata integer and advance past it.
+        const auto readInt = [&]() -> int {
+            if (pos < 0 || pos > byteLength ||
+                wordBytes > byteLength - pos) {
+                cpp11::stop("%s has an invalid bigz payload",
+                            nameOfObject.c_str());
+            }
+
+            int value;
+            std::memcpy(&value, raw + pos, sizeof(value));
+            pos += wordBytes;
+            return value;
+        };
+
+        const int wordCount = readInt();
+
+        // An NA record has only its word-count marker: no sign or magnitude.
+        if (wordCount <= 0) {
+            cpp11::stop("%s cannot be NA or NaN", label.c_str());
+        }
+
+        const int sign = readInt();
+
+        if (sign < -1 || sign > 1) {
+            cpp11::stop("%s has an invalid bigz payload",
+                        nameOfObject.c_str());
+        }
+
+        // pos now points to the first magnitude byte.
+        const R_xlen_t words = wordCount;
+
+        if (words > (byteLength - pos) / wordBytes) {
+            cpp11::stop("%s has an invalid bigz payload",
+                        nameOfObject.c_str());
+        }
+
+        mpz_import(result.get_mpz_t(),
+                   static_cast<std::size_t>(words),
+                   1, sizeof(int), 0, 0, raw + pos);
+
+        pos += words * wordBytes;
+
+        // Preserve the existing negative-value and zero checks.
+        if (sign == -1) {
+            if (!negPoss) {
+                cpp11::stop("%s must be a positive number", label.c_str());
+            }
+
+            mpz_neg(result.get_mpz_t(), result.get_mpz_t());
+        } else if (!negPoss && mpz_sgn(result.get_mpz_t()) == 0) {
+            cpp11::stop("%s must be a positive number", label.c_str());
+        }
+    }
+
     void convertMPZVector(SEXP input, std::vector<mpz_class> &myVec,
                           std::size_t vecSize, const std::string &nameOfObject,
                           bool negPoss) {
@@ -16,45 +77,29 @@ namespace CppConvert {
 
         switch (TYPEOF(input)) {
             case RAWSXP: {
-                // deserialise the vector. first int is the size.
+                const R_xlen_t byteLength = Rf_xlength(input);
+                const R_xlen_t wordBytes = sizeof(int);
+
+                if (byteLength < wordBytes) {
+                    cpp11::stop("%s has an invalid bigz header",
+                                nameOfObject.c_str());
+                }
+
                 const char* raw = reinterpret_cast<const char*>(RAW(input));
-                const std::size_t numb = 8 * intSize;
-                int pos = intSize; // position in raw[]. Starting after header.
+
+                int count;
+                std::memcpy(&count, raw, sizeof(count));
+
+                if (count < 0 || static_cast<std::size_t>(count) != vecSize) {
+                    cpp11::stop("%s has an invalid bigz header",
+                                nameOfObject.c_str());
+                }
+
+                R_xlen_t pos = wordBytes; // Start immediately after the vector header.
 
                 for (std::size_t i = 0; i < vecSize; ++i) {
-                    const int* r = (int*) (&raw[pos]);
-
-                    if (r[0] > 0) {
-                        const void* src = &(r[2]);
-                        mpz_import(
-                            myVec[i].get_mpz_t(), r[0], 1, intSize, 0, 0, src
-                        );
-
-                        if(r[1] == -1) {
-                            if (negPoss) {
-                                mpz_neg(
-                                    myVec[i].get_mpz_t(), myVec[i].get_mpz_t()
-                                );
-                            } else {
-                                myError = suffix + " must be a positive number";
-                                foundError = true;
-                                break;
-                            }
-                        } else if (!negPoss &&
-                                   mpz_sgn(myVec[i].get_mpz_t()) == 0) {
-                            myError = suffix + " must be a positive number";
-                            foundError = true;
-                            break;
-                        }
-                    } else {
-                        myError = suffix + " cannot be NA or NaN";
-                        foundError = true;
-                        break;
-                    }
-
-                    pos += intSize * (2 + (
-                        mpz_sizeinbase(myVec[i].get_mpz_t(), 2) + numb - 1
-                    ) / numb);
+                    RawDecoder(raw, byteLength, pos,
+                               nameOfObject, suffix, myVec[i], negPoss);
                 }
 
                 break;
@@ -163,39 +208,27 @@ namespace CppConvert {
 
         switch (TYPEOF(input)) {
             case RAWSXP: {
-                // de-serialize the vector. first int is the size.
-                const char* raw = (char*) RAW(input);
-                const int* r = (int*) (&raw[intSize]);
-                const int len = ((int*) raw)[0];
+                const R_xlen_t byteLength = Rf_xlength(input);
+                const R_xlen_t wordBytes = sizeof(int);
 
-                if (len > 1) {
-                    myError = nameOfObject + " must be of length 1";
-                    foundError = true;
-                    break;
+                if (byteLength < wordBytes) {
+                    cpp11::stop("%s has an invalid bigz header",
+                                nameOfObject.c_str());
                 }
 
-                if (r[0] > 0) {
-                    mpz_import(result.get_mpz_t(), r[0], 1,
-                               intSize, 0, 0, (void*) & (r[2]));
+                const char* raw = reinterpret_cast<const char*>(RAW(input));
 
-                    if(r[1] == -1) {
-                        if (negPoss) {
-                            mpz_neg(result.get_mpz_t(), result.get_mpz_t());
-                        } else {
-                            myError = nameOfObject + " must be a positive number";
-                            foundError = true;
-                            break;
-                        }
-                    } else if (!negPoss && mpz_sgn(result.get_mpz_t()) == 0) {
-                        myError = nameOfObject + " must be a positive number";
-                        foundError = true;
-                        break;
-                    }
-                } else {
-                    myError = nameOfObject + " cannot be NA or NaN";
-                    foundError = true;
-                    break;
+                int count;
+                std::memcpy(&count, raw, sizeof(count));
+
+                if (count != 1) {
+                    cpp11::stop("%s must be of length 1", nameOfObject.c_str());
                 }
+
+                R_xlen_t pos = wordBytes;
+
+                RawDecoder(raw, byteLength, pos,
+                           nameOfObject, nameOfObject, result, negPoss);
 
                 break;
             } case REALSXP: {

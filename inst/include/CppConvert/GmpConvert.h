@@ -4,6 +4,7 @@
 
 #include "Constants.h"
 #include <gmpxx.h>
+#include <cstring>
 #include <vector>
 #include <string>
 

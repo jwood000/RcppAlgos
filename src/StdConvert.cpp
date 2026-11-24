@@ -207,10 +207,30 @@ namespace CppConvert {
                                 nameOfObject.c_str());
                 }
 
-                const char* raw = reinterpret_cast<const char*>(RAW(input));
-                total = ((int*) raw)[0];
-                // do not put a break here. Fall to
-                // the next case for complete conversion
+                const R_xlen_t byteLength = Rf_xlength(input);
+                const R_xlen_t wordBytes = sizeof(int);
+
+                if (byteLength < wordBytes) {
+                    cpp11::stop("%s has an invalid bigz header",
+                                nameOfObject.c_str());
+                }
+
+                std::memcpy(&total, RAW(input), sizeof(total));
+
+                if (total < 0) {
+                    cpp11::stop("%s has an invalid bigz header",
+                                nameOfObject.c_str());
+                }
+
+                // Every encoded element requires at least its word-count integer.
+                const R_xlen_t remainingBytes = byteLength - wordBytes;
+
+                if (static_cast<R_xlen_t>(total) > remainingBytes / wordBytes) {
+                    cpp11::stop("%s has an invalid bigz payload",
+                                nameOfObject.c_str());
+                }
+
+                // Intentionally fall through to STRSXP for complete conversion.
             } case STRSXP: {
                 if (numOnly) {
                     cpp11::stop("%s must be of type numeric or integer",
