@@ -5,6 +5,155 @@ context("testing errors in all functions")
 ## to test, we simply remove this one file instead of tediously
 ## commenting out every error check in every test file.
 
+test_that("empty logical inputs reach width validation safely", {
+    # SetBasic must not copy from empty logical storage before checking m > n.
+    for (fun in list(comboGeneral, permuteGeneral, comboCount, permuteCount,
+                     comboIter, permuteIter)) {
+        expect_error(fun(logical(0), m = 1L),
+                     "m must be less than or equal to the length of v")
+    }
+})
+
+test_that("empty number-theory inputs still validate thread requests", {
+    for (fun in list(primeFactorize, divisorsRcpp, isPrimeRcpp)) {
+        for (threads in list(0L, NA_integer_)) {
+            expect_error(fun(numeric(0), nThreads = threads), "nThreads")
+        }
+    }
+})
+
+test_that("sampling and indexing reject empty vectors and invalid raw headers", {
+    inputs <- list(
+        list(values = list(integer(0), numeric(0), logical(0), character(0),
+                           gmp::as.bigz(integer(0))),
+             message = " must contain at least one index"),
+        list(values = c(lapply(0:3, raw),
+                        list(writeBin(-1L, raw(), size = 4L))),
+             message = " has an invalid bigz header")
+    )
+    # The first count uses native indices; the second requires GMP in both
+    # helpers. A valid empty bigz has a full header encoding zero elements.
+    cases <- list(
+        list(v = 5L, m = 3L, current = c(1L, 2L, 5L),
+             following = c(1L, 3L, 4L)),
+        list(v = 100L, m = 20L, current = c(1:19, 22L),
+             following = c(1:19, 23L))
+    )
+
+    for (case in cases) {
+        iterator <- comboIter(case$v, case$m)
+        # Start inside the result space so an unintended reset is observable.
+        expect_identical(iterator[[3L]], case$current)
+        before <- iterator@summary()$currentIndex
+
+        for (group in inputs) {
+            for (indices in group$values) {
+                expect_error(comboSample(case$v, case$m, sampleVec = indices),
+                             paste0("sampleVec", group$message))
+                expect_error(iterator[[indices]],
+                             paste0("indexVec", group$message))
+                expect_identical(iterator@summary()$currentIndex, before)
+                expect_identical(iterator@currIter(), case$current)
+            }
+        }
+
+        # Rejected requests must preserve traversal as well as the position.
+        expect_identical(iterator@nextIter(), case$following)
+        expect_identical(iterator[[gmp::as.bigz(3L)]], case$current)
+        expected <- unname(rbind(case$current, case$following))
+        expect_identical(
+            comboSample(case$v, case$m, sampleVec = gmp::as.bigz(3:4)),
+            expected
+        )
+    }
+})
+
+test_that("bigz payload errors preserve sampling and iterator behavior", {
+    # Retain the positive vector count while truncating every part of the
+    # first and second records. Manipulate raw bytes, not bigz elements.
+    bytes <- unclass(gmp::as.bigz(3:4))
+    truncated <- lapply(4L:(length(bytes) - 1L),
+                        function(n) bytes[seq_len(n)])
+    multiword <- unclass(gmp::as.bigz("4294967296"))
+    # Complete magnitudes isolate invalid signs in the first or later record.
+    invalidSigns <- lapply(c(-2L, 2L), function(sign) {
+        writeBin(c(1L, 1L, sign, 1L), raw(), size = 4L)
+    })
+    invalidLaterSigns <- lapply(c(-2L, 2L), function(sign) {
+        writeBin(c(2L, 1L, 1L, 3L, 1L, sign, 4L), raw(), size = 4L)
+    })
+    inputs <- list(
+        list(values = c(truncated, invalidSigns, invalidLaterSigns, list(
+            multiword[-length(multiword)],
+            writeBin(.Machine$integer.max, raw(), size = 4L),
+            writeBin(c(.Machine$integer.max, 1L), raw(), size = 4L),
+            writeBin(c(1L, .Machine$integer.max, 1L, 1L), raw(), size = 4L)
+        )), message = "has an invalid bigz payload"),
+        # An NA record has no sign or magnitude; retain the existing error.
+        list(values = list(gmp::as.bigz(c(NA_integer_, 1L)),
+                           gmp::as.bigz(c(1L, NA_integer_))),
+             message = "cannot be NA or NaN"),
+        # Valid sign codes -1 and 0 still reach the positive-index check.
+        list(values = list(gmp::as.bigz(-1L), gmp::as.bigz(0L)),
+             message = "must be a positive number")
+    )
+
+    for (case in list(c(5L, 3L), c(100L, 20L))) {
+        expected <- comboGeneral(case[1], case[2], lower = 3L, upper = 4L)
+        iterator <- comboIter(case[1], case[2])
+        expect_identical(iterator[[3L]], expected[1L, ])
+        before <- iterator@summary()$currentIndex
+
+        for (group in inputs) {
+            for (indices in group$values) {
+                expect_error(comboSample(case[1], case[2], sampleVec = indices),
+                             group$message)
+                expect_error(iterator[[indices]], group$message)
+                expect_identical(iterator@summary()$currentIndex, before)
+                expect_identical(iterator@currIter(), expected[1L, ])
+            }
+        }
+
+        expect_identical(iterator@nextIter(), expected[2L, ])
+        expect_identical(iterator[[gmp::as.bigz(3L)]], expected[1L, ])
+    }
+})
+
+test_that("scalar bigz bounds reject malformed encodings", {
+    bytes <- unclass(gmp::as.bigz(1L))
+    invalidSigns <- lapply(c(-2L, 2L), function(sign) {
+        writeBin(c(1L, 1L, sign, 1L), raw(), size = 4L)
+    })
+    inputs <- list(
+        list(values = lapply(0:3, raw),
+             message = "has an invalid bigz header"),
+        list(values = c(lapply(4L:(length(bytes) - 1L),
+                              function(n) bytes[seq_len(n)]), invalidSigns, list(
+            writeBin(c(1L, .Machine$integer.max, 1L, 1L), raw(), size = 4L)
+        )), message = "has an invalid bigz payload"),
+        list(values = list(gmp::as.bigz(integer()), gmp::as.bigz(1:2),
+                           writeBin(-1L, raw(), size = 4L),
+                           writeBin(.Machine$integer.max, raw(), size = 4L)),
+             message = "must be of length 1"),
+        list(values = list(gmp::as.bigz(NA_integer_)),
+             message = "cannot be NA or NaN"),
+        list(values = list(gmp::as.bigz(-1L), gmp::as.bigz(0L)),
+             message = "must be a positive number")
+    )
+
+    # Native counts convert through StdConvert; GMP counts decode directly.
+    for (case in list(c(5L, 3L), c(100L, 20L))) {
+        for (group in inputs) {
+            for (bound in group$values) {
+                expect_error(comboGeneral(case[1], case[2], lower = bound,
+                                          upper = 2L), group$message)
+                expect_error(comboGeneral(case[1], case[2], upper = bound),
+                             group$message)
+            }
+        }
+    }
+})
+
 test_that("comboGeneral produces appropriate error messages", {
     expect_error(comboGeneral(9,4,TRUE,NULL,NULL,NULL,"summ","<",10),
                  "'prod', 'sum', 'mean', 'max', or 'min'")

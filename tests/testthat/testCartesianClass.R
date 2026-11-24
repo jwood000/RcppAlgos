@@ -1,5 +1,47 @@
 context("testing expandGridIter")
 
+test_that("empty Cartesian endpoints leave the iterator position unchanged", {
+    cases <- list(list(a = integer(0), b = 1:2),
+                  list(a = 1:2, b = character(0)))
+
+    for (pools in cases) {
+        iterator <- expandGridIter(pools)
+        expect_equal(iterator@summary()$totalResults, 0)
+
+        checkEndpoints <- function() {
+            before <- iterator@summary()$currentIndex
+            expect_null(iterator@front())
+            expect_identical(iterator@summary()$currentIndex, before)
+            expect_null(iterator@back())
+            expect_identical(iterator@summary()$currentIndex, before)
+        }
+
+        checkEndpoints()
+        invisible(capture.output(result <- iterator@nextIter()))
+        expect_null(result)
+        checkEndpoints()
+        iterator@startOver()
+        checkEndpoints()
+    }
+})
+
+test_that("Cartesian endpoints remain available for native and GMP counts", {
+    # GMP iterators store zero in the unused native count field.
+    for (width in c(2L, 54L)) {
+        pools <- setNames(rep(list(0:1), width), paste0("x", seq_len(width)))
+        iterator <- expandGridIter(pools)
+
+        expect_identical(iterator@front(), setNames(rep(0L, width), names(pools)))
+        expect_identical(iterator@back(), setNames(rep(1L, width), names(pools)))
+        expect_identical(as.character(iterator@summary()$currentIndex),
+                         as.character(gmp::as.bigz(2)^width))
+
+        invisible(capture.output(iterator@nextIter()))
+        expect_identical(iterator@front(), setNames(rep(0L, width), names(pools)))
+        expect_identical(as.character(iterator@summary()$currentIndex), "1")
+    }
+})
+
 test_that("expandGridIter produces correct results", {
 
     CartesianClassTest <- function(lst) {

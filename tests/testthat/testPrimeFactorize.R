@@ -1,5 +1,15 @@
 context("testing primeFactorize")
 
+test_that("primeFactorize preserves empty result types and names", {
+    for (v in list(integer(0), numeric(0), logical(0))) {
+        expect_identical(primeFactorize(v), list())
+        expect_identical(primeFactorize(v, namedList = TRUE),
+                         structure(list(), names = character(0)))
+    }
+
+    expect_identical(primeFactorize(numeric(0), nThreads = 2L), list())
+})
+
 test_that("primeFactorize generates correct numbers", {
     options(scipen = 50)
     expect_equal(primeFactorize(100), c(2, 2, 5, 5))

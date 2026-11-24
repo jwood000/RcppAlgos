@@ -1,5 +1,15 @@
 context("testing divisorsRcpp")
 
+test_that("divisorsRcpp preserves empty result types and names", {
+    for (v in list(integer(0), numeric(0), logical(0))) {
+        expect_identical(divisorsRcpp(v), list())
+        expect_identical(divisorsRcpp(v, namedList = TRUE),
+                         structure(list(), names = character(0)))
+    }
+
+    expect_identical(divisorsRcpp(numeric(0), nThreads = 2L), list())
+})
+
 test_that("divisorsRcpp generates correct numbers", {
     options(scipen = 50)
     expect_equal(divisorsRcpp(0), numeric(0))

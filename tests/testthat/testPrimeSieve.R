@@ -1,5 +1,19 @@
 context("testing primeSieve")
 
+test_that("primeSieve preserves empty result types after sieving", {
+    # Reach result copying rather than the singleton/below-two shortcuts.
+    expect_identical(primeSieve(14, 16, nThreads = 1L), integer(0))
+    expect_identical(primeSieve(14, 17, nThreads = 1L), 17L)
+
+    # Above INT_MAX, the two composites produce an empty numeric vector.
+    # Extending the interval includes the known prime 2^31 - 1.
+    limit <- .Machine$integer.max
+    expect_identical(primeSieve(limit + 1, limit + 2, nThreads = 1L),
+                     numeric(0))
+    expect_identical(primeSieve(limit, limit + 2, nThreads = 1L),
+                     as.double(limit))
+})
+
 test_that("primeSieve handles the precomputed prime table endpoint", {
     # 31627 is the final entry in smallPrimeBase. Exercise its exact endpoint
     # so sanitizer builds also check that traversal stops within the table.

@@ -1,5 +1,15 @@
 context("testing isPrimeRcpp")
 
+test_that("isPrimeRcpp preserves empty result types and names", {
+    for (v in list(integer(0), numeric(0), logical(0))) {
+        expect_identical(isPrimeRcpp(v), logical(0))
+        expect_identical(isPrimeRcpp(v, namedVector = TRUE),
+                         structure(logical(0), names = character(0)))
+    }
+
+    expect_identical(isPrimeRcpp(numeric(0), nThreads = 2L), logical(0))
+})
+
 test_that("isPrimeRcpp generates correct numbers", {
     options(scipen = 999)
     expect_equal(isPrimeRcpp(10), FALSE)

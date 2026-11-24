@@ -1,5 +1,46 @@
 context("testing expandGrid")
 
+test_that("expandGrid preserves matrix types when a pool is empty", {
+    values <- list(1:2, c(1.25, 2.5), c(TRUE, FALSE), c("a", "b"),
+                   as.raw(1:2), c(1 + 1i, 2 + 2i))
+
+    for (v in values) {
+        expected <- matrix(v[FALSE], nrow = 0L, ncol = 2L,
+                           dimnames = list(NULL, c("a", "b")))
+
+        # A nonempty pool prevents GridInputs from returning before native code.
+        for (pools in list(list(a = v[FALSE], b = v),
+                           list(a = v, b = v[FALSE]))) {
+            expect_identical(expandGrid(pools, nThreads = 2L), expected)
+        }
+    }
+})
+
+test_that("empty Cartesian data frames preserve columns and row names", {
+    pools <- list(a = factor(character(0), levels = c("x", "y")),
+                  b = 1:2, c = c(1.25, 2.5), d = c(TRUE, FALSE),
+                  e = c("a", "b"), f = c(1 + 1i, 2 + 2i), g = as.raw(1:2))
+    expected <- as.data.frame(lapply(pools, function(v) v[FALSE]),
+                              stringsAsFactors = FALSE)
+    result <- expandGrid(pools)
+    expect_identical(result, expected)
+    # Inspect the stored attribute: attr() expands compact row names.
+    expect_identical(.row_names_info(result, 0L), integer(0))
+
+    result <- expandGrid(a = numeric(0), b = c(1.25, 2.5), return_df = TRUE)
+    expect_identical(result, data.frame(a = numeric(0), b = numeric(0)))
+    expect_identical(.row_names_info(result, 0L), integer(0))
+})
+
+test_that("empty Cartesian factor matrices preserve levels", {
+    values <- factor(c("x", "y"), levels = c("x", "y", "unused"))
+    expected <- values[FALSE]
+    dim(expected) <- c(0L, 2L)
+    colnames(expected) <- c("a", "b")
+
+    expect_identical(expandGrid(a = values[FALSE], b = values), expected)
+})
+
 test_that("expandGrid generates correct output", {
     baseRCheck <- function(myList) {
         testOut <- expandGrid(myList)
