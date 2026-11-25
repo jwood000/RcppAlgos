@@ -126,7 +126,7 @@ SEXP CombClassNew(SEXP RVals, SEXP RboolVec, SEXP freqInfo, SEXP Rparallel,
     std::vector<int> vInt =
         CppConvert::GetVec<int>(VECTOR_ELT(RVals, 2));
 
-    VecType myType;
+    VecType myType = VecType::Integer;
     SetType(myType, VECTOR_ELT(RVals, 0));
     const bool Parallel = CppConvert::convertFlag(Rparallel, "Parallel");
 

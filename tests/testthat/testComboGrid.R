@@ -1,5 +1,16 @@
 context("testing comboGrid")
 
+test_that("native comboGrid rejects unclassified source types", {
+    # Bypass R input preparation to exercise the native classification guard,
+    # including a valid pool followed by an unsupported pool.
+    for (pools in list(list(list(1L), 1:2), list(1:2, list(1L)))) {
+        expect_error(
+            .Call(RcppAlgos:::`_RcppAlgos_ComboGridCpp`, pools, TRUE, FALSE),
+            "Only atomic types are supported for v", fixed = TRUE
+        )
+    }
+})
+
 test_that("comboGrid generates correct output", {
     bruteCheck <- function(myList, rep = TRUE) {
         testOut <- comboGrid(myList, repetition = rep)

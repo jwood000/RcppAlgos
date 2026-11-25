@@ -10,7 +10,8 @@ enum rcppType {
     tFac = 4,
     tCpx = 5,
     tRaw = 6,
-    N_TYPES = 7
+    N_TYPES = 7,
+    tInvalid = N_TYPES // Sentinel outside the supported type indices.
 };
 
 // Non-finite values, including NaN and +/-Inf, are considered beyond the bound.

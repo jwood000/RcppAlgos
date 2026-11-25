@@ -440,9 +440,14 @@ SEXP ComboGridCpp(cpp11::list RList, bool IsRep, bool Force_DF) {
                                           std::vector<int>(sumLength, 0));
 
     for (int i = 0, total = 0, myIndex = 0, facInd = 0; i < nCols; ++i) {
-        rcppType myType;
+        rcppType myType = tInvalid;
         std::vector<std::string> tempVec;
         convertToString(tempVec, RList[i], myType, IsFactor[i]);
+
+        if (myType == tInvalid) {
+            cpp11::stop("Only atomic types are supported for v");
+        }
+
         std::size_t j = 0;
 
         for (const auto &v: tempVec) {
