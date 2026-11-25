@@ -81,7 +81,7 @@ SEXP PartitionsCount(
     std::vector<std::string> compVec;
     std::vector<double> targetVals;
 
-    ConstraintType ctype;
+    ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
     InitialSetupPartDesign(part, RIsWeak, RIsComposition, IsRep,
                            IsMult, Rf_isNull(Rm), IsComb);
@@ -186,7 +186,7 @@ SEXP PartitionsMultisetCount(
     std::vector<std::string> compVec;
     std::vector<double> targetVals;
 
-    ConstraintType ctype;
+    ConstraintType ctype = ConstraintType::NoConstraint;
     PartDesign part;
     InitialSetupPartDesign(part, RIsWeak, RIsComposition, IsRep,
                            IsMult, Rf_isNull(Rm), IsComb);

@@ -469,6 +469,10 @@ test_that("generic composition fallbacks reject generation and iteration", {
                     design$partition_type,
                     if (is.null(width)) "NotPartition" else "CoarseGrained"
                 )
+                expect_identical(
+                    design$constraint_type,
+                    if (is.null(width)) "General" else "PartitionEsque"
+                )
                 for (bounds in list(list(), list(upper = 3L),
                                     list(lower = 1L, upper = 20L),
                                     list(lower = 2L, upper = 20L))) {

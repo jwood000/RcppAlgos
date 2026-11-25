@@ -1,5 +1,35 @@
 context("testing partitionsDesign")
 
+test_that("irregular inputs retain general constraint classification", {
+    v <- c(1L, 2L, 4L, 7L)
+    freqs <- c(2L, 2L, 2L, 2L)
+
+    # Omitting m leaves NotPartition and skips SetPartitionDesign. Both native
+    # count entry points must initialize the constraint type before this path.
+    for (width in list(NULL, 3L)) {
+        args <- list(v = v, m = width, freqs = freqs, target = 9L)
+        design <- do.call(partitionsDesign, args)
+        expect_identical(
+            design$partition_type,
+            if (is.null(width)) "NotPartition" else "CoarseGrained"
+        )
+        expect_identical(
+            design$constraint_type,
+            if (is.null(width)) "General" else "PartitionEsque"
+        )
+        expect_false(design$is_partition)
+        expect_true(design$count_unknown)
+
+        for (count in list(partitionsCount, compositionsCount,
+                           partitionsMultisetCount, compositionsMultisetCount)) {
+            expect_error(
+                do.call(count, args),
+                "The count is unknown for this case.", fixed = TRUE
+            )
+        }
+    }
+})
+
 test_that("partitionsDesign produces correct results", {
     expect_equal(partitionsDesign(0:10, repetition = TRUE)$partition_type,
                  "RepStdAll")
