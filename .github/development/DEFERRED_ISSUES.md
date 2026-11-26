@@ -1,5 +1,59 @@
 # Deferred Investigations
 
+## Empty group sizes can crash during group preparation
+
+Status: Resolved; reviewed by the maintainer and fixed
+Discovered during: Review of the Alpine/GCC 15.2 `-Wfree-nonheap-object`
+warning in `ComboGroupsTemplate.cpp`, November 26, 2026
+
+Both `comboGroupsCount(4, grpSizes = integer(0))` and the same call with
+`numeric(0)` crashed installed RcppAlgos 2.10.4 with SIGSEGV at address zero
+in separate R processes. The control with `grpSizes = c(2L, 2L)` returned 3.
+
+The pre-fix source explains the failure. `GetVec<double>()` in
+`src/ConvertUtils.cpp` returns an empty vector for empty numeric input;
+`convertVector()` in `src/StdConvert.cpp` checks individual elements without
+rejecting an empty result. In `GroupPrep()` at
+`src/ComboGroupsTemplate.cpp:80-89`, both classification flags become false,
+`IsSame` becomes true, and `vGrpSize.front()` accesses the empty vector before
+the later group-total validation. Generation, counting, sampling, and iterator
+construction share this preparation function; the public reproduction above
+tested counting only. The focused fix and its validation are recorded below.
+
+An exact extraction of the classification block independently triggered UBSan
+on empty input. For nonempty inputs, 87,380 cases (lengths 1 through 8 over
+`{1, 2, 3, INT_MAX}`) matched an independent `std::set` classification oracle,
+preserved the source vector, and passed Apple Clang C++20 ASan/UBSan. This
+checks the classification block, including vector destruction, rather than
+the later group-size arithmetic or the full package. Diagnostic source and
+logs are retained at
+`/var/folders/fd/v2_r1ssx14jd6yww77jfvnmm0000gn/T/rcppalgos-group-classify-4wxpxb6v`.
+
+The reported GCC warning refers to destruction of the independent `grpUni`
+vector after valid copy/sort/unique/erase operations. Review found no invalid
+deallocation in those operations; a compiler false positive is likely, but
+was not confirmed with GCC 15.2. The empty-vector access is a real defect;
+whether excluding that path changes GCC's diagnostic remains untested.
+Starting Docker for a matching compiler was declined. The initial investigation
+did not include a full package build or cross-platform reproduction.
+
+The maintainer authorized a minimal fix: `GroupPrep()` now rejects an empty
+`vGrpSize` before classification. The guard follows the existing `numGroups`
+compatibility check, preserving that error for explicitly incompatible inputs.
+Eleven new expectations in `tests/testthat/testErrors.R` cover integer/numeric
+empty sizes through all four public entry points, the prior incompatibility
+error, and valid single-group/default-size controls. A clean isolated package
+build passed all 818 expectations in `testErrors.R`, `testComboGroups.R`, and
+`testComboGroupsClass.R`, with no failures, errors, warnings, or skips, using
+R 4.6.1 / Apple Clang on macOS arm64 and at most two algorithm workers.
+Logs and source hashes are in `/tmp/rcppalgos-empty-grpsizes-643ddmux`.
+Full `R CMD check`, a sanitizer package rebuild, and GCC 15.2/musl validation
+were not run for this guard-only change; its effect on the warning is unknown.
+
+The local deferred records contain no duplicate. A GitHub issue search could
+not complete because network escalation was declined, so remote duplicate
+status remains unknown. No GitHub issue was opened.
+
 ## Distinct-combination offsets for long matrices
 
 Status: Open; static finding, not reproduced end to end

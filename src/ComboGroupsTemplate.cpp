@@ -77,6 +77,10 @@ std::unique_ptr<ComboGroupsTemplate> GroupPrep(SEXP Rv, SEXP RNumGroups,
             numGroups = vGrpSize.size();
         }
 
+        if (vGrpSize.empty()) {
+            cpp11::stop("grpSizes must not be empty");
+        }
+
         std::vector<int> grpUni(vGrpSize.cbegin(), vGrpSize.cend());
         std::sort(grpUni.begin(), grpUni.end());
         grpUni.erase(

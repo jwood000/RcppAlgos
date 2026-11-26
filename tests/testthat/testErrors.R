@@ -265,6 +265,24 @@ test_that("comboGroups related functions produces appropriate error messages", {
                  "n and sampleVec cannot both be NULL")
 })
 
+test_that("comboGroups functions reject empty group sizes", {
+    for (sizes in list(integer(0), numeric(0))) {
+        expect_error(comboGroups(4, grpSizes = sizes),
+                     "grpSizes must not be empty")
+        expect_error(comboGroupsCount(4, grpSizes = sizes),
+                     "grpSizes must not be empty")
+        expect_error(comboGroupsSample(4, grpSizes = sizes, n = 1),
+                     "grpSizes must not be empty")
+        expect_error(comboGroupsIter(4, grpSizes = sizes),
+                     "grpSizes must not be empty")
+    }
+
+    expect_error(comboGroupsCount(4, numGroups = 2, grpSizes = integer(0)),
+                 "numGroups and grpSizes are incompatible")
+    expect_equal(comboGroupsCount(4, grpSizes = 4L), 1)
+    expect_equal(comboGroupsCount(4, numGroups = 2), 3)
+})
+
 test_that("comboIter related functions produces appropriate error messages", {
     a <- comboIter(500, 10)
     expect_error(a@nextRemaining(),
