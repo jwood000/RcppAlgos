@@ -2,6 +2,8 @@
 
 ## Bug Fixes
 
+* Fixed a compilation failure on musl-based Linux systems caused by a `PAGE_SIZE` macro collision in the prime-counting cache.
+* Empty `grpSizes` now produce an error instead of crashing `comboGroups()`, `comboGroupsCount()`, `comboGroupsSample()`, and `comboGroupsIter()` ([Issue #94](<https://github.com/jwood000/RcppAlgos/issues/94>)).
 * Fixed undefined behavior in `primeSieve()` for intervals containing no primes ([Issue #93](<https://github.com/jwood000/RcppAlgos/issues/93>)).
 * Fixed empty-input handling in `primeFactorize()`, `divisorsRcpp()`, `isPrimeRcpp()`, `expandGrid()`, and `expandGridIter()`.
 * Empty sampling and iterator index vectors now produce clear errors.

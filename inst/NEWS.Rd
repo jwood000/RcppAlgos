@@ -5,6 +5,8 @@
 
     \subsection{Bug Fixes}{
         \itemize{
+          \item Fixed a compilation failure on musl-based Linux systems caused by a \code{PAGE_SIZE} macro collision in the prime-counting cache.
+          \item Empty \code{grpSizes} now produce an error instead of crashing \code{comboGroups()}, \code{comboGroupsCount()}, \code{comboGroupsSample()}, and \code{comboGroupsIter()} (\href{https://github.com/jwood000/RcppAlgos/issues/94}{Issue #94}).
           \item Fixed undefined behavior in \code{primeSieve()} for intervals containing no primes (\href{https://github.com/jwood000/RcppAlgos/issues/93}{Issue #93}).
           \item Fixed empty-input handling in \code{primeFactorize()}, \code{divisorsRcpp()}, \code{isPrimeRcpp()}, \code{expandGrid()}, and \code{expandGridIter()}.
           \item Empty sampling and iterator index vectors now produce clear errors.
