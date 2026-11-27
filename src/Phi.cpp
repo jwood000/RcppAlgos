@@ -102,12 +102,13 @@ namespace {
     // The bound follows independently by six-prime inclusion-exclusion,
     // so doubling the argument range preserves uint16_t answer cells.
     // Public Phi handles x = 0 before consulting or populating the cache.
-    constexpr std::size_t CACHE_ROWS = 100;
-    constexpr unsigned PAGE_BITS = 12;
-    constexpr std::size_t PAGE_SIZE = 1u << PAGE_BITS;
-    constexpr std::uint64_t CACHE_MAX_X = 131071;
-    constexpr std::size_t PAGE_COUNT = (CACHE_MAX_X + 1) / PAGE_SIZE;
-    static_assert((CACHE_MAX_X + 1) % PAGE_SIZE == 0,
+    constexpr std::size_t Phi_Cache_Rows = 100;
+    constexpr unsigned Phi_Cache_Page_Bits = 12;
+    constexpr std::size_t Phi_Cache_Page_Size = 1u << Phi_Cache_Page_Bits;
+    constexpr std::uint64_t Phi_Cache_Max_X = 131071;
+    constexpr std::size_t Phi_Cache_Page_Count =
+        (Phi_Cache_Max_X + 1) / Phi_Cache_Page_Size;
+    static_assert((Phi_Cache_Max_X + 1) % Phi_Cache_Page_Size == 0,
                   "cache pages must cover the complete argument range");
 
     struct PhiCell {
@@ -119,7 +120,7 @@ namespace {
 
     struct PhiPage {
         // One allocation holds all cells inline; no allocation per PhiCell.
-        PhiCell cells[PAGE_SIZE];
+        PhiCell cells[Phi_Cache_Page_Size];
     };
 
     struct PublishedPage {
@@ -133,7 +134,7 @@ namespace {
         // Serializes page creation within this row only. Readers never take
         // this mutex, and writers skip it when their page already exists.
         std::mutex allocationMutex;
-        PublishedPage pages[PAGE_COUNT];
+        PublishedPage pages[Phi_Cache_Page_Count];
 
         ~PhiCacheRow() {
             // Published pages never move or get freed during evaluation.
@@ -147,36 +148,37 @@ namespace {
     };
 
     class PhiCache {
-        std::array<PhiCacheRow, CACHE_ROWS> rows;
+        std::array<PhiCacheRow, Phi_Cache_Rows> rows;
 
     public:
         std::int64_t get(std::uint64_t x, std::uint64_t a) const {
-            if (a >= CACHE_ROWS || x > CACHE_MAX_X) {
+            if (a >= Phi_Cache_Rows || x > Phi_Cache_Max_X) {
                 return 0;
             }
 
             // The shift and mask implement division and remainder by 4096.
             // Acquiring a published pointer makes its page initialization
             // visible, even though this reader never takes the row mutex.
-            const PhiPage* page = rows[a].pages[x >> PAGE_BITS].value.load(
-                std::memory_order_acquire
-            );
+            const PhiPage* page =
+                rows[a].pages[x >> Phi_Cache_Page_Bits].value.load(
+                    std::memory_order_acquire
+                );
 
             // The cell is the complete answer, not a ready flag for other
             // data. Relaxed access is still atomic. Seeing zero simply makes
             // the caller compute the answer, even if another worker has it.
-            return page ? page->cells[x & (PAGE_SIZE - 1)].value.load(
+            return page ? page->cells[x & (Phi_Cache_Page_Size - 1)].value.load(
                 std::memory_order_relaxed
             ) : 0;
         }
 
         void put(std::uint64_t x, std::uint64_t a, std::int64_t value) {
-            if (a >= CACHE_ROWS || x > CACHE_MAX_X) {
+            if (a >= Phi_Cache_Rows || x > Phi_Cache_Max_X) {
                 return;
             }
 
             auto& row = rows[a];
-            auto& published = row.pages[x >> PAGE_BITS].value;
+            auto& published = row.pages[x >> Phi_Cache_Page_Bits].value;
             PhiPage* page = published.load(std::memory_order_acquire);
 
             if (!page) {
@@ -205,7 +207,7 @@ namespace {
             // No other data is published by this store, so relaxed is enough.
             // Duplicate computation is allowed; workers need not wait for an
             // in-progress answer. The sign belongs to the caller's recurrence.
-            page->cells[x & (PAGE_SIZE - 1)].value.store(
+            page->cells[x & (Phi_Cache_Page_Size - 1)].value.store(
                 static_cast<std::uint16_t>(std::abs(value)),
                 std::memory_order_relaxed
             );
